@@ -1,0 +1,4 @@
+#pragma once
+
+#define PROJECT_DIR "${PROJECT_SOURCE_DIR}/"
+#define SHADER_DIR "${PROJECT_SOURCE_DIR}/shaders/"
