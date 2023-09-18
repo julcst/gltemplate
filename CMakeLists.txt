@@ -65,9 +65,11 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/example.cpp
     src/framework/app.cpp
-    src/framework/camera.cpp
-    src/framework/shader.cpp
-    src/framework/vao.cpp
+    src/framework/gl/buffer.cpp
+    src/framework/gl/mesh.cpp
+    src/framework/gl/program.cpp
+    src/framework/gl/shader.cpp
+    src/framework/gl/vertexarray.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} glad glfw glm imgui_glfw)

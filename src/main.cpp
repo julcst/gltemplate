@@ -3,8 +3,8 @@
 #include <iostream>
 
 int main() {
-    ExampleApp app;
     try {
+        ExampleApp app;
         app.run();
     } catch(std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;

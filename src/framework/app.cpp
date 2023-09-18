@@ -5,32 +5,23 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <glm/glm.hpp>
 
 #include <stdexcept>
 
-// To be overriden
-void App::init() {}
-void App::render() {}
-void App::keyCallback(int key, int action) {}
-void App::buildImGui() {}
+using namespace glm;
 
-void App::run() {
+App::App(int width, int height) : resolution(width, height), time(0.f) {
     initGLFW();
     initImGui();
     initGL();
-    init();
-    while (!glfwWindowShouldClose(window)) {
-        render();
-        if(imguiEnabled) renderImGui();
-        // Swap and pull
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-    cleanup();
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
+    App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+    app->resolution.x = width;
+    app->resolution.y = height;
 }
 
 void App::initGLFW() {
@@ -45,8 +36,11 @@ void App::initGLFW() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    window = glfwCreateWindow(800, 600, "", NULL, NULL);
-    // Create window
+    window = glfwCreateWindow(resolution.x, resolution.y, "", NULL, NULL);
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    resolution.x = width;
+    resolution.y = height;
     if(!window) throw std::runtime_error("GLFW window creation failed");
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
@@ -73,6 +67,32 @@ void App::initGL() {
     if (!version) throw std::runtime_error("Failed to load OpenGL");
 }
 
+App::~App() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+    if(window) glfwDestroyWindow(window);
+    glfwTerminate();
+}
+
+// To be overriden
+void App::init() {}
+void App::render() {}
+void App::keyCallback(int key, int action) {}
+void App::buildImGui() {}
+
+void App::run() {
+    init();
+    while (!glfwWindowShouldClose(window)) {
+        time = (float) glfwGetTime();
+        render();
+        if(imguiEnabled) renderImGui();
+        // Swap and pull
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
+
 void App::renderImGui() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -80,14 +100,6 @@ void App::renderImGui() {
     buildImGui();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-void App::cleanup() {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-    if(window) glfwDestroyWindow(window);
-    glfwTerminate();
 }
 
 void App::close() {
