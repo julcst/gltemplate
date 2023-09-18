@@ -54,13 +54,6 @@ add_library(imgui_glfw STATIC
 target_include_directories(imgui_glfw PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
 target_link_libraries(imgui_glfw glfw)
 
-get_cmake_property(_variableNames VARIABLES)
-list (SORT _variableNames)
-foreach (_variableName ${_variableNames})
-    message(STATUS "${_variableName}=${${_variableName}}")
-endforeach()
-
-
 ####################################################################
 # Configure header file
 configure_file("src/framework/config.hpp.in" "src/framework/config.hpp")
