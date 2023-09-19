@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(gltemplate VERSION 0.1 LANGUAGES CXX)
+project(gltemplate VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
