@@ -11,6 +11,7 @@ class App {
 public:
     vec2 resolution;
     float time;
+    float delta;
     App(int width, int height);
     App(const App&) = delete;
     App& operator=(const App&) = delete;

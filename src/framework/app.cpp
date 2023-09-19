@@ -11,7 +11,7 @@
 
 using namespace glm;
 
-App::App(int width, int height) : resolution(width, height), time(0.f) {
+App::App(int width, int height) : resolution(width, height), time(0.f), delta(0.f) {
     initGLFW();
     initImGui();
     initGL();
@@ -49,7 +49,7 @@ void App::initGLFW() {
         app->keyCallback(key, action);
     });
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    glfwSwapInterval(1); // VSync
 }
 
 void App::initImGui() {
@@ -84,12 +84,13 @@ void App::buildImGui() {}
 void App::run() {
     init();
     while (!glfwWindowShouldClose(window)) {
-        time = (float) glfwGetTime();
+        glfwPollEvents();
+        float current = (float) glfwGetTime();
+        delta = current - time;
+        time = current;
         render();
         if(imguiEnabled) renderImGui();
-        // Swap and pull
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
 }
 
