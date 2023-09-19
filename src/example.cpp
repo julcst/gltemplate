@@ -14,17 +14,7 @@
 using namespace glm;
 
 ExampleApp::ExampleApp() : App(800, 600) {
-    std::vector<float> vertices = {
-         1.0f,  1.0f, 0.0f,
-         1.0f, -1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f,
-        -1.0f,  1.0f, 0.0f
-    };
-    std::vector<unsigned int> indices = {
-        0, 1, 3,
-        1, 2, 3
-    };
-    mesh.load(vertices, indices);
+    mesh.load(FULLSCREEN_VERTICES, FULLSCREEN_INDICES);
     program.load("example.vert", "example.frag");
     lRes = program.uniform("uRes");
     lT = program.uniform("uT");

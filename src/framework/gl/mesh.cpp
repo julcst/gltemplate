@@ -12,6 +12,7 @@ void Mesh::load(std::vector<float> vertices, std::vector<unsigned int> indices) 
     ebo.load(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(unsigned int), indices.data());
 
     // Bind buffers to VAO
+    // TODO: Use DSA instead (but only OpenGL 4.5+, so not on macOS)
     bind();
     vbo.bind(GL_ARRAY_BUFFER);
     ebo.bind(GL_ELEMENT_ARRAY_BUFFER);

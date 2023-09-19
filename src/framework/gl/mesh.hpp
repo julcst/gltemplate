@@ -5,6 +5,16 @@
 
 #include <vector>
 
+const std::vector<float> FULLSCREEN_VERTICES = {
+    -1.0f, -1.0f, 0.0f,
+    -1.0f,  3.0f, 0.0f,
+     3.0f, -1.0f, 0.0f,
+};
+
+const std::vector<unsigned int> FULLSCREEN_INDICES = {
+    0, 1, 2,
+};
+
 class Mesh : VertexArray {
 public:
     void load(std::vector<float> vertices, std::vector<unsigned int> indices);
