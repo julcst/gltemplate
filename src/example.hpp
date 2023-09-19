@@ -13,8 +13,11 @@ protected:
     void render();
     void keyCallback(int key, int action);
 private:
-    Mesh mesh;
-    Program program;
+    Mesh fullscreenTriangle;
+    Program backgroundShader;
     GLuint lRes;
     GLuint lT;
+    Mesh mesh;
+    Program meshShader;
+    GLuint lMVP;
 };

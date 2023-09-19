@@ -87,19 +87,34 @@ void Program::set(GLuint loc, float value) {
     glProgramUniform1f(handle, loc, value);
 }
 
-void Program::set(GLuint loc, ivec2& value) {
+void Program::set(GLuint loc, const ivec2& value) {
     glProgramUniform2iv(handle, loc, 1, value_ptr(value));
 }
 
-void Program::set(GLuint loc, vec2& value) {
+void Program::set(GLuint loc, const vec2& value) {
     glProgramUniform2fv(handle, loc, 1, value_ptr(value));
 }
 
-void Program::set(GLuint loc, ivec3& value) {
+void Program::set(GLuint loc, const ivec3& value) {
     glProgramUniform3iv(handle, loc, 1, value_ptr(value));
 }
 
-void Program::set(GLuint loc, vec3& value) {
+void Program::set(GLuint loc, const vec3& value) {
     glProgramUniform3fv(handle, loc, 1, value_ptr(value));
 }
 
+void Program::set(GLuint loc, const ivec4& value) {
+    glProgramUniform4iv(handle, loc, 1, value_ptr(value));
+}
+
+void Program::set(GLuint loc, const vec4& value) {
+    glProgramUniform4fv(handle, loc, 1, value_ptr(value));
+}
+
+void Program::set(GLuint loc, const mat3& value) {
+    glProgramUniformMatrix3fv(handle, loc, 1, GL_FALSE, value_ptr(value));
+}
+
+void Program::set(GLuint loc, const mat4& value) {
+    glProgramUniformMatrix4fv(handle, loc, 1, GL_FALSE, value_ptr(value));
+}
