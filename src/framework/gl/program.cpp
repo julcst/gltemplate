@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <cassert>
 #include <stdexcept>
 #include <string>
 #include <list>
@@ -16,6 +17,7 @@ using namespace glm;
 /////////////////////// RAII behavior ///////////////////////
 Program::Program() {
     handle = glCreateProgram();
+    assert(handle);
 }
 
 Program::Program(Program&& other) : handle(other.handle) {
@@ -65,7 +67,7 @@ void Program::link() {
     if (!success) {
         char infoLog[512];
         glGetProgramInfoLog(handle, 512, NULL, infoLog);
-        throw std::runtime_error("Shader program linking failed: " + std::string(infoLog));
+        throw std::runtime_error("Program linking failed: " + std::string(infoLog));
     }
 }
 

@@ -7,7 +7,7 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <glm/glm.hpp>
 
-#include <stdexcept>
+#include <cassert>
 
 using namespace glm;
 
@@ -26,7 +26,8 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 
 void App::initGLFW() {
     // Init GLFW
-    if(!glfwInit()) throw std::runtime_error("GLFW initialization failed");
+    int glfwInitStatus = glfwInit();
+    assert(glfwInitStatus);
 
     // Window hints
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -37,11 +38,11 @@ void App::initGLFW() {
 #endif
 
     window = glfwCreateWindow(resolution.x, resolution.y, "", NULL, NULL);
+    assert(window);
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     resolution.x = width;
     resolution.y = height;
-    if(!window) throw std::runtime_error("GLFW window creation failed");
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -63,8 +64,8 @@ void App::initImGui() {
 }
 
 void App::initGL() {
-    int version = gladLoadGL();
-    if (!version) throw std::runtime_error("Failed to load OpenGL");
+    int gladLoadGLStatus = gladLoadGL();
+    assert(gladLoadGLStatus);
 }
 
 App::~App() {

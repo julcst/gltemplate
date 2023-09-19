@@ -2,9 +2,12 @@
 
 #include <glad/glad.h>
 
+#include <cassert>
+
 /////////////////////// RAII behavior ///////////////////////
 VertexArray::VertexArray() {
     glGenVertexArrays(1, &handle);
+    assert(handle);
 }
 
 VertexArray::VertexArray(VertexArray&& other) : handle(other.handle) {

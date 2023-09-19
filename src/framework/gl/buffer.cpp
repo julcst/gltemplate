@@ -2,9 +2,12 @@
 
 #include <glad/glad.h>
 
+#include <cassert>
+
 /////////////////////// RAII behavior ///////////////////////
 Buffer::Buffer() {
     glGenBuffers(1, &handle);
+    assert(handle);
 }
 
 Buffer::Buffer(Buffer&& other) : handle(other.handle) {

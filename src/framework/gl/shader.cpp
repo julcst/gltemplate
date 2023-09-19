@@ -4,6 +4,7 @@
 
 #include <glad/glad.h>
 
+#include <cassert>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -13,6 +14,7 @@
 /////////////////////// RAII behavior ///////////////////////
 Shader::Shader(GLenum type) {
     handle = glCreateShader(type);
+    assert(handle);
 }
 
 Shader::Shader(Shader&& other) : handle(other.handle) {
