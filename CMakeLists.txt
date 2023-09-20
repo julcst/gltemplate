@@ -65,6 +65,7 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/example.cpp
     src/framework/app.cpp
+    src/framework/camera.cpp
     src/framework/gl/buffer.cpp
     src/framework/gl/mesh.cpp
     src/framework/gl/program.cpp

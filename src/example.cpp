@@ -6,10 +6,10 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <imgui.h>
 
 #include <vector>
-#include <iostream>
 
 using namespace glm;
 
@@ -33,7 +33,7 @@ const std::vector<unsigned int> indices = {
     3, 2, 6, 6, 7, 3, // Top
 };
 
-ExampleApp::ExampleApp() : App(800, 600) {
+ExampleApp::ExampleApp() : App(800, 600), cam(0.0f, 0.0f, 5.0f, 3.0f, 50.0f) {
     fullscreenTriangle.load(FULLSCREEN_VERTICES, FULLSCREEN_INDICES);
     backgroundShader.load("screen.vert", "example.frag");
     lRes = backgroundShader.uniform("uRes");
@@ -62,15 +62,24 @@ void ExampleApp::render() {
     fullscreenTriangle.draw();
     // Render the mesh in the foreground
     mat4 projMat = perspective(45.0f, resolution.x / resolution.y, 0.1f, 100.0f);
-    mat4 modelMat = rotate(translate(mat4(1.0f), vec3(0.0f, 0.0f, -5.0f)), time, vec3(0.0f, 1.0f, 0.0f));
+    mat4 viewMat = cam.calcView();
+    mat4 modelMat = rotate(mat4(1.0f), time, vec3(0.0f, 1.0f, 0.0f));
     glDepthMask(GL_TRUE);
     meshShader.bind();
-    meshShader.set(lMVP, projMat * modelMat);
+    meshShader.set(lMVP, projMat * viewMat * modelMat);
     mesh.draw();
 }
 
-void ExampleApp::keyCallback(int key, int action) {
-    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) close();
+void ExampleApp::keyCallback(Key key, Action action) {
+    if(key == Key::ESC && action == Action::PRESS) close();
+}
+
+void ExampleApp::scrollCallback(float amount) {
+    cam.zoom(amount);
+}
+
+void ExampleApp::moveCallback(vec2 movement, bool leftButton, bool rightButton, bool middleButton) {
+    if(rightButton) cam.rotate(movement * 0.01f);
 }
 
 void ExampleApp::buildImGui() {

@@ -39,15 +39,44 @@ void App::initGLFW() {
 
     window = glfwCreateWindow(resolution.x, resolution.y, "", NULL, NULL);
     assert(window);
+    glfwSetWindowUserPointer(window, this);
+    // Measure real resolution
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
     resolution.x = width;
     resolution.y = height;
-    glfwSetWindowUserPointer(window, this);
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
+    mouse = vec2(x, y);
+    // Callbacks
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+    glfwSetKeyCallback(window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
-        app->keyCallback(key, action);
+        app->keyCallback(static_cast<Key>(key), static_cast<Action>(action));
+    });
+    glfwSetMouseButtonCallback(window, [] (GLFWwindow* window, int button, int action, int mods) {
+        App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+        double x, y;
+        glfwGetCursorPos(window, &x, &y);
+        app->mouse.x = x;
+        app->mouse.y = y;
+        app->clickCallback(static_cast<Button>(button), static_cast<Action>(action), vec2(x, y));
+    });
+    glfwSetCursorPosCallback(window, [] (GLFWwindow* window, double xpos, double ypos) {
+        App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+        double x, y;
+        glfwGetCursorPos(window, &x, &y);
+        vec2 movement = vec2(x - app->mouse.x, y - app->mouse.y);
+        app->mouse.x = x;
+        app->mouse.y = y;
+        bool leftButton = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+        bool rightButton = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
+        bool middleButton = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS;
+        app->moveCallback(movement, leftButton, rightButton, middleButton);
+    });
+    glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
+        App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+        app->scrollCallback(static_cast<float>(yoffset));
     });
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // VSync
@@ -79,7 +108,10 @@ App::~App() {
 // To be overriden
 void App::init() {}
 void App::render() {}
-void App::keyCallback(int key, int action) {}
+void App::keyCallback(Key key, Action action) {}
+void App::clickCallback(Button button, Action action, vec2 position) {}
+void App::scrollCallback(float amount) {}
+void App::moveCallback(vec2 movement, bool leftButton, bool rightButton, bool middleButton) {}
 void App::buildImGui() {}
 
 void App::run() {
