@@ -53,7 +53,7 @@ void ExampleApp::init() {
 }
 
 void ExampleApp::render() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
     // Render color pattern in the background
     glDepthMask(GL_FALSE);
     backgroundShader.bind();

@@ -8,6 +8,7 @@ uniform float uT;
 
 void main() {
     vec2 uv = gl_FragCoord.xy / uRes;
+    if (hash3f(vec3(floor(gl_FragCoord.xy / 1.0), uT)).x > 0.5) discard;
     switch (int(floor(mod(uT, 3.0)))) {
     case 0:
         vec3 p = vec3(gl_FragCoord.xy / uRes, 0.0) + uT * vec3(0.02, 0.02, 0.0);
