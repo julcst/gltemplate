@@ -5,7 +5,7 @@ A simple wrapper framework around common OpenGL concepts I created to learn CMak
 ## Features
 
 - Automatically downloads dependencies with CMake `FetchContent`
-- macOS support
+- DMG generation with CPack
 - Encapsulates OpenGL resources with RAII wrappers
 
 ## Dependencies

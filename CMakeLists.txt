@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
+set(CMAKE_OSX_ARCHITECTURES x86_64;arm64)
 project(GLTemplate VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -91,7 +92,7 @@ configure_file("src/framework/config.hpp.in" "src/framework/config.hpp")
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_BINARY_DIR}/src/framework)
 
 ####################################################################
-# Bundle app on macOS
+# Bundling macOS application
 set_target_properties(${PROJECT_NAME} PROPERTIES
     BUNDLE True
     MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
@@ -110,10 +111,9 @@ set_source_files_properties(${SHADERS}
 )
 
 ####################################################################
-# Packaging installer on macOS
+# Packaging macOS installer
 install(TARGETS ${PROJECT_NAME} BUNDLE DESTINATION .)
 include(InstallRequiredSystemLibraries)
 set(CPACK_GENERATOR DragNDrop)
-# set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME})
 set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
 include(CPack)
