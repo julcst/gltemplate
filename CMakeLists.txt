@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(gltemplate VERSION 1.0 LANGUAGES CXX)
+project(GLTemplate VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
@@ -16,6 +16,7 @@ FetchContent_Declare(
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(glfw)
 
 # GLAD
@@ -47,7 +48,6 @@ add_library(imgui_glfw STATIC
     ${imgui_SOURCE_DIR}/imgui_demo.cpp
     ${imgui_SOURCE_DIR}/imgui_tables.cpp
     ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-
     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
@@ -55,13 +55,8 @@ target_include_directories(imgui_glfw PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_
 target_link_libraries(imgui_glfw glfw)
 
 ####################################################################
-# Configure header file
-configure_file("src/framework/config.hpp.in" "src/framework/config.hpp")
-target_include_directories(imgui_glfw PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/src/framework)
-
-####################################################################
-# Add executable
-add_executable(${PROJECT_NAME}
+# List files
+set(SRC
     src/main.cpp
     src/example.cpp
     src/framework/app.cpp
@@ -72,10 +67,53 @@ add_executable(${PROJECT_NAME}
     src/framework/gl/shader.cpp
     src/framework/gl/vertexarray.cpp
 )
-
-target_link_libraries(${PROJECT_NAME} glad glfw glm imgui_glfw)
+set(SHADERS
+    shaders/example.frag
+    shaders/projection.vert
+    shaders/random.glsl
+    shaders/screen.vert
+    shaders/voxels.frag
+)
+set(ICON
+    icons/AppIcon.icns
+)
 
 ####################################################################
-# Building installer
-set(CPACK_BUNDLE_NAME "gltemplate")
+# Add executable
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE
+    ${SRC}
+    ${SHADERS}
+    ${ICON}
+)
+
+target_link_libraries(${PROJECT_NAME} glad glfw glm imgui_glfw)
+configure_file("src/framework/config.hpp.in" "src/framework/config.hpp")
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_BINARY_DIR}/src/framework)
+
+####################################################################
+# Bundle app on macOS
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    BUNDLE True
+    MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
+    MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION}
+    MACOSX_BUNDLE_GUI_IDENTIFIER de.julcs.${PROJECT_NAME}
+    MACOSX_BUNDLE_ICON_FILE AppIcon
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${CMAKE_PROJECT_VERSION}
+)
+set_source_files_properties(${ICON}
+    PROPERTIES
+    MACOSX_PACKAGE_LOCATION "Resources"
+)
+set_source_files_properties(${SHADERS}
+    PROPERTIES
+    MACOSX_PACKAGE_LOCATION "Resources/shaders"
+)
+
+####################################################################
+# Packaging installer on macOS
+install(TARGETS ${PROJECT_NAME} BUNDLE DESTINATION .)
+include(InstallRequiredSystemLibraries)
+set(CPACK_GENERATOR DragNDrop)
+# set(CPACK_PACKAGE_EXECUTABLES ${PROJECT_NAME})
+set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
 include(CPack)

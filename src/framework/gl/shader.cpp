@@ -41,18 +41,18 @@ void Shader::release() {
 
 const std::regex includeRegex("#include \"([^\"]+)\"");
 
-std::string readFile(std::string filename) {
-    std::ifstream stream(SHADER_DIR + filename);
+std::string readFile(std::string path) {
+    std::ifstream stream(path);
     std::stringstream buffer;
     buffer << stream.rdbuf();
     return buffer.str();
 }
 
 std::string readShader(std::string filename) {
-    std::string source = readFile(filename);
+    std::string source = readFile(SHADER_DIR + filename);
     std::smatch match;
     while (std::regex_search(source, match, includeRegex)) {
-        std::string include = readFile(match[1]);
+        std::string include = readFile(SHADER_DIR + match[1].str());
         source = match.prefix().str() + include + match.suffix().str();
     }
     return source;
