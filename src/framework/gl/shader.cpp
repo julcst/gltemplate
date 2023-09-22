@@ -43,6 +43,7 @@ const std::regex includeRegex("#include \"([^\"]+)\"");
 
 std::string readFile(std::string path) {
     std::ifstream stream(path);
+    if(!stream.is_open()) throw std::runtime_error("Could not open file: " + path);
     std::stringstream buffer;
     buffer << stream.rdbuf();
     return buffer.str();
