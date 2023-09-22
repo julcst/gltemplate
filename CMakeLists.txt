@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 set(CMAKE_OSX_ARCHITECTURES x86_64;arm64)
 project(GLTemplate VERSION 1.0 LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 ####################################################################
@@ -114,6 +114,6 @@ set_source_files_properties(${SHADERS}
 # Packaging macOS installer
 install(TARGETS ${PROJECT_NAME} BUNDLE DESTINATION .)
 include(InstallRequiredSystemLibraries)
-set(CPACK_GENERATOR DragNDrop)
+set(CPACK_GENERATOR ZIP)
 set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
 include(CPack)
