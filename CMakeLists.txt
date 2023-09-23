@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.26)
+
+if(APPLE)
 set(CMAKE_OSX_ARCHITECTURES x86_64;arm64)
+    set(CMAKE_MACOSX_BUNDLE True)
+elseif(WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+endif()
+
 project(GLTemplate VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -92,6 +99,7 @@ configure_file("src/framework/config.hpp.in" "src/framework/config.hpp")
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_BINARY_DIR}/src/framework)
 
 ####################################################################
+if(APPLE)
 # Bundling macOS application
 set_target_properties(${PROJECT_NAME} PROPERTIES
     BUNDLE True
@@ -110,10 +118,17 @@ set_source_files_properties(${SHADERS}
     MACOSX_PACKAGE_LOCATION "Resources/shaders"
 )
 
-####################################################################
 # Packaging macOS installer
 install(TARGETS ${PROJECT_NAME} BUNDLE DESTINATION .)
 include(InstallRequiredSystemLibraries)
-set(CPACK_GENERATOR ZIP)
+    set(CPACK_GENERATOR DragNDrop)
 set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
 include(CPack)
+elseif(WIN32)
+    install(TARGETS ${PROJECT_NAME} DESTINATION .)
+    install(FILES ${SHADERS} DESTINATION shaders)
+    include(InstallRequiredSystemLibraries)
+    set(CPACK_GENERATOR ZIP)
+    set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
+    include(CPack)
+endif()
