@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 
 if(APPLE)
-set(CMAKE_OSX_ARCHITECTURES x86_64;arm64)
+    set(CMAKE_OSX_ARCHITECTURES x86_64;arm64)
     set(CMAKE_MACOSX_BUNDLE True)
 elseif(WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
@@ -100,30 +100,30 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_BINARY_DIR}/src/framew
 
 ####################################################################
 if(APPLE)
-# Bundling macOS application
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    BUNDLE True
-    MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
-    MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION}
-    MACOSX_BUNDLE_GUI_IDENTIFIER de.julcs.${PROJECT_NAME}
-    MACOSX_BUNDLE_ICON_FILE AppIcon
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${CMAKE_PROJECT_VERSION}
-)
-set_source_files_properties(${ICON}
-    PROPERTIES
-    MACOSX_PACKAGE_LOCATION "Resources"
-)
-set_source_files_properties(${SHADERS}
-    PROPERTIES
-    MACOSX_PACKAGE_LOCATION "Resources/shaders"
-)
+    # Bundling macOS application
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        BUNDLE True
+        MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
+        MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION}
+        MACOSX_BUNDLE_GUI_IDENTIFIER de.julcs.${PROJECT_NAME}
+        MACOSX_BUNDLE_ICON_FILE AppIcon
+        MACOSX_BUNDLE_SHORT_VERSION_STRING ${CMAKE_PROJECT_VERSION}
+    )
+    set_source_files_properties(${ICON}
+        PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources"
+    )
+    set_source_files_properties(${SHADERS}
+        PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources/shaders"
+    )
 
-# Packaging macOS installer
-install(TARGETS ${PROJECT_NAME} BUNDLE DESTINATION .)
-include(InstallRequiredSystemLibraries)
+    # Packaging macOS installer
+    install(TARGETS ${PROJECT_NAME} BUNDLE DESTINATION .)
+    include(InstallRequiredSystemLibraries)
     set(CPACK_GENERATOR DragNDrop)
-set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
-include(CPack)
+    set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
+    include(CPack)
 elseif(WIN32)
     install(TARGETS ${PROJECT_NAME} DESTINATION .)
     install(FILES ${SHADERS} DESTINATION shaders)
