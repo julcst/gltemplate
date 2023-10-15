@@ -11,7 +11,7 @@
 
 using namespace glm;
 
-App::App(int width, int height) : resolution(width, height), time(0.f), delta(0.f) {
+App::App(int width, int height) : resolution(width, height), time(0.f), delta(0.f), frames(0), imguiEnabled(true) {
     initGLFW();
     initImGui();
     initGL();
@@ -117,6 +117,7 @@ void App::buildImGui() {}
 
 void App::run() {
     init();
+    frames = 0;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         float current = (float) glfwGetTime();
@@ -125,6 +126,7 @@ void App::run() {
         render();
         if(imguiEnabled) renderImGui();
         glfwSwapBuffers(window);
+        frames++;
     }
 }
 

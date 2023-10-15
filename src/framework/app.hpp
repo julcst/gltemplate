@@ -41,6 +41,7 @@ public:
     vec2 resolution;
     float time;
     float delta;
+    unsigned int frames;
     vec2 mouse;
     App(int width, int height);
     App(const App&) = delete;
@@ -60,7 +61,7 @@ protected:
     virtual void scrollCallback(float amount);
     virtual void moveCallback(vec2 movement, bool leftButton, bool rightButton, bool middleButton);
 private:
-    bool imguiEnabled = true;
+    bool imguiEnabled;
     GLFWwindow* window;
     void initGLFW();
     void initImGui();
