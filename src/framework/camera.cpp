@@ -27,10 +27,10 @@ mat4 Camera::calcView() {
 }
 
 mat3 Camera::calcRotation() {
-    vec3 dir = normalize(getPosition() - target);
-    vec3 right = cross(dir, up);
-    vec3 newUp = cross(right, dir);
-    return mat3(dir, newUp, right);
+    vec3 forward = normalize(target - getPosition());
+    vec3 right = normalize(cross(forward, up));
+    vec3 newUp = cross(right, forward);
+    return mat3(right, newUp, forward);
 }
 
 vec3 Camera::calcPosition() {
