@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
+
 if(APPLE)
     set(CMAKE_OSX_ARCHITECTURES x86_64;arm64)
     set(CMAKE_MACOSX_BUNDLE True)
@@ -75,6 +77,10 @@ set(SRC
     src/framework/gl/shader.cpp
     src/framework/gl/vertexarray.cpp
 )
+set(INCLUDE
+    src/
+    src/framework/
+)
 set(SHADERS
     shaders/example.frag
     shaders/projection.vert
@@ -88,11 +94,12 @@ set(ICON
 
 ####################################################################
 # Add executable
-add_executable(${PROJECT_NAME} MACOSX_BUNDLE
+add_executable(${PROJECT_NAME}
     ${SRC}
     ${SHADERS}
     ${ICON}
 )
+target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE})
 
 target_link_libraries(${PROJECT_NAME} glad glfw glm imgui_glfw)
 configure_file("src/framework/config.hpp.in" "src/framework/config.hpp")
