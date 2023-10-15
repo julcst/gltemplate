@@ -28,6 +28,7 @@ public:
     void bind();
     GLuint uniform(std::string name);
     void set(GLuint loc, int value);
+    void set(GLuint loc, unsigned int value);
     void set(GLuint loc, float value);
     void set(GLuint loc, const glm::ivec2& value);
     void set(GLuint loc, const glm::vec2& value);
@@ -37,6 +38,7 @@ public:
     void set(GLuint loc, const glm::vec4& value);
     void set(GLuint loc, const glm::mat3& value);
     void set(GLuint loc, const glm::mat4& value);
+    void set(GLuint loc, const glm::vec4& values, GLuint n);
 private:
     GLuint handle;
     std::list<Shader> shaders;

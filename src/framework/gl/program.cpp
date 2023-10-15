@@ -83,6 +83,10 @@ void Program::set(GLuint loc, int value) {
     glProgramUniform1i(handle, loc, value);
 }
 
+void Program::set(GLuint loc, unsigned int value) {
+    glProgramUniform1ui(handle, loc, value);
+}
+
 void Program::set(GLuint loc, float value) {
     glProgramUniform1f(handle, loc, value);
 }
@@ -117,4 +121,8 @@ void Program::set(GLuint loc, const mat3& value) {
 
 void Program::set(GLuint loc, const mat4& value) {
     glProgramUniformMatrix4fv(handle, loc, 1, GL_FALSE, value_ptr(value));
+}
+
+void Program::set(GLuint loc, const vec4& values, GLuint n) {
+    glProgramUniform4fv(handle, loc, n, value_ptr(values));
 }
