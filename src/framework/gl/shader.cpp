@@ -10,6 +10,7 @@
 #include <sstream>
 #include <regex>
 #include <stdexcept>
+#include <set>
 
 /////////////////////// RAII behavior ///////////////////////
 Shader::Shader(GLenum type) {
@@ -49,18 +50,24 @@ std::string readFile(std::string path) {
     return buffer.str();
 }
 
-std::string readShader(std::string filename) {
+std::string readShader(std::string filename, std::set<std::string>& included) {
     std::string source = readFile(SHADER_DIR + filename);
     std::smatch match;
     while (std::regex_search(source, match, includeRegex)) {
-        std::string include = readFile(SHADER_DIR + match[1].str());
-        source = match.prefix().str() + include + match.suffix().str();
+        if (included.find(match[1].str()) == included.end()) {
+            included.insert(match[1].str());
+            std::string include = readShader(match[1].str(), included);
+            source = match.prefix().str() + include + match.suffix().str();
+        } else {
+            source = match.prefix().str() + match.suffix().str();
+        }
     }
     return source;
 }
 
 void Shader::load(std::string filename) {
-    std::string source = readShader(filename);
+    std::set<std::string> included;
+    std::string source = readShader(filename, included);
     const char* sourcePtr = source.c_str();
     glShaderSource(handle, 1, &sourcePtr, NULL);
     compile();
