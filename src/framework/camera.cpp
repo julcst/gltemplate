@@ -6,10 +6,10 @@
 
 using namespace glm;
 
-Camera::Camera(float azimuth, float altitude, float dist, float minDist, float maxDist, vec3 target, vec3 up)
+Camera::Camera(float azimuth, float altitude, float dist, float minDist, float maxDist, const vec3& target, const vec3& up)
 : sphericalPosition(dist, azimuth, altitude), minDist(minDist), maxDist(maxDist), target(target), up(up), changed(true) {}
 
-void Camera::rotate(vec2 delta) {
+void Camera::rotate(const vec2& delta) {
     sphericalPosition += vec3(0.0f, -delta.x, delta.y);
     sphericalPosition.y = mod(sphericalPosition.y, two_pi<float>());
     sphericalPosition.z = clamp(sphericalPosition.z, -half_pi<float>() + ALTITUDE_DELTA, half_pi<float>() - ALTITUDE_DELTA);

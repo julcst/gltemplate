@@ -42,7 +42,7 @@ void Program::release() {
 }
 /////////////////////////////////////////////////////////////
 
-void Program::load(std::string vs, std::string fs) {
+void Program::load(const std::string& vs, const std::string& fs) {
     attach(vs, GL_VERTEX_SHADER);
     attach(fs, GL_FRAGMENT_SHADER);
     link();
@@ -53,7 +53,7 @@ void Program::attach(Shader shader) {
     shaders.push_back(std::move(shader));
 }
 
-void Program::attach(std::string filename, GLuint type) {
+void Program::attach(const std::string& filename, GLuint type) {
     Shader shader(type);
     shader.load(filename);
     glAttachShader(handle, shader.getHandle());
@@ -75,7 +75,7 @@ void Program::bind() {
     glUseProgram(handle);
 }
 
-GLuint Program::uniform(std::string name) {
+GLuint Program::uniform(const std::string& name) {
     return glGetUniformLocation(handle, name.c_str());
 }
 
@@ -84,6 +84,10 @@ void Program::set(GLuint loc, int value) {
 }
 
 void Program::set(GLuint loc, unsigned int value) {
+    glProgramUniform1ui(handle, loc, value);
+}
+
+void Program::set(GLuint loc, size_t value) {
     glProgramUniform1ui(handle, loc, value);
 }
 

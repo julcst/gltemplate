@@ -78,7 +78,7 @@ void ExampleApp::scrollCallback(float amount) {
     cam.zoom(amount);
 }
 
-void ExampleApp::moveCallback(vec2 movement, bool leftButton, bool rightButton, bool middleButton) {
+void ExampleApp::moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) {
     if(rightButton) cam.rotate(movement * 0.01f);
 }
 

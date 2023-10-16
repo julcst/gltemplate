@@ -11,17 +11,10 @@
 
 using namespace glm;
 
-App::App(int width, int height) : resolution(width, height), time(0.f), delta(0.f), frames(0), imguiEnabled(true) {
+App::App(unsigned int width, unsigned int height) : resolution(width, height), time(0.f), delta(0.f), frames(0), imguiEnabled(true) {
     initGLFW();
     initImGui();
     initGL();
-}
-
-void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-    App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
-    app->resolution.x = width;
-    app->resolution.y = height;
 }
 
 void App::initGLFW() {
@@ -41,20 +34,25 @@ void App::initGLFW() {
     assert(window);
     glfwSetWindowUserPointer(window, this);
     // Measure real resolution
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    resolution.x = width;
-    resolution.y = height;
+    int w, h;
+    glfwGetFramebufferSize(window, &w, &h);
+    resolution.x = w;
+    resolution.y = h;
     double x, y;
     glfwGetCursorPos(window, &x, &y);
     mouse = vec2(x, y);
     // Callbacks
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetKeyCallback(window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
+    glfwSetFramebufferSizeCallback(window, [] (GLFWwindow* window, int width, int height) {
+        glViewport(0, 0, width, height);
+        App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+        app->resolution.x = width;
+        app->resolution.y = height;
+    });
+    glfwSetKeyCallback(window, [] (GLFWwindow* window, int key, int, int action, int) {
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         app->keyCallback(static_cast<Key>(key), static_cast<Action>(action));
     });
-    glfwSetMouseButtonCallback(window, [] (GLFWwindow* window, int button, int action, int mods) {
+    glfwSetMouseButtonCallback(window, [] (GLFWwindow* window, int button, int action, int) {
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         double x, y;
         glfwGetCursorPos(window, &x, &y);
@@ -74,7 +72,7 @@ void App::initGLFW() {
         bool middleButton = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS;
         app->moveCallback(movement, leftButton, rightButton, middleButton);
     });
-    glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
+    glfwSetScrollCallback(window, [](GLFWwindow* window, double, double yoffset) {
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         app->scrollCallback(static_cast<float>(yoffset));
     });
@@ -110,9 +108,9 @@ App::~App() {
 void App::init() {}
 void App::render() {}
 void App::keyCallback(Key key, Action action) {}
-void App::clickCallback(Button button, Action action, vec2 position) {}
+void App::clickCallback(Button button, Action action, const vec2& position) {}
 void App::scrollCallback(float amount) {}
-void App::moveCallback(vec2 movement, bool leftButton, bool rightButton, bool middleButton) {}
+void App::moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) {}
 void App::buildImGui() {}
 
 void App::run() {

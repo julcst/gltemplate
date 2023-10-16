@@ -15,10 +15,10 @@ public:
     VertexArray(VertexArray&& other);
     VertexArray& operator=(VertexArray&& other);
     virtual ~VertexArray();
-    void release();
     void bind();
     void unbind();
     virtual void draw();
 private:
     GLuint handle;
+    void release();
 };

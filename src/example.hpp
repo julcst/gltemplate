@@ -9,12 +9,12 @@ class ExampleApp : public App {
 public:
     ExampleApp();
 protected:
-    void init();
-    void buildImGui();
-    void render();
-    void keyCallback(Key key, Action action);
-    void scrollCallback(float amount);
-    void moveCallback(vec2 movement, bool leftButton, bool rightButton, bool middleButton);
+    void init() override;
+    void buildImGui() override;
+    void render() override;
+    void keyCallback(Key key, Action action) override;
+    void scrollCallback(float amount) override;
+    void moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) override;
 private:
     Camera cam;
     Mesh fullscreenTriangle;

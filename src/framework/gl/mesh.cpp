@@ -4,7 +4,7 @@
 
 #include <vector>
 
-void Mesh::load(std::vector<float> vertices, std::vector<unsigned int> indices) {
+void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numVertices = vertices.size();
     numIndices = indices.size();

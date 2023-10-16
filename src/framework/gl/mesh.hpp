@@ -16,9 +16,9 @@ const std::vector<unsigned int> FULLSCREEN_INDICES = {
 };
 
 // TODO: Check if RAII behavior is inherited
-class Mesh : VertexArray {
+class Mesh : public VertexArray {
 public:
-    void load(std::vector<float> vertices, std::vector<unsigned int> indices);
+    void load(const std::vector<float>& vertices, const std::vector<unsigned int>& indices);
     void draw();
 private:
     unsigned int numVertices, numIndices = 0;

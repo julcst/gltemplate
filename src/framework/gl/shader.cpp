@@ -50,7 +50,7 @@ std::string readFile(std::string path) {
     return buffer.str();
 }
 
-std::string readShader(std::string filename, std::set<std::string>& included) {
+std::string readShader(const std::string& filename, std::set<std::string>& included) {
     std::string source = readFile(SHADER_DIR + filename);
     std::smatch match;
     while (std::regex_search(source, match, includeRegex)) {
@@ -65,7 +65,7 @@ std::string readShader(std::string filename, std::set<std::string>& included) {
     return source;
 }
 
-void Shader::load(std::string filename) {
+void Shader::load(const std::string& filename) {
     std::set<std::string> included;
     std::string source = readShader(filename, included);
     const char* sourcePtr = source.c_str();

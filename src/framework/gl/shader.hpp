@@ -15,10 +15,10 @@ public:
     Shader(Shader&& other);
     Shader& operator=(Shader&& other);
     ~Shader();
-    void release();
-    void load(std::string filename);
+    void load(const std::string& filename);
     void compile();
     GLuint getHandle();
 private:
     GLuint handle;
+    void release();
 };
