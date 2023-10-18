@@ -28,7 +28,7 @@ Buffer::~Buffer() {
 }
 
 void Buffer::release() {
-    if(handle) glDeleteBuffers(1, &handle);
+    if (handle) glDeleteBuffers(1, &handle);
 }
 /////////////////////////////////////////////////////////////
 

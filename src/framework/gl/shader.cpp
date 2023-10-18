@@ -1,16 +1,16 @@
 #include "shader.hpp"
 
-#include "config.hpp"
-
 #include <glad/glad.h>
 
 #include <cassert>
-#include <string>
 #include <fstream>
-#include <sstream>
 #include <regex>
-#include <stdexcept>
 #include <set>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+
+#include "config.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
 Shader::Shader(GLenum type) {
@@ -36,7 +36,7 @@ Shader::~Shader() {
 }
 
 void Shader::release() {
-    if(handle) glDeleteShader(handle);
+    if (handle) glDeleteShader(handle);
 }
 /////////////////////////////////////////////////////////////
 
@@ -44,7 +44,7 @@ const std::regex includeRegex("#include \"([^\"]+)\"");
 
 std::string readFile(std::string path) {
     std::ifstream stream(path);
-    if(!stream.is_open()) throw std::runtime_error("Could not open file: " + path);
+    if (!stream.is_open()) throw std::runtime_error("Could not open file: " + path);
     std::stringstream buffer;
     buffer << stream.rdbuf();
     return buffer.str();

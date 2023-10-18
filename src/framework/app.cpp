@@ -1,11 +1,11 @@
 #include "app.hpp"
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <imgui.h>
 
 #include <cassert>
 
@@ -42,17 +42,17 @@ void App::initGLFW() {
     glfwGetCursorPos(window, &x, &y);
     mouse = vec2(x, y);
     // Callbacks
-    glfwSetFramebufferSizeCallback(window, [] (GLFWwindow* window, int width, int height) {
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
         glViewport(0, 0, width, height);
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         app->resolution.x = width;
         app->resolution.y = height;
     });
-    glfwSetKeyCallback(window, [] (GLFWwindow* window, int key, int, int action, int) {
+    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int, int action, int) {
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         app->keyCallback(static_cast<Key>(key), static_cast<Action>(action));
     });
-    glfwSetMouseButtonCallback(window, [] (GLFWwindow* window, int button, int action, int) {
+    glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int) {
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         double x, y;
         glfwGetCursorPos(window, &x, &y);
@@ -60,7 +60,7 @@ void App::initGLFW() {
         app->mouse.y = y;
         app->clickCallback(static_cast<Button>(button), static_cast<Action>(action), vec2(x, y));
     });
-    glfwSetCursorPosCallback(window, [] (GLFWwindow* window, double xpos, double ypos) {
+    glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         double x, y;
         glfwGetCursorPos(window, &x, &y);
@@ -77,7 +77,7 @@ void App::initGLFW() {
         app->scrollCallback(static_cast<float>(yoffset));
     });
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // VSync
+    glfwSwapInterval(1);  // VSync
 }
 
 void App::initImGui() {
@@ -100,7 +100,7 @@ App::~App() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    if(window) glfwDestroyWindow(window);
+    if (window) glfwDestroyWindow(window);
     glfwTerminate();
 }
 
@@ -118,11 +118,11 @@ void App::run() {
     frames = 0;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
-        float current = (float) glfwGetTime();
+        float current = static_cast<float>(glfwGetTime());
         delta = current - time;
         time = current;
         render();
-        if(imguiEnabled) renderImGui();
+        if (imguiEnabled) renderImGui();
         glfwSwapBuffers(window);
         frames++;
     }

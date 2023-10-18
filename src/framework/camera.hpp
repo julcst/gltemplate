@@ -7,14 +7,15 @@ using namespace glm;
 const float ALTITUDE_DELTA = 0.1f;
 
 class Camera {
-public:
+   public:
     Camera(float azimuth, float altitude, float dist, float minDist = 0.01f, float maxDist = 100.0f, const vec3& target = vec3(0.0f), const vec3& up = vec3(0.0f, 1.0f, 0.0f));
     void rotate(const vec2& delta);
     void zoom(float delta);
     mat4 calcView();
     mat3 calcRotation();
     vec3 getPosition();
-private:
+
+   private:
     vec3 calcPosition();
     bool changed;
     vec3 sphericalPosition;

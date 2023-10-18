@@ -6,7 +6,7 @@
  * RAII wrapper for OpenGL vertex buffer
  */
 class Buffer {
-public:
+   public:
     Buffer();
     // Disable copying
     Buffer(const Buffer&) = delete;
@@ -17,7 +17,8 @@ public:
     ~Buffer();
     void bind(GLenum type);
     void load(GLenum type, GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
-private:
+
+   private:
     GLuint handle;
     void release();
 };

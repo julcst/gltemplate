@@ -6,16 +6,18 @@
 #include "framework/gl/program.hpp"
 
 class ExampleApp : public App {
-public:
+   public:
     ExampleApp();
-protected:
+
+   protected:
     void init() override;
     void buildImGui() override;
     void render() override;
     void keyCallback(Key key, Action action) override;
     void scrollCallback(float amount) override;
     void moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) override;
-private:
+
+   private:
     Camera cam;
     Mesh fullscreenTriangle;
     Program backgroundShader;

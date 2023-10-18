@@ -7,7 +7,7 @@
 using namespace glm;
 
 Camera::Camera(float azimuth, float altitude, float dist, float minDist, float maxDist, const vec3& target, const vec3& up)
-: sphericalPosition(dist, azimuth, altitude), minDist(minDist), maxDist(maxDist), target(target), up(up), changed(true) {}
+    : sphericalPosition(dist, azimuth, altitude), minDist(minDist), maxDist(maxDist), target(target), up(up), changed(true) {}
 
 void Camera::rotate(const vec2& delta) {
     sphericalPosition += vec3(0.0f, -delta.x, delta.y);
@@ -41,7 +41,7 @@ vec3 Camera::calcPosition() {
 }
 
 vec3 Camera::getPosition() {
-    if(changed) {
+    if (changed) {
         cartesianPosition = calcPosition();
         changed = false;
     }

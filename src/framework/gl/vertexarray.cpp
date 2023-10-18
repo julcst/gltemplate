@@ -28,7 +28,7 @@ VertexArray::~VertexArray() {
 }
 
 void VertexArray::release() {
-    if(handle) glDeleteVertexArrays(1, &handle);
+    if (handle) glDeleteVertexArrays(1, &handle);
 }
 /////////////////////////////////////////////////////////////
 

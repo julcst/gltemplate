@@ -1,17 +1,17 @@
 #pragma once
 
-#include "shader.hpp"
-
 #include <glad/glad.h>
 
-#include <string>
 #include <list>
+#include <string>
+
+#include "shader.hpp"
 
 /*
  * RAII wrapper for OpenGL program
  */
 class Program {
-public:
+   public:
     Program();
     // Disable copying
     Program(const Program&) = delete;
@@ -39,7 +39,8 @@ public:
     void set(GLuint loc, const glm::mat3& value);
     void set(GLuint loc, const glm::mat4& value);
     void set(GLuint loc, const glm::vec4& values, GLuint n);
-private:
+
+   private:
     GLuint handle;
     std::list<Shader> shaders;
     void release();

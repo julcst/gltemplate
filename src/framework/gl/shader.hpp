@@ -6,7 +6,7 @@
 #include <string>
 
 class Shader {
-public:
+   public:
     Shader(GLenum type);
     // Disable copying
     Shader(const Shader&) = delete;
@@ -18,7 +18,8 @@ public:
     void load(const std::string& filename);
     void compile();
     GLuint getHandle();
-private:
+
+   private:
     GLuint handle;
     void release();
 };

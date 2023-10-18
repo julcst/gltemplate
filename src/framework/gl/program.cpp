@@ -1,16 +1,16 @@
 #include "program.hpp"
 
-#include "shader.hpp"
-
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <cassert>
+#include <iostream>
+#include <list>
 #include <stdexcept>
 #include <string>
-#include <list>
-#include <iostream>
+
+#include "shader.hpp"
 
 using namespace glm;
 
@@ -38,7 +38,7 @@ Program::~Program() {
 }
 
 void Program::release() {
-    if(handle) glDeleteProgram(handle);
+    if (handle) glDeleteProgram(handle);
 }
 /////////////////////////////////////////////////////////////
 

@@ -1,15 +1,15 @@
 #include "example.hpp"
 
-#include "framework/gl/program.hpp"
-#include "framework/gl/mesh.hpp"
-
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 
 #include <vector>
+
+#include "framework/gl/mesh.hpp"
+#include "framework/gl/program.hpp"
 
 using namespace glm;
 
@@ -25,12 +25,12 @@ const std::vector<float> vertices = {
     -1.0f,  1.0f, -1.0f, // 7
 };
 const std::vector<unsigned int> indices = {
-    0, 1, 2, 2, 3, 0, // Front
-    1, 5, 6, 6, 2, 1, // Right
-    7, 6, 5, 5, 4, 7, // Back
-    4, 0, 3, 3, 7, 4, // Left
-    4, 5, 1, 1, 0, 4, // Bottom
-    3, 2, 6, 6, 7, 3, // Top
+    0, 1, 2, 2, 3, 0,  // Front
+    1, 5, 6, 6, 2, 1,  // Right
+    7, 6, 5, 5, 4, 7,  // Back
+    4, 0, 3, 3, 7, 4,  // Left
+    4, 5, 1, 1, 0, 4,  // Bottom
+    3, 2, 6, 6, 7, 3,  // Top
 };
 
 ExampleApp::ExampleApp() : App(800, 600), cam(0.0f, 0.0f, 5.0f, 3.0f, 50.0f) {
@@ -71,7 +71,7 @@ void ExampleApp::render() {
 }
 
 void ExampleApp::keyCallback(Key key, Action action) {
-    if(key == Key::ESC && action == Action::PRESS) close();
+    if (key == Key::ESC && action == Action::PRESS) close();
 }
 
 void ExampleApp::scrollCallback(float amount) {
@@ -79,7 +79,7 @@ void ExampleApp::scrollCallback(float amount) {
 }
 
 void ExampleApp::moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) {
-    if(rightButton) cam.rotate(movement * 0.01f);
+    if (rightButton) cam.rotate(movement * 0.01f);
 }
 
 void ExampleApp::buildImGui() {

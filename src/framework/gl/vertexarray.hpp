@@ -6,7 +6,7 @@
  * RAII wrapper for OpenGL vertex array
  */
 class VertexArray {
-public:
+   public:
     VertexArray();
     // Disable copying
     VertexArray(const VertexArray&) = delete;
@@ -18,7 +18,8 @@ public:
     void bind();
     void unbind();
     virtual void draw();
-private:
+
+   private:
     GLuint handle;
     void release();
 };

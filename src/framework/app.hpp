@@ -2,7 +2,6 @@
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 
 using namespace glm;
@@ -37,7 +36,7 @@ enum class Action {
 };
 
 class App {
-public:
+   public:
     vec2 resolution;
     float time;
     float delta;
@@ -51,7 +50,8 @@ public:
     virtual ~App();
     void run();
     void close();
-protected:
+
+   protected:
     // To be overriden
     virtual void init();
     virtual void buildImGui();
@@ -60,7 +60,8 @@ protected:
     virtual void clickCallback(Button button, Action action, const vec2& position);
     virtual void scrollCallback(float amount);
     virtual void moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton);
-private:
+
+   private:
     bool imguiEnabled;
     GLFWwindow* window;
     void initGLFW();
