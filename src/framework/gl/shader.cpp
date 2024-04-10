@@ -39,7 +39,7 @@ void Shader::release() {
 }
 /////////////////////////////////////////////////////////////
 
-const std::regex includeRegex("^#include \"([^\"]+)\"", std::regex::multiline);
+const std::regex includeRegex("(?:^|\n)#include \"([^\"]+)\"");
 
 std::string readShader(const std::string& filename, std::set<std::string>& included) {
     std::string source = Common::readFile(Config::SHADER_DIR + filename);
