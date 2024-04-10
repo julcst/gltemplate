@@ -26,6 +26,7 @@ void App::initGLFW() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE); // Enables SRGB rendering
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -77,7 +78,7 @@ void App::initGLFW() {
         app->scrollCallback(static_cast<float>(yoffset));
     });
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);  // VSync
+    glfwSwapInterval(1);  // Enable VSync
 }
 
 void App::initImGui() {
@@ -94,6 +95,7 @@ void App::initImGui() {
 void App::initGL() {
     int gladLoadGLStatus = gladLoadGL();
     assert(gladLoadGLStatus);
+    glEnable(GL_FRAMEBUFFER_SRGB); // Enables SRGB rendering
 }
 
 App::~App() {

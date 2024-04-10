@@ -37,6 +37,7 @@ enum class Action {
 
 class App {
    public:
+    bool imguiEnabled;
     vec2 resolution;
     float time;
     float delta;
@@ -62,7 +63,6 @@ class App {
     virtual void moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton);
 
    private:
-    bool imguiEnabled;
     GLFWwindow* window;
     void initGLFW();
     void initImGui();

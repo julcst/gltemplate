@@ -5,7 +5,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <cassert>
-#include <iostream>
 #include <list>
 #include <stdexcept>
 #include <string>
@@ -77,6 +76,11 @@ void Program::bind() {
 
 GLuint Program::uniform(const std::string& name) {
     return glGetUniformLocation(handle, name.c_str());
+}
+
+void Program::bindUBO(const std::string& loc, GLuint index) {
+    GLuint i = glGetUniformBlockIndex(handle, loc.c_str());
+    glUniformBlockBinding(handle, i, index);
 }
 
 void Program::set(GLuint loc, int value) {

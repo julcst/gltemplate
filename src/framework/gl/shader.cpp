@@ -3,13 +3,12 @@
 #include <glad/glad.h>
 
 #include <cassert>
-#include <fstream>
 #include <regex>
 #include <set>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 
+#include "common.hpp"
 #include "config.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
@@ -40,24 +39,20 @@ void Shader::release() {
 }
 /////////////////////////////////////////////////////////////
 
-const std::regex includeRegex("#include \"([^\"]+)\"");
-
-std::string readFile(std::string path) {
-    std::ifstream stream(path);
-    if (!stream.is_open()) throw std::runtime_error("Could not open file: " + path);
-    std::stringstream buffer;
-    buffer << stream.rdbuf();
-    return buffer.str();
-}
+const std::regex includeRegex("^#include \"([^\"]+)\"", std::regex::multiline);
 
 std::string readShader(const std::string& filename, std::set<std::string>& included) {
-    std::string source = readFile(SHADER_DIR + filename);
+    std::string source = Common::readFile(Config::SHADER_DIR + filename);
     std::smatch match;
     while (std::regex_search(source, match, includeRegex)) {
         if (included.find(match[1].str()) == included.end()) {
             included.insert(match[1].str());
-            std::string include = readShader(match[1].str(), included);
-            source = match.prefix().str() + include + match.suffix().str();
+            try {
+                std::string include = readShader(match[1].str(), included);
+                source = match.prefix().str() + include + match.suffix().str();
+            } catch (const std::runtime_error& e) {
+                throw std::runtime_error("Error including \"" + match[1].str() + "\" in \"" + filename + "\": " + e.what());
+            }
         } else {
             source = match.prefix().str() + match.suffix().str();
         }
@@ -68,6 +63,9 @@ std::string readShader(const std::string& filename, std::set<std::string>& inclu
 void Shader::load(const std::string& filename) {
     std::set<std::string> included;
     std::string source = readShader(filename, included);
+#ifdef COMPOSE_SHADERS
+    Common::writeToFile(source, Config::COMPOSED_SHADER_DIR + filename);
+#endif
     const char* sourcePtr = source.c_str();
     glShaderSource(handle, 1, &sourcePtr, NULL);
     compile();

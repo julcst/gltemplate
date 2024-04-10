@@ -1,0 +1,43 @@
+#pragma once
+
+#include <string>
+#include <vector>
+
+#ifdef __APPLE__
+    #include <unistd.h>
+    #include <pwd.h>
+#endif
+
+namespace Config {
+
+// Fetch the directory for temporary files
+#ifdef __APPLE__
+    const std::string HOME = std::string(getpwuid(getuid())->pw_dir); // Get home directory on Unix/Linux/MacOS
+    const std::string APP_DIR = HOME + "/Library/Application Support/@PROJECT_NAME@/"; // Writing into the .app bundle is not allowed as it is signed
+#else
+    const std::string APP_DIR = ""; // On other platforms just write into the application directory
+#endif
+
+const std::string SHADER_DIR = "shaders/";
+const std::string MODEL_DIR = "models/";
+const std::string MATERIAL_DIR = "materials/";
+const std::string CUBEMAP_DIR = "cubemaps/";
+const std::string TEXTURES_DIR = "textures/";
+const std::string SCENE_DIR = APP_DIR + "scenes/";
+
+// NDEBUG is defined in RELEASE mode
+#ifndef NDEBUG
+//#define COMPOSE_SHADERS // Uncomment to compose shaders in DEBUG mode
+                          // Currently disabled because the #line directive serves better for debugging
+#endif
+const std::string COMPOSED_SHADER_DIR = "@CMAKE_SOURCE_DIR@/composed/";
+
+const std::vector<std::string> MODEL_FILES = {@MODEL_FILES@};
+const std::vector<std::string> SHADER_FILES = {"shared/debug.frag", "shared/lambert.frag", "shared/ggx.frag", "shared/ggx_aniso.frag", "glints/glints_ambient.frag", "glints/glints_aniso.frag", "glints/glints.frag", "glints/reference.frag", "layered/layered.frag", "layered/layered_aniso.frag"};
+enum class ShaderType : unsigned int { DEBUG, LAMBERT, GGX, GGX_ANISO, GLINTS_AMBIENT, GLINTS_ANISO, GLINTS, GLINTS_REF, LAYER, LAYER_ANISO};
+const std::vector<std::string> MATERIAL_FILES = {@MATERIAL_FILES@};
+const std::vector<std::string> CUBEMAP_NAMES = {@CUBEMAP_NAMES@};
+
+const unsigned int NUMBER_OF_MEASUREMENTS = 60;
+
+}

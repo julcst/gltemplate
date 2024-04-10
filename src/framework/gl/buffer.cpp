@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 
 #include <cassert>
+#include <vector>
 
 /////////////////////// RAII behavior ///////////////////////
 Buffer::Buffer() {
@@ -32,11 +33,20 @@ void Buffer::release() {
 }
 /////////////////////////////////////////////////////////////
 
-void Buffer::bind(GLenum type) {
-    glBindBuffer(type, handle);
+void Buffer::bind(Type type) {
+    glBindBuffer(static_cast<GLenum>(type), handle);
 }
 
-void Buffer::load(GLenum type, GLsizeiptr size, const GLvoid* data, GLenum usage) {
+void Buffer::bindUBO(GLuint index) {
+    glBindBufferBase(GL_UNIFORM_BUFFER, index, handle);
+}
+
+void Buffer::_load(Type type, GLsizeiptr size, const GLvoid* data, Usage usage) {
     bind(type);
-    glBufferData(type, size, data, usage);
+    glBufferData(static_cast<GLenum>(type), size, data, static_cast<GLenum>(usage));
+}
+
+void Buffer::_set(Type type, GLsizeiptr size, const GLvoid* data, GLintptr offset) {
+    bind(type);
+    glBufferSubData(static_cast<GLenum>(type), offset, size, data);
 }

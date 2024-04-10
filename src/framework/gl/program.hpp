@@ -5,9 +5,10 @@
 #include <list>
 #include <string>
 
+#include "buffer.hpp"
 #include "shader.hpp"
 
-/*
+/**
  * RAII wrapper for OpenGL program
  */
 class Program {
@@ -26,6 +27,7 @@ class Program {
     void link();
     void bind();
     GLuint uniform(const std::string& name);
+    void bindUBO(const std::string& loc, GLuint index);
     void set(GLuint loc, int value);
     void set(GLuint loc, unsigned int value);
     void set(GLuint loc, size_t value);

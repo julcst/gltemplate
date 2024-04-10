@@ -2,11 +2,21 @@
 
 #include <glad/glad.h>
 
-/*
+#include <vector>
+
+/**
  * RAII wrapper for OpenGL vertex buffer
  */
 class Buffer {
    public:
+    enum class Type {
+        ARRAY_BUFFER = GL_ARRAY_BUFFER,
+        UNIFORM_BUFFER = GL_UNIFORM_BUFFER,
+        INDEX_BUFFER = GL_ELEMENT_ARRAY_BUFFER,
+    };
+    enum class Usage {
+        STATIC_DRAW = GL_STATIC_DRAW,
+    };
     Buffer();
     // Disable copying
     Buffer(const Buffer&) = delete;
@@ -15,10 +25,40 @@ class Buffer {
     Buffer(Buffer&& other);
     Buffer& operator=(Buffer&& other);
     ~Buffer();
-    void bind(GLenum type);
-    void load(GLenum type, GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
+    void bind(Type type);
+    void bindUBO(GLuint index);
+    void _load(Type type, GLsizeiptr size, const GLvoid* data, Usage usage = Usage::STATIC_DRAW);
+    template <typename T>
+    void load(Type type, const std::vector<T>& data, Usage usage = Usage::STATIC_DRAW);
+    template <typename T>
+    void load(Type type, const T& data, Usage usage = Usage::STATIC_DRAW);
+    template <typename T>
+    void set(Type type, const std::vector<T>& data, unsigned int offset = 0);
+    template <typename T>
+    void set(Type type, const T& data, unsigned int offset = 0);
 
    private:
     GLuint handle;
     void release();
+    void _set(Type type, GLsizeiptr size, const GLvoid* data, GLintptr offset);
 };
+
+template <typename T>
+inline void Buffer::load(Type type, const std::vector<T>& data, Usage usage) {
+    _load(type, sizeof(T) * data.size(), data.data(), usage);
+}
+
+template <typename T>
+inline void Buffer::load(Type type, const T& data, Usage usage) {
+    _load(type, sizeof(T), &data, usage);
+}
+
+template <typename T>
+inline void Buffer::set(Type type, const std::vector<T>& data, unsigned int offset) {
+    _set(type, sizeof(T) * data.size(), data.data(), offset);
+}
+
+template <typename T>
+inline void Buffer::set(Type type, const T& data, unsigned int offset) {
+    _set(type, sizeof(T), &data, offset);
+}
