@@ -3,11 +3,14 @@ cmake_minimum_required(VERSION 3.26)
 set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 
 if(APPLE)
+    # Enable universal building on macOS
     set(CMAKE_OSX_ARCHITECTURES x86_64;arm64)
     set(CMAKE_MACOSX_BUNDLE True)
 elseif(WIN32)
-    message("${CMAKE_RELEASE_TYPE}")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+    # Make the application run without a console window in Release mode
+    if($<CONFIG:Release>)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+    endif()
 endif()
 
 project(GLTemplate VERSION 1.0 LANGUAGES CXX C)
@@ -226,18 +229,27 @@ if(APPLE)
 
     # Packaging macOS installer
     install(TARGETS ${PROJECT_NAME} BUNDLE DESTINATION .)
-    include(InstallRequiredSystemLibraries)
+    # include(InstallRequiredSystemLibraries)
     set(CPACK_GENERATOR DragNDrop)
     set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
     include(CPack)
+    
 elseif(WIN32)
-    install(TARGETS ${PROJECT_NAME} DESTINATION .)
-    install(FILES ${SHADERS} DESTINATION shaders)
-    include(InstallRequiredSystemLibraries)
-    set(CPACK_GENERATOR ZIP)
-    set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
-    include(CPack)
-    foreach(res ${RES})
-        configure_file(${res} ${res})
+    foreach(RES_FILE IN LISTS RES)
+        cmake_path(GET RES_FILE PARENT_PATH LOC)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/${RES_FILE} $<TARGET_FILE_DIR:${PROJECT_NAME}>/${RES_FILE}
+        )
+        install(FILES ${RES_FILE} DESTINATION ${LOC})
     endforeach()
+
+    # Packaging Windows portable
+    include(InstallRequiredSystemLibraries)
+    install(TARGETS ${PROJECT_NAME} DESTINATION .)
+    set(CPACK_GENERATOR ZIP) # For portable ZIP
+    #set(CPACK_GENERATOR NSIS) # For .EXE installer, requires NSIS installed (winget install NSIS.NSIS)
+    #set(CPACK_GENERATOR WIX) # For .MSI installer, requires WiX Toolset installed
+    set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
+    set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/LICENSE)
+    include(CPack)
 endif()
