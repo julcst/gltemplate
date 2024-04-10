@@ -43,38 +43,29 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(glfw)
 
 # GLAD
-# FetchContent_Declare(
-#     glad
-#     GIT_REPOSITORY https://github.com/Dav1dde/glad.git
-#     GIT_TAG v0.1.36
-# )
 FetchContent_Declare(
     glad
-    URL https://github.com/Dav1dde/glad/archive/refs/tags/v0.1.36.tar.gz
+    #GIT_REPOSITORY https://github.com/Dav1dde/glad.git
+    GIT_TAG v0.1.36
+    URL https://github.com/Dav1dde/glad/archive/v0.1.36.tar.gz
 )
 FetchContent_MakeAvailable(glad)
 
 # GLM
-# FetchContent_Declare(
-#     glm
-#     GIT_REPOSITORY https://github.com/g-truc/glm.git
-#     GIT_TAG 0.9.9.8
-# )
 FetchContent_Declare(
     glm
-    URL https://github.com/g-truc/glm/archive/refs/tags/1.0.1.tar.gz
+    #GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG 1.0.1
+    URL https://github.com/g-truc/glm/archive/1.0.1.tar.gz
 )
 FetchContent_MakeAvailable(glm)
 
 # ImGui
-# FetchContent_Declare(
-#     imgui
-#     GIT_REPOSITORY https://github.com/ocornut/imgui.git
-#     GIT_TAG v1.89.9
-# )
 FetchContent_Declare(
     imgui
-    URL https://github.com/ocornut/imgui/archive/refs/tags/v1.90.4.tar.gz
+    #GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG v1.90.4
+    URL https://github.com/ocornut/imgui/archive/v1.90.4.tar.gz
 )
 FetchContent_MakeAvailable(imgui)
 add_library(imgui_glfw STATIC
