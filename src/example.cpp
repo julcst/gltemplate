@@ -110,7 +110,7 @@ void ExampleApp::moveCallback(const vec2& movement, bool leftButton, bool rightB
 }
 
 void ExampleApp::buildImGui() {
-    ImGui::FPSWindow(delta, resolution);
+    ImGui::StatisticsWindow(delta, resolution);
 
     ImGui::Begin("Hello, world!");
     ImGui::Text("Read me!");

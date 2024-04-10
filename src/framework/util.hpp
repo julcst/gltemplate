@@ -7,7 +7,7 @@
 
 namespace ImGui {
 
-void FPSWindow(float frametime, const glm::vec2& resolution);
+void StatisticsWindow(float frametime, const glm::vec2& resolution);
 bool SphericalSlider(const char* label, glm::vec3& cartesian);
 bool AngleSlider3(const char* label, glm::vec3& angles);
 bool Combo(const char* label, int* curr, const std::vector<std::string>& items);

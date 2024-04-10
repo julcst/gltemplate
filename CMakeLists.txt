@@ -104,16 +104,15 @@ FetchContent_MakeAvailable(json)
 
 # stb_image
 FetchContent_Declare(
-    stb_image
+    stb
     GIT_REPOSITORY https://github.com/nothings/stb.git
     GIT_TAG ae721c50eaf761660b4f90cc590453cdb0c2acd0
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
 )
-FetchContent_MakeAvailable(stb_image)
-add_library(stb_image INTERFACE)
-target_include_directories(stb_image INTERFACE ${stb_image_SOURCE_DIR})
-
+FetchContent_MakeAvailable(stb)
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
 
 ####################################################################
 # Source files
@@ -149,25 +148,23 @@ set(SHADERS
     shaders/uniforms.glsl
     shaders/voxels.frag
 )
-set(MODELS
-    models/bunny.obj
-    models/cube.obj
-    models/cylinder.obj
-    models/donut.obj
-    models/highpolysphere.obj
-    models/plane.obj
-    models/suzanne.obj
+set(MESHES
+    meshes/bunny.obj
+    meshes/cube.obj
+    meshes/cylinder.obj
+    meshes/donut.obj
+    meshes/highpolysphere.obj
+    meshes/plane.obj
+    meshes/suzanne.obj
 )
-set(CUBEMAPS
-)
-foreach(cubemap ${CUBEMAPS})
-    list(APPEND CUBEMAP_FILES ${cubemap}_nx.hdr ${cubemap}_ny.hdr ${cubemap}_nz.hdr ${cubemap}_px.hdr ${cubemap}_py.hdr ${cubemap}_pz.hdr)
-endforeach()
 set(ICON
     icons/AppIcon.icns
 )
-set(RES "${SHADERS};${MODELS};${MATERIALS};${CUBEMAP_FILES}")
+set(RES "${SHADERS};${MESHES}")
 set_source_files_properties(${RES} PROPERTIES HEADER_FILE_ONLY True)
+foreach(mesh ${MESHES})
+    set(MESH_FILES "${MESH_FILES}\"${mesh}\",")
+endforeach()
 
 ####################################################################
 # Add executable
@@ -178,18 +175,9 @@ add_executable(${PROJECT_NAME}
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE})
 
-target_link_libraries(${PROJECT_NAME} glad glfw glm imgui_glfw objgl nlohmann_json::nlohmann_json stb_image)
+target_link_libraries(${PROJECT_NAME} glad glfw glm imgui_glfw objgl nlohmann_json::nlohmann_json stb)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/src/)
 
-foreach(model ${MODELS})
-    set(MODEL_FILES "${MODEL_FILES}\"${model}\",")
-endforeach()
-foreach(material ${MATERIALS})
-    set(MATERIAL_FILES "${MATERIAL_FILES}\"${material}\",")
-endforeach()
-foreach(cubemap ${CUBEMAPS})
-    set(CUBEMAP_NAMES "${CUBEMAP_NAMES}\"${cubemap}\",")
-endforeach()
 configure_file("src/config.hpp.in" "src/config.hpp")
 
 ####################################################################

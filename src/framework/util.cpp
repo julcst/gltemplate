@@ -13,8 +13,8 @@
 
 using namespace glm;
 
-void ImGui::FPSWindow(float frametime, const vec2& resolution) {
-    static Series<float, Config::NUMBER_OF_MEASUREMENTS> measurements;
+void ImGui::StatisticsWindow(float frametime, const vec2& resolution) {
+    static Series<float, Config::FRAMETIME_SMOOTHING> measurements;
     measurements.push(frametime);
     float avg = measurements.avg;
 
