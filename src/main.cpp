@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "example.hpp"
+#include "mainapp.hpp"
 
 int main() {
     try {
-        ExampleApp app;
+        MainApp app;
         app.run();
     } catch (std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;

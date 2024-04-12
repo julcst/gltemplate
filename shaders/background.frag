@@ -1,22 +1,13 @@
 #version 330 core
-out vec4 fragColor;
+
+in vec3 viewDir;
+out vec3 fragColor;
 
 #include "uniforms.glsl"
-#include "random.glsl"
+#line 8 101
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / uResolution;
-    if (hash3f(vec3(floor(gl_FragCoord.xy / 1.0), uTime)).x > 0.5) discard;
-    switch (int(floor(mod(uTime, 3.0)))) {
-    case 0:
-        vec3 p = vec3(gl_FragCoord.xy / uResolution, 0.0) + uTime * vec3(0.02, 0.02, 0.0);
-        fragColor = vec4(hash3f(floor(p * 100)), 1.0);
-        break;
-    case 1:
-        fragColor = vec4(vec3(uv.x * uv.y), 1.0);
-        break;
-    case 2:
-        fragColor = vec4(uv, 0.0, 1.0);
-        break;
-    }
+    vec3 rayDir = normalize(viewDir); // Renormalize after interpolation
+    vec3 sky = exp(-abs(rayDir.y) / vec3(0.1, 0.3, 0.6));
+    fragColor = sky;
 }

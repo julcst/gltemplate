@@ -29,9 +29,9 @@ struct ObjectBuffer {
     mat4 uLocalToWorld = mat4(1.0f);
 };
 
-class ExampleApp : public App {
+class MainApp : public App {
    public:
-    ExampleApp();
+    MainApp();
 
    protected:
     void init() override;

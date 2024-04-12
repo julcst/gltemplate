@@ -114,7 +114,7 @@ target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
 # Source files
 set(SRC
     src/main.cpp
-    src/example.cpp
+    src/mainapp.cpp
     src/framework/app.cpp
     src/framework/camera.cpp
     src/framework/common.cpp
@@ -142,7 +142,7 @@ set(SHADERS
     shaders/screen.vert
     shaders/tangentspace.glsl
     shaders/uniforms.glsl
-    shaders/voxels.frag
+    shaders/debug.frag
 )
 set(MESHES
     meshes/bunny.obj
