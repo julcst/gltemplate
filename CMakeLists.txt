@@ -14,6 +14,7 @@ elseif(WIN32)
 endif()
 
 project(GLTemplate VERSION 1.0 LANGUAGES CXX C)
+set(PROJECT_IDENTIFIER com.julcs)
 if(WIN32)
     set(CMAKE_CXX_STANDARD 20)
 else()
@@ -81,19 +82,14 @@ add_library(imgui_glfw STATIC
 target_include_directories(imgui_glfw PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
 target_link_libraries(imgui_glfw glfw)
 
-# objgl
+# tinyobjloader
 FetchContent_Declare(
-    objgl
-    GIT_REPOSITORY https://github.com/karolek471/objgl.git
-    GIT_TAG a038f0eb432f2167ae186f7c74cb4c07eb5df343
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
+    tinyobjloader
+    #GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git
+    GIT_TAG v2.0.0rc13
+    URL https://github.com/tinyobjloader/tinyobjloader/archive/v2.0.0rc13.tar.gz
 )
-FetchContent_MakeAvailable(objgl)
-add_library(objgl STATIC
-    ${objgl_SOURCE_DIR}/source/objgl.c
-)
-target_include_directories(objgl PUBLIC ${objgl_SOURCE_DIR}/source)
+FetchContent_MakeAvailable(tinyobjloader)
 
 # json
 FetchContent_Declare(
@@ -175,7 +171,7 @@ add_executable(${PROJECT_NAME}
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE})
 
-target_link_libraries(${PROJECT_NAME} glad glfw glm imgui_glfw objgl nlohmann_json::nlohmann_json stb)
+target_link_libraries(${PROJECT_NAME} glad glfw glm imgui_glfw tinyobjloader nlohmann_json::nlohmann_json stb)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/src/)
 
 configure_file("src/config.hpp.in" "src/config.hpp")
@@ -187,7 +183,7 @@ if(APPLE)
         BUNDLE True
         MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
         MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION}
-        MACOSX_BUNDLE_GUI_IDENTIFIER com.julcs.${PROJECT_NAME}
+        MACOSX_BUNDLE_GUI_IDENTIFIER ${PROJECT_IDENTIFIER}.${PROJECT_NAME}
         MACOSX_BUNDLE_ICON_FILE AppIcon
         MACOSX_BUNDLE_SHORT_VERSION_STRING ${CMAKE_PROJECT_VERSION}
     )

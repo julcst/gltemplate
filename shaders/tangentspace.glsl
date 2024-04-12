@@ -2,7 +2,7 @@
 
 /** 
   * Reorthogonalize tangent space with Gram-Schmidt. Its kind of expensive to do in the fragment shader
-  * but we do it because we want to eliminate tangent seam artifacts.
+  * but we do so because we want to eliminate tangent seam artifacts.
   * For faster approaches one could also use a vertex shader approach like in https://sotrh.github.io/learn-wgpu/intermediate/tutorial11-normals
   * (but this lead to seams in our implementation) or the industry standard mikktspace.
   */

@@ -40,7 +40,7 @@ ExampleApp::ExampleApp() : App(800, 600), cam(0.0f, 0.0f, 5.0f, 3.0f, 50.0f), wo
     backgroundShader.bindUBO("WorldBuffer", 0);
     backgroundShader.bindUBO("ObjectBuffer", 1);
 
-    mesh.load(vertices, indices);
+    mesh.loadWithTangents("meshes/bunny.obj");
     meshShader.load("projection.vert", "voxels.frag");
     meshShader.bindUBO("WorldBuffer", 0);
     meshShader.bindUBO("ObjectBuffer", 1);

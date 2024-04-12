@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include <string>
 #include <vector>
 
@@ -18,16 +20,28 @@ const std::vector<unsigned int> FULLSCREEN_INDICES = {
 
 class Mesh {
    public:
+    struct VertexPCN {
+        glm::vec3 position;
+        glm::vec2 texCoord;
+        glm::vec3 normal;
+    };
+    struct VertexPCNT {
+        glm::vec3 position;
+        glm::vec2 texCoord;
+        glm::vec3 normal;
+        glm::vec3 tangent;
+    };
+
     void load(const std::vector<float>& vertices, const std::vector<unsigned int>& indices);
+    void load(const std::vector<VertexPCN>& vertices, const std::vector<unsigned int>& indices);
+    void load(const std::vector<VertexPCNT>& vertices, const std::vector<unsigned int>& indices);
     void load(const std::string& filepath);
-    bool loadWithTangents(const std::string& filepath);
+    void loadWithTangents(const std::string& filepath);
     void draw();
-    std::string getFilepath();
 
    private:
-    unsigned int numVertices, numIndices = 0;
+    unsigned int numIndices = 0;
     VertexArray vao;
     Buffer vbo;
     Buffer ebo;
-    std::string path;
 };
