@@ -182,10 +182,10 @@ if(APPLE)
     set_target_properties(${PROJECT_NAME} PROPERTIES
         BUNDLE True
         MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}
-        MACOSX_BUNDLE_BUNDLE_VERSION ${CMAKE_PROJECT_VERSION}
+        MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
         MACOSX_BUNDLE_GUI_IDENTIFIER ${PROJECT_IDENTIFIER}.${PROJECT_NAME}
         MACOSX_BUNDLE_ICON_FILE AppIcon
-        MACOSX_BUNDLE_SHORT_VERSION_STRING ${CMAKE_PROJECT_VERSION}
+        MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION}
     )
 
     # Copy resource files into bundle
@@ -214,6 +214,7 @@ elseif(WIN32)
         cmake_path(GET RES_FILE PARENT_PATH LOC)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/${RES_FILE} $<TARGET_FILE_DIR:${PROJECT_NAME}>/${RES_FILE}
+            COMMENT "Copying ${CMAKE_SOURCE_DIR}/${RES_FILE} to $<TARGET_FILE_DIR:${PROJECT_NAME}>/${RES_FILE}"
         )
         install(FILES ${RES_FILE} DESTINATION ${LOC})
     endforeach()
@@ -228,3 +229,12 @@ elseif(WIN32)
     set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/LICENSE)
     include(CPack)
 endif()
+
+####################################################################
+# Zipping sources
+set(ARCHIVE_FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}-source.zip)
+add_custom_target(Archive ALL
+    COMMAND git archive --output ${ARCHIVE_FILE} HEAD
+    COMMENT "Zipping sources"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
