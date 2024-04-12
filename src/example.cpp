@@ -34,7 +34,7 @@ const std::vector<unsigned int> indices = {
     3, 2, 6, 6, 7, 3,  // Top
 };
 
-ExampleApp::ExampleApp() : App(800, 600), cam(0.0f, 0.0f, 5.0f, 3.0f, 50.0f), worldUBO(0, world), objectUBO(1, object) {
+ExampleApp::ExampleApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     fullscreenTriangle.load(FULLSCREEN_VERTICES, FULLSCREEN_INDICES);
     backgroundShader.load("screen.vert", "background.frag");
     backgroundShader.bindUBO("WorldBuffer", 0);
@@ -53,7 +53,7 @@ void ExampleApp::init() {
 }
 
 void ExampleApp::render() {
-    // Clear the screen
+    // Clear the depth buffer
     glClear(GL_DEPTH_BUFFER_BIT);
 
     /////////////////////////////////////
@@ -65,6 +65,10 @@ void ExampleApp::render() {
     world.uTime = time;
     world.uTimeDelta = delta;
     world.uAspectRatio = resolution.x / resolution.y;
+    if (cam.hasChanged()) {
+        world.uCameraRotation = cam.calcRotationMatrix();
+        world.uFocalLength = cam.calcFocalLength();
+    }
     worldUBO.upload(world); // Send to GPU
 
     // Render
@@ -77,8 +81,8 @@ void ExampleApp::render() {
     ////////////////////////////
 
     // Calculate transformations
-    mat4 projMat = perspective(45.0f, resolution.x / resolution.y, 0.1f, 100.0f);
-    mat4 viewMat = cam.calcView();
+    mat4 projMat = cam.calcProjectionMatrix(world.uAspectRatio, 0.01f, 100.0f);
+    mat4 viewMat = cam.calcViewMatrix();
     mat4 modelMat = rotate(mat4(1.0f), time, vec3(0.0f, 1.0f, 0.0f));
 
     // Update per object uniforms

@@ -215,6 +215,7 @@ elseif(WIN32)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/${RES_FILE} $<TARGET_FILE_DIR:${PROJECT_NAME}>/${RES_FILE}
             COMMENT "Copying ${CMAKE_SOURCE_DIR}/${RES_FILE} to $<TARGET_FILE_DIR:${PROJECT_NAME}>/${RES_FILE}"
+            VERBATIM
         )
         install(FILES ${RES_FILE} DESTINATION ${LOC})
     endforeach()
@@ -237,4 +238,5 @@ add_custom_target(Archive ALL
     COMMAND git archive --output ${ARCHIVE_FILE} HEAD
     COMMENT "Zipping sources"
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    VERBATIM
 )
