@@ -26,7 +26,7 @@ class Buffer {
     Buffer& operator=(Buffer&& other);
     ~Buffer();
     void bind(Type type);
-    void bindUBO(GLuint index);
+    void bind(Type type, GLuint index);
     void _load(Type type, GLsizeiptr size, const GLvoid* data, Usage usage = Usage::STATIC_DRAW);
     template <typename T>
     void load(Type type, const std::vector<T>& data, Usage usage = Usage::STATIC_DRAW);

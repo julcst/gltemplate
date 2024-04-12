@@ -15,6 +15,7 @@
 using namespace glm;
 
 MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
+    /* The background is rendered using a triangle that spans the whole frame */
     fullscreenTriangle.load(FULLSCREEN_VERTICES, FULLSCREEN_INDICES);
     backgroundShader.load("screen.vert", "background.frag");
     backgroundShader.bindUBO("WorldBuffer", 0);
@@ -99,5 +100,6 @@ void MainApp::buildImGui() {
     ImGui::Begin("Hello, world!");
     ImGui::Text("Read me!");
     ImGui::Button("Click me!");
+    ImGui::Text("Press ESC to exit or COMMA to toggle GUI.");
     ImGui::End();
 }

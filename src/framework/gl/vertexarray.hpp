@@ -14,10 +14,9 @@ class VertexArray {
     // Implement moving
     VertexArray(VertexArray&& other);
     VertexArray& operator=(VertexArray&& other);
-    virtual ~VertexArray();
+    ~VertexArray();
     void bind();
     void unbind();
-    virtual void draw();
 
    private:
     GLuint handle;

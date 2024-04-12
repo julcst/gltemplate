@@ -19,7 +19,7 @@ class Query {
     Query& operator=(Query&& other);
     ~Query();
     void begin(Type type);
-    GLuint end();
+    GLuint end(Type type);
 
    private:
     GLuint handle;

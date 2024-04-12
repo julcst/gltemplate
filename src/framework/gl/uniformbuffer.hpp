@@ -15,7 +15,7 @@ class UniformBuffer {
 
 template <typename T>
 UniformBuffer<T>::UniformBuffer(unsigned int index, const T& uniforms) : buffer() {
-    buffer.bindUBO(index);
+    buffer.bind(Buffer::Type::UNIFORM_BUFFER, index);
     buffer.load(Buffer::Type::UNIFORM_BUFFER, uniforms);
 }
 
@@ -26,5 +26,5 @@ void UniformBuffer<T>::upload(const T& uniforms) {
 
 template <typename T>
 void UniformBuffer<T>::bind(unsigned int index) {
-    buffer.bindUBO(index);
+    buffer.bind(Buffer::Type::UNIFORM_BUFFER, index);
 }

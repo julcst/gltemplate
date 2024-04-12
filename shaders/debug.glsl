@@ -1,6 +1,14 @@
 #line 2 103
-#define DEBUG // Enable debug macros
-
+/**
+ * Includes common functions and macros for debugging purposes
+ */
+ 
+/**
+ * Uncomment following line to enable debug macros.
+ * A uniform uDebug is required to be set to the index of the debug view
+ * then you can specify different debug views by using the DEBUG_VIEW macro.
+ */
+//#define DEBUG
 #ifdef DEBUG
 #define RENDER_VIEW(c) if (uDebug == 0U) fragColor = c
 #define DEBUG_VIEW(i, v) if (uDebug == uint(i)) fragColor = v

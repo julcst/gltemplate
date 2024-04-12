@@ -37,8 +37,8 @@ void Buffer::bind(Type type) {
     glBindBuffer(static_cast<GLenum>(type), handle);
 }
 
-void Buffer::bindUBO(GLuint index) {
-    glBindBufferBase(GL_UNIFORM_BUFFER, index, handle);
+void Buffer::bind(Type type, GLuint index) {
+    glBindBufferBase(static_cast<GLenum>(type), index, handle);
 }
 
 void Buffer::_load(Type type, GLsizeiptr size, const GLvoid* data, Usage usage) {

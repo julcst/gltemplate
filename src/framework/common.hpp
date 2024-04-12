@@ -10,7 +10,7 @@ void writeToFile(const std::string& content, const std::string& path);
 void filesInDirectory(const std::string& directoryPath, const std::string& extension, std::vector<std::string>& filenames);
 
 template <class T, typename... Rest>
-void hash_combine(std::size_t& seed, const T& v, const Rest&... rest) ;
+void hash_combine(std::size_t& seed, const T& v, const Rest&... rest);
 
 }
 
