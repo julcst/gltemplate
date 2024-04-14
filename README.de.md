@@ -1,4 +1,5 @@
 # OpenGL Template
+[![en](https://img.shields.io/badge/lang-en-red.svg)](README.md)
 
 ## Über das Framework
 

@@ -1,4 +1,5 @@
 # OpenGL Template
+[![de](https://img.shields.io/badge/lang-de-red.svg)](README.de.md)
 
 ## About the framework
 The OpenGL API is primarily written for use with C, which is why memory management is largely manual. C++ is based on C and allows pointers and structs to be replaced by objects and classes whose memory management is largely automatic. This framework uses the advanced features of C++ to free the code from error-prone manual pointer management. To this end, we apply the programming technique [RAII](https://de.wikipedia.org/wiki/Ressourcenbelegung_ist_Initialisierung) and encapsulate all GPU resources in C++ objects, which outsource the allocation and release of resources to the constructor/destructor.
