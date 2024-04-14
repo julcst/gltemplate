@@ -51,6 +51,7 @@ class App {
     virtual ~App();
     void run();
     void close();
+    void collectGLErrors();
 
    protected:
     // To be overriden
