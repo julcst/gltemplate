@@ -12,8 +12,8 @@
 #include "config.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
-Shader::Shader(GLenum type) {
-    handle = glCreateShader(type);
+Shader::Shader(Type type) {
+    handle = glCreateShader(static_cast<GLenum>(type));
     assert(handle);
 }
 

@@ -23,7 +23,7 @@ class Program {
     ~Program();
     void load(const std::string& vs, const std::string& fs);
     void attach(Shader shader);
-    void attach(const std::string& filename, GLuint type);
+    void attach(const std::string& filename, Shader::Type type);
     void link();
     void bind();
     GLuint uniform(const std::string& name);
