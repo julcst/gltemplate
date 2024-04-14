@@ -7,6 +7,7 @@ using namespace glm;
 #include "framework/camera.hpp"
 #include "framework/gl/mesh.hpp"
 #include "framework/gl/program.hpp"
+#include "framework/gl/texture.hpp"
 #include "framework/gl/uniformbuffer.hpp"
 
 struct WorldBuffer {
@@ -46,6 +47,7 @@ class MainApp : public App {
     Mesh fullscreenTriangle;
     Program backgroundShader;
     Mesh mesh;
+    Texture texture;
     Program meshShader;
     WorldBuffer world;
     ObjectBuffer object;

@@ -5,7 +5,7 @@
 #include <vector>
 
 /**
- * RAII wrapper for OpenGL vertex buffer
+ * RAII wrapper for OpenGL buffer
  */
 class Buffer {
    public:

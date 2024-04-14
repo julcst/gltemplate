@@ -9,8 +9,12 @@
 #include <vector>
 
 #include "util.hpp"
+#include "framework/app.hpp"
+#include "framework/camera.hpp"
 #include "framework/gl/mesh.hpp"
 #include "framework/gl/program.hpp"
+#include "framework/gl/texture.hpp"
+#include "framework/gl/uniformbuffer.hpp"
 
 using namespace glm;
 
@@ -25,6 +29,9 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     meshShader.load("projection.vert", "debug.frag");
     meshShader.bindUBO("WorldBuffer", 0);
     meshShader.bindUBO("ObjectBuffer", 1);
+    meshShader.bindTextureUnit("tDiffuse", 0);
+
+    texture.load(Texture::Format::COLOR8, "textures/test.png", 5);
 }
 
 void MainApp::init() {
@@ -73,6 +80,7 @@ void MainApp::render() {
 
     // Render
     glDepthMask(GL_TRUE);
+    texture.bind(Texture::Type::TEX2D, 0);
     meshShader.bind();
     mesh.draw();
 }

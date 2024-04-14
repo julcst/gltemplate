@@ -104,6 +104,13 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(json)
 
 # stb_image
+# FetchContent_Declare(
+#     stb
+#     GIT_REPOSITORY https://github.com/gracicot/stb-cmake.git
+#     GIT_TAG d42aa7a48ff0479fa9cab999d035a901cc4c4134
+#     EXCLUDE_FROM_ALL
+# )
+# FetchContent_MakeAvailable(stb)
 FetchContent_Declare(
     stb
     GIT_REPOSITORY https://github.com/nothings/stb.git
@@ -114,6 +121,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(stb)
 add_library(stb INTERFACE)
+target_compile_definitions(stb INTERFACE STB_IMAGE_IMPLEMENTATION)
 target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
 
 ####################################################################
@@ -131,6 +139,7 @@ set(SRC
     src/framework/gl/program.cpp
     src/framework/gl/query.cpp
     src/framework/gl/shader.cpp
+    src/framework/gl/texture.cpp
     src/framework/gl/vertexarray.cpp
 )
 set(INCLUDE
@@ -159,10 +168,13 @@ set(MESHES
     meshes/plane.obj
     meshes/suzanne.obj
 )
+set(TEXTURES
+    textures/test.png
+)
 set(ICON
     icons/AppIcon.icns
 )
-set(RES "${SHADERS};${MESHES}")
+set(RES "${SHADERS};${MESHES};${TEXTURES}")
 set_source_files_properties(${RES} PROPERTIES HEADER_FILE_ONLY True)
 foreach(mesh ${MESHES})
     set(MESH_FILES "${MESH_FILES}\"${mesh}\",")

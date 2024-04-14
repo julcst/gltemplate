@@ -83,6 +83,10 @@ void Program::bindUBO(const std::string& loc, GLuint index) {
     glUniformBlockBinding(handle, i, index);
 }
 
+void Program::bindTextureUnit(const std::string& loc, GLuint index) {
+    glUniform1i(uniform(loc), index);
+}
+
 void Program::set(GLuint loc, int value) {
     glProgramUniform1i(handle, loc, value);
 }
