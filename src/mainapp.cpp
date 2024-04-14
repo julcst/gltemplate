@@ -77,6 +77,8 @@ void MainApp::render() {
     mesh.draw();
 }
 
+/* Catch window events by overriding the callback functions */
+
 void MainApp::keyCallback(Key key, Action action) {
     // Close the application when pressing ESC
     if (key == Key::ESC && action == Action::PRESS) close();
