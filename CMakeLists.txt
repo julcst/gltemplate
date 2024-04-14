@@ -21,7 +21,6 @@ else()
     set(CMAKE_CXX_STANDARD 17)
 endif()
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_WARN_DEPRECATED FALSE)
 
 ####################################################################
 # Fetching libraries
@@ -36,6 +35,7 @@ include(FetchContent)
 FetchContent_Declare(
     glfw
     URL https://github.com/glfw/glfw/archive/refs/tags/3.3.tar.gz
+    EXCLUDE_FROM_ALL
 )
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -49,6 +49,7 @@ FetchContent_Declare(
     #GIT_REPOSITORY https://github.com/Dav1dde/glad.git
     GIT_TAG v0.1.36
     URL https://github.com/Dav1dde/glad/archive/v0.1.36.tar.gz
+    EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(glad)
 
@@ -58,6 +59,7 @@ FetchContent_Declare(
     #GIT_REPOSITORY https://github.com/g-truc/glm.git
     GIT_TAG 1.0.1
     URL https://github.com/g-truc/glm/archive/1.0.1.tar.gz
+    EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(glm)
 
@@ -67,6 +69,7 @@ FetchContent_Declare(
     #GIT_REPOSITORY https://github.com/ocornut/imgui.git
     GIT_TAG v1.90.4
     URL https://github.com/ocornut/imgui/archive/v1.90.4.tar.gz
+    EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(imgui)
 add_library(imgui_glfw STATIC
@@ -88,6 +91,7 @@ FetchContent_Declare(
     #GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git
     GIT_TAG v2.0.0rc13
     URL https://github.com/tinyobjloader/tinyobjloader/archive/v2.0.0rc13.tar.gz
+    EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(tinyobjloader)
 
@@ -95,6 +99,7 @@ FetchContent_MakeAvailable(tinyobjloader)
 FetchContent_Declare(
     json
     URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
+    EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(json)
 
@@ -105,6 +110,7 @@ FetchContent_Declare(
     GIT_TAG ae721c50eaf761660b4f90cc590453cdb0c2acd0
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
+    EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(stb)
 add_library(stb INTERFACE)
@@ -177,6 +183,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/src/)
 configure_file("src/config.hpp.in" "src/config.hpp")
 
 ####################################################################
+# CPack deployment
 if(APPLE)
     # Bundling macOS application
     set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -204,10 +211,7 @@ if(APPLE)
 
     # Packaging macOS installer
     install(TARGETS ${PROJECT_NAME} BUNDLE DESTINATION .)
-    # include(InstallRequiredSystemLibraries)
     set(CPACK_GENERATOR DragNDrop)
-    set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
-    include(CPack)
     
 elseif(WIN32)
     foreach(RES_FILE IN LISTS RES)
@@ -226,16 +230,20 @@ elseif(WIN32)
     set(CPACK_GENERATOR ZIP) # For portable ZIP
     #set(CPACK_GENERATOR NSIS) # For .EXE installer, requires NSIS installed (winget install NSIS.NSIS)
     #set(CPACK_GENERATOR WIX) # For .MSI installer, requires WiX Toolset installed
-    set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
-    set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/LICENSE)
-    include(CPack)
 endif()
+set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README.md)
+set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/LICENSE)
+include(CPack)
 
 ####################################################################
 # Zipping sources
 set(ARCHIVE_FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}-source.zip)
-add_custom_target(Archive ALL
-    COMMAND git archive --output ${ARCHIVE_FILE} HEAD
+file(GLOB_RECURSE SRC_FILES *)
+# Ignore build files
+list(FILTER SRC_FILES EXCLUDE REGEX ".*.DS_Store|build/*|.git/*|composed/*|.vscode/*")
+
+add_custom_target(zip ALL
+    COMMAND ${CMAKE_COMMAND} -E tar c "${ARCHIVE_FILE}" --format=zip -- ${SRC_FILES}
     COMMENT "Zipping sources"
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     VERBATIM
