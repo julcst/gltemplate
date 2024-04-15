@@ -7,7 +7,36 @@ Die OpenGL-API ist primär für die Benutzung mit C geschrieben, deswegen ist di
 
 Außerdem stellt das Framework Funktionen zum Laden von Modellen, Texturen und Shadern bereit und lagert die mühsame Erstellung von Fenstern und Kontexten in eine übergeordnete App-Klasse aus. Euer Code kann diese dann einfach von der App-Klasse erben.
 
-Das Framework umfasst jedoch keine Rendering-Pipeline, diese müsst ihr selber einbauen, indem ihr die Renderschleife `App::render()` überschreibt. GUI-Elemente könnt ihr in der Funktion `App::buildImGui()` spezifiziern, Assets ladet ihr am besten innerhalb des Konstruktors und initiale OpenGL Konfigurationen könnt ihr in der Funktion `App::init()` vornehmen.
+Das Framework umfasst jedoch keine Rendering-Pipeline, diese müsst ihr selber einbauen indem ihr die Renderschleife `App::render()` überschreibt. GUI-Elemente könnt ihr in der Funktion `App::buildImGui()` spezifiziern, Assets ladet ihr am besten innerhalb des Konstruktors und initiale OpenGL Konfigurationen könnt ihr in der Funktion `App::init()` vornehmen.
+
+In [`mainapp.cpp`](src/mainapp.cpp) findet ihr ein Beispielprogramm.
+
+Assets und neue Codedateien werden nicht automatisch zu eurem Projekt hinzugefügt. Damit das Buildskript neue Dateien erkennt müsst ihr diese in [`CMakeLists.txt`](CMakeLists.txt) explizit auflisten. Dieses Verhalten ist erwünscht, damit CMake erkennt, dass ihr eine Änderung vorgenommen habt, und die Builddateien neu konfiguriert.
+
+Um beispielsweise eine Textur `new_texture.png` hinzuzufügen, ergänzt ihr in [`CMakeLists.txt`](CMakeLists.txt)
+
+```CMake
+...
+set(TEXTURES
+    textures/checker.png
+    textures/checkerbw.png
+)
+...
+```
+
+zu
+
+```CMake
+...
+set(TEXTURES
+    textures/checker.png
+    textures/checkerbw.png
+    textures/new_texture.png
+)
+...
+```
+
+Das Vorgehen für Quelldateien (`SRC`), Modelle (`MESHES`) und Shader (`SHADERS`) erfolgt analog.
 
 ## Installation
 
@@ -24,7 +53,7 @@ In Linux könnt ihr CMake, Clang und VSCode über euren Package-Manager beziehen
 
 ```sh
 sudo apt install clang 
-sudo apt-get install cmake
+sudo apt install cmake
 sudo snap install --classic code
 ```
 
@@ -83,7 +112,7 @@ Danach können wir dieses Buildsystem plattformübergreifenden mit `cmake --buil
 cmake --build build
 ```
 
-Dieser Befehl generiert jetzt ausführbare Dateien und legt diese im `build`-Ordner ab, manchmal noch in einem Unterordner mit dem Namen "Debug" oder "Release". Diese Ordner trennen verschiedene Buildvarianten, die mit dem Parameter `--config` ausgewählt werden können.
+Dieser Befehl generiert jetzt ausführbare Dateien und legt diese im `build`-Ordner ab, manchmal noch in einem Unterordner mit dem Namen `Debug` oder `Release`. Diese Ordner trennen verschiedene Buildvarianten, die mit dem Parameter `--config` ausgewählt werden können.
 
 Die Ausführung unseres Programms variert je nach Betriebssystem.
 
@@ -109,7 +138,7 @@ cpack
 
 oder ihr ruft im Wurzelverzeichnis `cmake --build build --target package` auf.
 
-`cpack` generiert unter macOS ein DragNDrop-Archiv mit einem `.app` Bundle und unter Windows einen Zip-Ordner mit einer `.exe` und allen notwendigen Ressourcen. Auf Windows besteht dazu auch noch die Möglichkeit einen .EXE oder .MSI Installer zu bauen, dafür wird jedoch zusätzlich NSIS bzw. WiX Toolset benötigt.
+`cpack` generiert unter macOS ein DragNDrop-Archiv mit einem `.app` Bundle und unter Windows einen Zip-Ordner mit einer `.exe` und allen notwendigen Ressourcen. Auf Windows besteht dazu auch noch die Möglichkeit einen .EXE oder .MSI Installer zu bauen, dafür wird jedoch zusätzlich [NSIS](http://nsis.sourceforge.net/) bzw. [WiX Toolset](http://wixtoolset.org/) benötigt.
 
 `cpack` versucht standardmäßig die Release-Variante zu verpacken, das könnt ihr ändern mit dem Parameter `-C Debug`.
 

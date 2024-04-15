@@ -48,7 +48,7 @@ void MainApp::render() {
     // Clear the depth buffer
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    /* Update uniforms that do only change once per frame */
+    /* Update uniforms that only change once per frame */
     world.uResolution = resolution;
     world.uTime = time;
     world.uTimeDelta = delta;

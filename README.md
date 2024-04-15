@@ -8,6 +8,33 @@ The framework also provides functions for loading models, textures and shaders a
 
 However, the framework does not include a rendering pipeline, which you have to write yourself by overwriting the render loop `App::render()`. GUI elements can be specified in the function `App::buildImGui()`, assets are best loaded within the constructor and initial OpenGL configurations can be made in the function `App::init()`.
 
+In [`mainapp.cpp`](src/mainapp.cpp) you will find a sample program.
+
+Assets and new code files are not automatically added to your project. In order for the build script to recognize new files, you must explicitly list them in [`CMakeLists.txt`](CMakeLists.txt). This behavior is desired so that CMake recognizes that you have made a change and reconfigures the build files.
+
+For example, to add a texture `new_texture.png`, add in [`CMakeLists.txt`](CMakeLists.txt)
+
+```CMake
+...
+set(TEXTURES
+    textures/checker.png
+    textures/checkerbw.png
+)
+...
+```
+to
+```CMake
+...
+set(TEXTURES
+    textures/checker.png
+    textures/checkerbw.png
+    textures/new_texture.png
+)
+...
+```
+
+The procedure for source files (`SRC`), models (`MESHES`) and shaders (`SHADERS`) is the same.
+
 ## Installation
 For the installation you need:
 * A C++ compiler
@@ -20,7 +47,7 @@ In Linux you can get CMake, Clang and VSCode via your package manager:
 
 ```sh
 sudo apt install clang 
-sudo apt-get install cmake
+sudo apt install cmake
 sudo snap install --classic code
 ```
 
@@ -74,7 +101,7 @@ We can then execute this cross-platform build system with `cmake --build`:
 cmake --build build
 ```
 
-This command now generates executable files and stores them in the `build` folder, sometimes in a subfolder called "Debug" or "Release". These folders separate different build variants, which can be selected with the `--config` parameter.
+This command now generates executable files and stores them in the `build` folder, sometimes in a subfolder called `Debug` or `Release`. These folders separate different build variants, which can be selected with the `--config` parameter.
 The execution of our program varies depending on the operating system.
 
 ### With VSCode
@@ -96,10 +123,9 @@ cpack
 
 or alternatively call `cmake --build build --target package` in the root directory.
 
-`cpack` generates a DragNDrop archive with an `.app` bundle under macOS and a zip folder with an `.exe` and all necessary resources under Windows. On Windows it is also possible to build an .EXE or .MSI installer, but this also requires NSIS or WiX Toolset.
+`cpack` generates a DragNDrop archive with an `.app` bundle under macOS and a zip folder with an `.exe` and all necessary resources under Windows. On Windows it is also possible to build an .EXE or .MSI installer, but this also requires [NSIS](http://nsis.sourceforge.net/) or [WiX Toolset](http://wixtoolset.org/).
 
 By default `cpack` tries to pack the release version, you can change this with the parameter `-C Debug`.
 
 ### Pack source files
-
 The source files are packed by default with every build. A zip file with your code but without temporary build files then appears in the build folder. This makes it easier for you to share your code with others.
