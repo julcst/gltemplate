@@ -6,88 +6,76 @@
 
 using namespace glm;
 
-Camera::Camera()
-    : sphericalPosition(vec3(5.0f, 0.0f, 0.0f)), target(vec3(0.0f)), up(vec3(0.0f, 1.0f, 0.0f)), minDist(0.1f), maxDist(100.0f), fov(45.0f), changed(true), isCartesianPositionUpToDate(false) {}
+Camera::Camera() {}
 
-Camera::Camera(const vec3& sphericalPosition, const vec3& target, const vec3& up, float minDist, float maxDist, float fov)
-    : sphericalPosition(sphericalPosition), target(target), up(up), minDist(minDist), maxDist(maxDist), fov(fov), changed(true), isCartesianPositionUpToDate(false) {}
+Camera::Camera(const vec3& sphericalPosition, const vec3& target, const vec3& up, float near, float far, float fov)
+    : sphericalPosition(sphericalPosition), target(target), up(up), minDist(near), maxDist(far), fov(fov), near(near), far(far) {}
 
 void Camera::rotate(const vec2& delta) {
     sphericalPosition += vec3(0.0f, -delta.x, delta.y);
     sphericalPosition.y = mod(sphericalPosition.y, two_pi<float>());
     sphericalPosition.z = clamp(sphericalPosition.z, -half_pi<float>() + ALTITUDE_DELTA, half_pi<float>() - ALTITUDE_DELTA);
-    isCartesianPositionUpToDate = false;
-    changed = true;
+    invalidate();
 }
 
 void Camera::zoom(float delta) {
     sphericalPosition.x -= delta;
     sphericalPosition.x = clamp(sphericalPosition.x, minDist, maxDist);
-    isCartesianPositionUpToDate = false;
-    changed = true;
+    invalidate();
 }
 
-void Camera::setTarget(const vec3& target) {
-    Camera::target = target;
-    isCartesianPositionUpToDate = false;
-    changed = true;
+void Camera::resize(float aspectRatio) {
+    this->aspectRatio = aspectRatio;
+    invalidate();
 }
 
-void Camera::setUp(const vec3& up) {
-    Camera::up = up;
-    changed = true;
+void Camera::invalidate() {
+    isUpToDate = false;
 }
 
-void Camera::setZoomRange(float minDist, float maxDist) {
-    Camera::minDist = minDist;
-    Camera::maxDist = maxDist;
-    sphericalPosition.x = clamp(sphericalPosition.x, minDist, maxDist);
-    isCartesianPositionUpToDate = false;
-    changed = true;
+mat4 calcViewMatrix(vec3 cartesianPosition, vec3 target, vec3 up) {
+    return lookAt(cartesianPosition, target, up);
 }
 
-void Camera::setFOV(float fov) {
-    Camera::fov = fov;
-    changed = true;
-}
-
-mat4 Camera::calcViewMatrix() {
-    return lookAt(getCartesianPosition(), target, up);
-}
-
-mat3 Camera::calcRotationMatrix() {
-    vec3 forward = normalize(target - getCartesianPosition());
-    vec3 right = normalize(cross(forward, up));
-    vec3 newUp = cross(right, forward);
+mat3 calcRotationMatrix(vec3 cartesianPosition, vec3 target, vec3 up) {
+    const vec3 forward = normalize(target - cartesianPosition);
+    const vec3 right = normalize(cross(forward, up));
+    const vec3 newUp = cross(right, forward);
     return mat3(right, newUp, forward);
 }
 
-vec3 Camera::calcCartesianPosition() {
+vec3 calcCartesianPosition(vec3 sphericalPosition, vec3 target) {
     const float azimuth = sphericalPosition.y;
     const float altitude = sphericalPosition.z;
     const float radius = sphericalPosition.x;
     return vec3(cos(altitude) * sin(azimuth), sin(altitude), cos(altitude) * cos(azimuth)) * radius + target;
 }
 
-vec3 Camera::getCartesianPosition() {
-    if (!isCartesianPositionUpToDate) {
-        cartesianPosition = calcCartesianPosition();
-        isCartesianPositionUpToDate = true;
-    }
-    return cartesianPosition;
-}
-
-mat4 Camera::calcProjectionMatrix(float aspectRatio, float near, float far) {
+mat4 calcProjectionMatrix(float fov, float aspectRatio, float near, float far) {
     return perspective(fov, aspectRatio, near, far);
 }
 
-float Camera::calcFocalLength() {
+float calcFocalLength(float fov) {
     const float tanHalfFovy = tan(fov / 2.0f);
     return 1.0f / tanHalfFovy;
 }
 
+void Camera::update() {
+    cartesianPosition = calcCartesianPosition(sphericalPosition, target);
+    viewMatrix = calcViewMatrix(cartesianPosition, target, up);
+    rotationMatrix = calcRotationMatrix(cartesianPosition, target, up);
+    projectionMatrix = calcProjectionMatrix(fov, aspectRatio, near, far);
+    focalLength = calcFocalLength(fov);
+    isUpToDate = true;
+    hasRecentlyChanged = true;
+}
+
+void Camera::updateIfChanged() {
+    if (!isUpToDate) update();
+}
+
 bool Camera::hasChanged() {
-    bool hasChanged = changed;
-    changed = false;
+    bool hasChanged = hasRecentlyChanged;
+    hasRecentlyChanged = false;
     return hasChanged;
 }

@@ -41,6 +41,7 @@ class MainApp : public App {
     void keyCallback(Key key, Action action) override;
     void scrollCallback(float amount) override;
     void moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) override;
+    void resizeCallback(const vec2& resolution) override;
 
    private:
     Camera cam;

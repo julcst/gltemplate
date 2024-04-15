@@ -7,6 +7,7 @@
 #include <imgui.h>
 
 #include <vector>
+#include <iostream>
 
 #include "util.hpp"
 #include "framework/app.hpp"
@@ -41,6 +42,9 @@ void MainApp::init() {
 }
 
 void MainApp::render() {
+    // Update camera
+    cam.updateIfChanged();
+
     // Clear the depth buffer
     glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -52,10 +56,10 @@ void MainApp::render() {
     world.uResolution = resolution;
     world.uTime = time;
     world.uTimeDelta = delta;
-    world.uAspectRatio = resolution.x / resolution.y;
     if (cam.hasChanged()) {
-        world.uCameraRotation = cam.calcRotationMatrix();
-        world.uFocalLength = cam.calcFocalLength();
+        world.uAspectRatio = cam.aspectRatio;
+        world.uCameraRotation = cam.rotationMatrix;
+        world.uFocalLength = cam.focalLength;
     }
     worldUBO.upload(world); // Send to GPU
 
@@ -69,8 +73,8 @@ void MainApp::render() {
     ////////////////////////////
 
     // Calculate transformations
-    mat4 projMat = cam.calcProjectionMatrix(world.uAspectRatio, 0.01f, 100.0f);
-    mat4 viewMat = cam.calcViewMatrix();
+    mat4 projMat = cam.projectionMatrix;
+    mat4 viewMat = cam.viewMatrix;
     mat4 modelMat = rotate(mat4(1.0f), time, vec3(0.0f, 1.0f, 0.0f));
 
     // Update per object uniforms
@@ -102,6 +106,11 @@ void MainApp::scrollCallback(float amount) {
 void MainApp::moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) {
     // Rotate camera with right mouse button
     if (rightButton) cam.rotate(movement * 0.01f);
+}
+
+void MainApp::resizeCallback(const vec2& resolution) {
+    // Resize camera with window
+    cam.resize(resolution.x / resolution.y);
 }
 
 void MainApp::buildImGui() {

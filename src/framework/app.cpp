@@ -54,6 +54,7 @@ void App::initGLFW() {
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         app->resolution.x = width;
         app->resolution.y = height;
+        app->resizeCallback(app->resolution);
     });
     glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int, int action, int) {
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
@@ -186,10 +187,12 @@ void App::keyCallback(Key key, Action action) {}
 void App::clickCallback(Button button, Action action, const vec2& position) {}
 void App::scrollCallback(float amount) {}
 void App::moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) {}
+void App::resizeCallback(const vec2& resolution) {}
 void App::buildImGui() {}
 
 void App::run() {
     init();
+    resizeCallback(resolution);
     frames = 0;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();

@@ -43,6 +43,7 @@ class App {
     float delta;
     unsigned int frames;
     vec2 mouse;
+
     App(unsigned int width, unsigned int height);
     App(const App&) = delete;
     App& operator=(const App&) = delete;
@@ -62,6 +63,7 @@ class App {
     virtual void clickCallback(Button button, Action action, const vec2& position);
     virtual void scrollCallback(float amount);
     virtual void moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton);
+    virtual void resizeCallback(const vec2& resolution);
 
    private:
     GLFWwindow* window;
