@@ -6,7 +6,7 @@ The OpenGL API is primarily written for use with C, which is why memory manageme
 
 The framework also provides functions for loading models, textures and shaders and outsources the tedious creation of windows and contexts to a higher-level app class. Your code can then simply inherit these from the app class.
 
-However, the framework does not include a rendering pipeline, which you have to install yourself by overwriting the render loop `App::render()`. GUI elements can be specified in the function `App::buildImGui()`, assets are best loaded within the constructor and initial OpenGL configurations can be made in the function `App::init()`.
+However, the framework does not include a rendering pipeline, which you have to write yourself by overwriting the render loop `App::render()`. GUI elements can be specified in the function `App::buildImGui()`, assets are best loaded within the constructor and initial OpenGL configurations can be made in the function `App::init()`.
 
 ## Installation
 For the installation you need:
