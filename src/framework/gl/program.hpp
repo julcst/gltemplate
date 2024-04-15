@@ -28,11 +28,10 @@ class Program {
     void bind();
     GLuint uniform(const std::string& name);
     void bindUBO(const std::string& loc, GLuint index);
-    void bindTextureUnit(const std::string& loc, GLuint index);
-    void set(GLuint loc, int value);
-    void set(GLuint loc, unsigned int value);
-    void set(GLuint loc, size_t value);
-    void set(GLuint loc, float value);
+    void bindTextureUnit(const std::string& loc, GLint index);
+    void set(GLuint loc, GLint value);
+    void set(GLuint loc, GLuint value);
+    void set(GLuint loc, GLfloat value);
     void set(GLuint loc, const glm::ivec2& value);
     void set(GLuint loc, const glm::vec2& value);
     void set(GLuint loc, const glm::ivec3& value);
@@ -41,7 +40,6 @@ class Program {
     void set(GLuint loc, const glm::vec4& value);
     void set(GLuint loc, const glm::mat3& value);
     void set(GLuint loc, const glm::mat4& value);
-    void set(GLuint loc, const glm::vec4& values, GLuint n);
 
    private:
     GLuint handle;

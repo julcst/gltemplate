@@ -83,23 +83,19 @@ void Program::bindUBO(const std::string& loc, GLuint index) {
     glUniformBlockBinding(handle, i, index);
 }
 
-void Program::bindTextureUnit(const std::string& loc, GLuint index) {
-    glUniform1i(uniform(loc), index);
+void Program::bindTextureUnit(const std::string& loc, GLint index) {
+    set(uniform(loc), index);
 }
 
-void Program::set(GLuint loc, int value) {
+void Program::set(GLuint loc, GLint value) {
     glProgramUniform1i(handle, loc, value);
 }
 
-void Program::set(GLuint loc, unsigned int value) {
+void Program::set(GLuint loc, GLuint value) {
     glProgramUniform1ui(handle, loc, value);
 }
 
-void Program::set(GLuint loc, size_t value) {
-    glProgramUniform1ui(handle, loc, value);
-}
-
-void Program::set(GLuint loc, float value) {
+void Program::set(GLuint loc, GLfloat value) {
     glProgramUniform1f(handle, loc, value);
 }
 
@@ -133,8 +129,4 @@ void Program::set(GLuint loc, const mat3& value) {
 
 void Program::set(GLuint loc, const mat4& value) {
     glProgramUniformMatrix4fv(handle, loc, 1, GL_FALSE, value_ptr(value));
-}
-
-void Program::set(GLuint loc, const vec4& values, GLuint n) {
-    glProgramUniform4fv(handle, loc, n, value_ptr(values));
 }
