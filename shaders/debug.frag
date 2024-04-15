@@ -1,6 +1,6 @@
 #version 330 core
 
-/* The input from the vertex shader. This has to be the same format as the output from the vertex shader */
+/* The input from the vertex shader. This has to be the same format as the output of the vertex shader */
 in VertexData {
     vec2 uv;
     vec3 worldPosition;
@@ -21,7 +21,7 @@ out vec3 fragColor;
 #line 22 102
 
 /**
- * Renders the normals and a UV-checkerboard pattern onto the mesh
+ * Simpe test fragment shader
  */
 void main() {
     /* The normal is interpolated by the rasterizer, so we need to manually renormalize it to ensure a unit vector */

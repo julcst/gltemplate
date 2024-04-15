@@ -32,7 +32,7 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     meshShader.bindUBO("ObjectBuffer", 1);
     meshShader.bindTextureUnit("tDiffuse", 0);
 
-    texture.load(Texture::Format::SRGB8, "textures/test.png", 5);
+    texture.load(Texture::Format::SRGB8, "textures/checker.png", 5);
 }
 
 void MainApp::init() {
@@ -48,11 +48,7 @@ void MainApp::render() {
     // Clear the depth buffer
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    /////////////////////////////////////
-    // Color pattern in the background //
-    /////////////////////////////////////
-
-    // Update per frame uniforms
+    /* Update uniforms that do only change once per frame */
     world.uResolution = resolution;
     world.uTime = time;
     world.uTimeDelta = delta;
@@ -63,30 +59,26 @@ void MainApp::render() {
     }
     worldUBO.upload(world); // Send to GPU
 
-    // Render
-    glDepthMask(GL_FALSE);
-    backgroundShader.bind();
-    fullscreenTriangle.draw();
+    /* Render procedural sky in the background */
+    glDepthMask(GL_FALSE); // Disable writing to the depth buffer
+    backgroundShader.bind(); // Bind shader
+    fullscreenTriangle.draw(); // Draw fullscreen
 
-    ////////////////////////////
-    // Mesh in the foreground //
-    ////////////////////////////
-
-    // Calculate transformations
+    /* Calculate object transformation */
     mat4 projMat = cam.projectionMatrix;
     mat4 viewMat = cam.viewMatrix;
     mat4 modelMat = rotate(mat4(1.0f), time, vec3(0.0f, 1.0f, 0.0f));
 
-    // Update per object uniforms
+    /* Update object specific uniforms */
     object.uLocalToWorld = modelMat;
     object.uLocalToClip = projMat * viewMat * modelMat;
     objectUBO.upload(object); // Send to GPU
 
-    // Render
-    glDepthMask(GL_TRUE);
-    texture.bind(Texture::Type::TEX2D, 0);
-    meshShader.bind();
-    mesh.draw();
+    /* Render mesh with texture in the foreground */
+    glDepthMask(GL_TRUE); // Enable writing to the depth buffer
+    texture.bind(Texture::Type::TEX2D, 0); // Bind texture to texture unit 0
+    meshShader.bind(); // Bind shader
+    mesh.draw(); // Draw mesh
 }
 
 /* Catch window events by overriding the callback functions */
@@ -113,9 +105,12 @@ void MainApp::resizeCallback(const vec2& resolution) {
     cam.resize(resolution.x / resolution.y);
 }
 
+/* Build GUI elements here using the functions from imgui.h and util.cpp */
 void MainApp::buildImGui() {
+    /* Render FPS, frametime and resolution. FPS and frametime are rolling averages */
     ImGui::StatisticsWindow(delta, resolution);
 
+    /* Render a simple window with text and a button */
     ImGui::Begin("Hello, world!");
     ImGui::Text("Read me!");
     ImGui::Button("Click me!");

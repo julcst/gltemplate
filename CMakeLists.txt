@@ -169,7 +169,8 @@ set(MESHES
     meshes/suzanne.obj
 )
 set(TEXTURES
-    textures/test.png
+    textures/checker.png
+    textures/checkerbw.png
 )
 set(ICON
     icons/AppIcon.icns

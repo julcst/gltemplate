@@ -54,6 +54,7 @@ void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) 
     stbi_set_flip_vertically_on_load(true); 
     if (format == Format::LINEAR8) {
         data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
+        if (!data) throw std::runtime_error("Failed to load image: " + filename);
         switch (channels) {
             case 1: internalformat = GL_R8; break;
             case 2: internalformat = GL_RG8; break;
@@ -63,6 +64,7 @@ void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) 
         }
     } else if (format == Format::SRGB8) {
         data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
+        if (!data) throw std::runtime_error("Failed to load image: " + filename);
         switch (channels) {
             case 1: assert(false); break;
             case 2: assert(false); break;
@@ -72,6 +74,7 @@ void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) 
         }
     } else if (format == Format::FLOAT16) {
         data = stbi_loadf(filename.c_str(), &width, &height, &channels, 0);
+        if (!data) throw std::runtime_error("Failed to load image: " + filename);
         type = GL_FLOAT;
         switch (channels) {
             case 1: internalformat = GL_R16F; break;
@@ -82,6 +85,7 @@ void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) 
         }
     } else if (format == Format::NORMAL8) {
         data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
+        if (!data) throw std::runtime_error("Failed to load image: " + filename);
         switch (channels) {
             case 1: internalformat = GL_R8_SNORM; break;
             case 2: internalformat = GL_RG8_SNORM; break;
@@ -90,7 +94,6 @@ void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) 
             default: assert(false);
         }
     }
-    assert(data);
 
     switch (channels) {
         case 1: dataformat = GL_RED; break;
