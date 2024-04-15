@@ -18,7 +18,7 @@ class Texture {
         TEX3D = GL_TEXTURE_3D,
     };
     enum class Format {
-        COLOR8,
+        LINEAR8,
         SRGB8,
         FLOAT16,
         NORMAL8,

@@ -52,7 +52,7 @@ void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) 
 
     // Load image from file and read format
     stbi_set_flip_vertically_on_load(true); 
-    if (format == Format::COLOR8) {
+    if (format == Format::LINEAR8) {
         data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
         switch (channels) {
             case 1: internalformat = GL_R8; break;
