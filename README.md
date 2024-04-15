@@ -68,7 +68,7 @@ brew install visual-studio-code
 ### Windows
 Under Windows you can install a C++ compiler e.g. with the [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) or via the [Visual Studio Installer](https://visualstudio.microsoft.com/downloads/#visual-studio-community-2022). Alternatively, installation is also possible via the Windows Package Manager [winget](https://learn.microsoft.com/de-de/windows/package-manager/winget/):
 
-```
+```sh
 winget install Microsoft.VisualStudio.2022.BuildTools
 winget install Kitware.CMake
 winget install Microsoft.VisualStudioCode
