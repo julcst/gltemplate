@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <string>
+#include <stdexcept>
 
 /////////////////////// RAII behavior ///////////////////////
 Texture::Texture() {

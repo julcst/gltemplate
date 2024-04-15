@@ -3,6 +3,7 @@
 /* The input from the vertex shader. This has to be the same format as the output of the vertex shader */
 in VertexData {
     vec2 uv;
+    vec3 localPosition;
     vec3 worldPosition;
     vec3 worldNormal;
     vec3 worldTangent;
@@ -18,7 +19,7 @@ out vec3 fragColor;
 #include "uniforms.glsl"
 /* The #line XX YYY macro is used for correct error messages, errors will be shown as "ERROR: YYY:??: ..." in terminal.
    This is necessary because the #include macro messes up our line numbering. Specify the number of the next line with XX and the file with YYY. */
-#line 22 102
+#line 23 102
 
 /**
  * Simpe test fragment shader
