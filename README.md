@@ -94,7 +94,7 @@ cd build
 cpack
 ```
 
-or call `cmake --build build --target package` in the root directory.
+or alternatively call `cmake --build build --target package` in the root directory.
 
 `cpack` generates a DragNDrop archive with an `.app` bundle under macOS and a zip folder with an `.exe` and all necessary resources under Windows. On Windows it is also possible to build an .EXE or .MSI installer, but this also requires NSIS or WiX Toolset.
 
