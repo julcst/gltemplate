@@ -253,7 +253,7 @@ include(CPack)
 set(ARCHIVE_FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}-source.zip)
 file(GLOB_RECURSE SRC_FILES *)
 # Ignore build files
-list(FILTER SRC_FILES EXCLUDE REGEX ".*.DS_Store|build/*|.git/*|composed/*|.vscode/*")
+list(FILTER SRC_FILES EXCLUDE REGEX ".*.DS_Store$|build//*|.git//*|composed//*|.vscode//*")
 
 add_custom_target(zip ALL
     COMMAND ${CMAKE_COMMAND} -E tar c "${ARCHIVE_FILE}" --format=zip -- ${SRC_FILES}
