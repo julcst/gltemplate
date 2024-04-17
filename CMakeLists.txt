@@ -27,13 +27,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(FetchContent)
 
 # GLFW
-# FetchContent_Declare(
-#     glfw
-#     GIT_REPOSITORY https://github.com/glfw/glfw.git
-#     GIT_TAG 3.3
-# )
 FetchContent_Declare(
     glfw
+    #GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG 3.3
     URL https://github.com/glfw/glfw/archive/refs/tags/3.3.tar.gz
     EXCLUDE_FROM_ALL
 )
@@ -104,13 +101,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(json)
 
 # stb_image
-# FetchContent_Declare(
-#     stb
-#     GIT_REPOSITORY https://github.com/gracicot/stb-cmake.git
-#     GIT_TAG d42aa7a48ff0479fa9cab999d035a901cc4c4134
-#     EXCLUDE_FROM_ALL
-# )
-# FetchContent_MakeAvailable(stb)
 FetchContent_Declare(
     stb
     GIT_REPOSITORY https://github.com/nothings/stb.git
