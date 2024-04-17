@@ -218,3 +218,7 @@ void App::renderImGui() {
 void App::close() {
     glfwSetWindowShouldClose(window, true);
 }
+
+void App::setTitle(const std::string& title) {
+    glfwSetWindowTitle(window, title.c_str());
+}

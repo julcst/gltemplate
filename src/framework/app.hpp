@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include <string>
+
 using namespace glm;
 
 enum class Key {
@@ -53,6 +55,7 @@ class App {
     void run();
     void close();
     void collectGLErrors();
+    void setTitle(const std::string& title);
 
    protected:
     // To be overriden
