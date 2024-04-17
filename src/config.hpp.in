@@ -18,9 +18,10 @@ namespace Config {
     const std::string APP_DIR = ""; // On other platforms just write into the application directory
 #endif
 
+const std::string PROJECT_NAME = "@PROJECT_NAME@";
 const std::string SHADER_DIR = "shaders/";
-const std::string MODEL_DIR = "models/";
-const std::string TEXTURES_DIR = "textures/";
+const std::string MESH_DIR = "meshes/";
+const std::string TEXTURE_DIR = "textures/";
 
 // NDEBUG is defined in RELEASE mode
 #ifndef NDEBUG
@@ -29,7 +30,7 @@ const std::string TEXTURES_DIR = "textures/";
 #endif
 const std::string COMPOSED_SHADER_DIR = "@CMAKE_SOURCE_DIR@/composed/";
 
-const std::vector<std::string> MODEL_FILES = {@MODEL_FILES@};
+const std::vector<std::string> MESH_FILES = {@MESH_FILES@};
 
 // Number of frames to average for frame time smoothing
 const unsigned int FRAMETIME_SMOOTHING = 60;
