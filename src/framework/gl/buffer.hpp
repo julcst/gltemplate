@@ -17,6 +17,7 @@ class Buffer {
     enum class Usage {
         STATIC_DRAW = GL_STATIC_DRAW,
     };
+    GLuint handle;
     Buffer();
     // Disable copying
     Buffer(const Buffer&) = delete;
@@ -38,7 +39,6 @@ class Buffer {
     void set(Type type, const T& data, unsigned int offset = 0);
 
    private:
-    GLuint handle;
     void release();
     void _set(Type type, GLsizeiptr size, const GLvoid* data, GLintptr offset);
 };

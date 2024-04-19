@@ -11,6 +11,7 @@ class Shader {
         VERTEX_SHADER = GL_VERTEX_SHADER,
         FRAGMENT_SHADER = GL_FRAGMENT_SHADER,
     };
+    GLuint handle;
     Shader(Type type);
     // Disable copying
     Shader(const Shader&) = delete;
@@ -24,6 +25,5 @@ class Shader {
     GLuint getHandle();
 
    private:
-    GLuint handle;
     void release();
 };

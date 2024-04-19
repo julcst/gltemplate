@@ -5,7 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <cassert>
-#include <list>
+#include <vector>
 #include <stdexcept>
 #include <string>
 

@@ -23,6 +23,7 @@ class Texture {
         FLOAT16,
         NORMAL8,
     };
+    GLuint handle;
     Texture();
     // Disable copying
     Texture(const Texture&) = delete;
@@ -36,6 +37,5 @@ class Texture {
     void load(Format format, const std::string& filename, GLsizei mipmaps);
 
    private:
-    GLuint handle;
     void release();
 };

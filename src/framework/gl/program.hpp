@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-#include <list>
+#include <vector>
 #include <string>
 
 #include "buffer.hpp"
@@ -13,6 +13,7 @@
  */
 class Program {
    public:
+    GLuint handle;
     Program();
     // Disable copying
     Program(const Program&) = delete;
@@ -42,7 +43,6 @@ class Program {
     void set(GLuint loc, const glm::mat4& value);
 
    private:
-    GLuint handle;
-    std::list<Shader> shaders;
+    std::vector<Shader> shaders;
     void release();
 };
