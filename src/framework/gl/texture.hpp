@@ -21,6 +21,7 @@ class Texture {
         LINEAR8,
         SRGB8,
         FLOAT16,
+        FLOAT32,
         NORMAL8,
     };
     GLuint handle;

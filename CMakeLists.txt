@@ -14,7 +14,7 @@ elseif(WIN32)
 endif()
 
 project(GLTemplate VERSION 1.0 LANGUAGES CXX C)
-set(PROJECT_IDENTIFIER com.julcs)
+set(PROJECT_IDENTIFIER com.example)
 if(WIN32)
     set(CMAKE_CXX_STANDARD 20)
 else()
@@ -69,6 +69,7 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(imgui)
+
 add_library(imgui_glfw STATIC
     ${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp
     ${imgui_SOURCE_DIR}/imgui.cpp
@@ -79,7 +80,7 @@ add_library(imgui_glfw STATIC
     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
-target_include_directories(imgui_glfw PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
+target_include_directories(imgui_glfw PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends ${imgui_SOURCE_DIR}/misc/cpp)
 target_link_libraries(imgui_glfw glfw)
 
 # tinyobjloader
@@ -100,19 +101,18 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(json)
 
-# stb_image
+# stb
 FetchContent_Declare(
     stb
     GIT_REPOSITORY https://github.com/nothings/stb.git
     GIT_TAG ae721c50eaf761660b4f90cc590453cdb0c2acd0
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
     EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(stb)
-add_library(stb INTERFACE)
-target_compile_definitions(stb INTERFACE STB_IMAGE_IMPLEMENTATION)
-target_include_directories(stb INTERFACE ${stb_SOURCE_DIR})
+
+add_library(stb_impl INTERFACE)
+target_compile_definitions(stb_impl INTERFACE STB_IMAGE_IMPLEMENTATION)
+target_include_directories(stb_impl INTERFACE ${stb_SOURCE_DIR})
 
 ####################################################################
 # Source files
@@ -180,7 +180,7 @@ add_executable(${PROJECT_NAME}
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE})
 
-target_link_libraries(${PROJECT_NAME} glad glfw glm imgui_glfw tinyobjloader nlohmann_json::nlohmann_json stb)
+target_link_libraries(${PROJECT_NAME} glad glfw glm imgui_glfw tinyobjloader nlohmann_json::nlohmann_json stb_impl)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/src/)
 
 configure_file("src/config.hpp.in" "src/config.hpp")

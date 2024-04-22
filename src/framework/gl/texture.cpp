@@ -47,53 +47,75 @@ void Texture::bind(Type type, GLuint index) {
 
 void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) {
     int width, height, channels;
-    GLenum internalformat, dataformat;
-    GLenum type = GL_UNSIGNED_BYTE;
+    GLenum internalformat, dataformat, type;
     void* data;
 
     // Load image from file and read format
-    stbi_set_flip_vertically_on_load(true); 
-    if (format == Format::LINEAR8) {
-        data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
-        if (!data) throw std::runtime_error("Failed to load image: " + filename);
-        switch (channels) {
-            case 1: internalformat = GL_R8; break;
-            case 2: internalformat = GL_RG8; break;
-            case 3: internalformat = GL_RGB8; break;
-            case 4: internalformat = GL_RGBA8; break;
-            default: assert(false);
-        }
-    } else if (format == Format::SRGB8) {
-        data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
-        if (!data) throw std::runtime_error("Failed to load image: " + filename);
-        switch (channels) {
-            case 1: assert(false); break;
-            case 2: assert(false); break;
-            case 3: internalformat = GL_SRGB8; break;
-            case 4: internalformat = GL_SRGB8_ALPHA8; break;
-            default: assert(false);
-        }
-    } else if (format == Format::FLOAT16) {
-        data = stbi_loadf(filename.c_str(), &width, &height, &channels, 0);
-        if (!data) throw std::runtime_error("Failed to load image: " + filename);
-        type = GL_FLOAT;
-        switch (channels) {
-            case 1: internalformat = GL_R16F; break;
-            case 2: internalformat = GL_RG16F; break;
-            case 3: internalformat = GL_RGB16F; break;
-            case 4: internalformat = GL_RGBA16F; break;
-            default: assert(false);
-        }
-    } else if (format == Format::NORMAL8) {
-        data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
-        if (!data) throw std::runtime_error("Failed to load image: " + filename);
-        switch (channels) {
-            case 1: internalformat = GL_R8_SNORM; break;
-            case 2: internalformat = GL_RG8_SNORM; break;
-            case 3: internalformat = GL_RGB8_SNORM; break;
-            case 4: internalformat = GL_RGBA8_SNORM; break;
-            default: assert(false);
-        }
+    stbi_set_flip_vertically_on_load(true);
+    switch (format) {
+        case Format::LINEAR8:
+        case Format::SRGB8:
+        case Format::NORMAL8:
+            type = GL_UNSIGNED_BYTE;
+            data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
+            break;
+        case Format::FLOAT16:
+        case Format::FLOAT32:
+            type = GL_FLOAT;
+            data = stbi_loadf(filename.c_str(), &width, &height, &channels, 0);
+            break;
+        default: assert(false);
+    }
+
+    if (!data) throw std::runtime_error("Failed to load image: " + filename);
+
+    switch(format) {
+        case Format::LINEAR8:
+            switch (channels) {
+                case 1: internalformat = GL_R8; break;
+                case 2: internalformat = GL_RG8; break;
+                case 3: internalformat = GL_RGB8; break;
+                case 4: internalformat = GL_RGBA8; break;
+                default: assert(false);
+            }
+            break;
+        case Format::SRGB8:
+            switch (channels) {
+                case 1: assert(false); break;
+                case 2: assert(false); break;
+                case 3: internalformat = GL_SRGB8; break;
+                case 4: internalformat = GL_SRGB8_ALPHA8; break;
+                default: assert(false);
+            }
+            break;
+        case Format::FLOAT16:
+            switch (channels) {
+                case 1: internalformat = GL_R16F; break;
+                case 2: internalformat = GL_RG16F; break;
+                case 3: internalformat = GL_RGB16F; break;
+                case 4: internalformat = GL_RGBA16F; break;
+                default: assert(false);
+            }
+            break;
+        case Format::FLOAT32:
+            switch (channels) {
+                case 1: internalformat = GL_R32F; break;
+                case 2: internalformat = GL_RG32F; break;
+                case 3: internalformat = GL_RGB32F; break;
+                case 4: internalformat = GL_RGBA32F; break;
+                default: assert(false);
+            }
+            break;
+        case Format::NORMAL8:    
+            switch (channels) {
+                case 1: internalformat = GL_R8_SNORM; break;
+                case 2: internalformat = GL_RG8_SNORM; break;
+                case 3: internalformat = GL_RGB8_SNORM; break;
+                case 4: internalformat = GL_RGBA8_SNORM; break;
+                default: assert(false);
+            }
+            break;
+        default: assert(false);
     }
 
     switch (channels) {
