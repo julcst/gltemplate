@@ -17,12 +17,12 @@ class Texture {
         TEX2D = GL_TEXTURE_2D,
         TEX3D = GL_TEXTURE_3D,
     };
-    enum class Format {
-        LINEAR8,
-        SRGB8,
-        FLOAT16,
-        FLOAT32,
-        NORMAL8,
+    enum class Format { // See https://www.khronos.org/opengl/wiki/Image_Format
+        LINEAR8, // 8-bit unsigned normalized integer
+        NORMAL8, // 8-bit signed normalized integer
+        SRGB8,   // 8-bit sRGB with linear alpha
+        FLOAT16, // 16-bit floating point
+        FLOAT32, // 32-bit floating point
     };
     GLuint handle;
     Texture();
