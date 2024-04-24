@@ -10,7 +10,7 @@ class Query {
     enum class Type {
         TIME_ELAPSED = GL_TIME_ELAPSED,
     };
-    GLuint handle;
+    
     Query();
     // Disable copying
     Query(const Query&) = delete;
@@ -21,6 +21,8 @@ class Query {
     ~Query();
     void begin(Type type);
     GLuint end(Type type);
+
+    GLuint handle;
 
    private:
     void release();

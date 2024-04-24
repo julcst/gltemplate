@@ -122,10 +122,11 @@ set(SRC
     src/framework/app.cpp
     src/framework/camera.cpp
     src/framework/common.cpp
+    src/framework/imguiutil.cpp
+    src/framework/mesh.cpp
+    src/framework/objparser.cpp
     src/framework/series.hpp
-    src/framework/util.cpp
     src/framework/gl/buffer.cpp
-    src/framework/gl/mesh.cpp
     src/framework/gl/program.cpp
     src/framework/gl/query.cpp
     src/framework/gl/shader.cpp

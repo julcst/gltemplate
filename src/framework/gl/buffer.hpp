@@ -17,7 +17,7 @@ class Buffer {
     enum class Usage {
         STATIC_DRAW = GL_STATIC_DRAW,
     };
-    GLuint handle;
+    
     Buffer();
     // Disable copying
     Buffer(const Buffer&) = delete;
@@ -28,19 +28,23 @@ class Buffer {
     ~Buffer();
     void bind(Type type);
     void bind(Type type, GLuint index);
+
     void _load(Type type, GLsizeiptr size, const GLvoid* data, Usage usage = Usage::STATIC_DRAW);
     template <typename T>
     void load(Type type, const std::vector<T>& data, Usage usage = Usage::STATIC_DRAW);
     template <typename T>
     void load(Type type, const T& data, Usage usage = Usage::STATIC_DRAW);
+
+    void _set(Type type, GLsizeiptr size, const GLvoid* data, GLintptr offset);
     template <typename T>
     void set(Type type, const std::vector<T>& data, unsigned int offset = 0);
     template <typename T>
     void set(Type type, const T& data, unsigned int offset = 0);
 
+    GLuint handle;
+
    private:
     void release();
-    void _set(Type type, GLsizeiptr size, const GLvoid* data, GLintptr offset);
 };
 
 template <typename T>

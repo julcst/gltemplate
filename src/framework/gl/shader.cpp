@@ -81,7 +81,3 @@ void Shader::compile() {
         throw std::runtime_error("Shader compilation failed: " + std::string(infoLog));
     }
 }
-
-GLuint Shader::getHandle() {
-    return handle;
-}

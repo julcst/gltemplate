@@ -13,7 +13,6 @@
  */
 class Program {
    public:
-    GLuint handle;
     Program();
     // Disable copying
     Program(const Program&) = delete;
@@ -42,7 +41,9 @@ class Program {
     void set(GLuint loc, const glm::mat3& value);
     void set(GLuint loc, const glm::mat4& value);
 
-   private:
+    GLuint handle;
     std::vector<Shader> shaders;
+
+   private:
     void release();
 };

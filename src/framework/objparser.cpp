@@ -1,94 +1,20 @@
-#include "mesh.hpp"
+#include "objparser.hpp"
 
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 #include <tiny_obj_loader.h>
 
-#include <fstream>
+using namespace glm;
+
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+#include <stdexcept>
 
+#include "mesh.hpp"
 #include "common.hpp"
-#include "config.hpp"
-
-using namespace glm;
-
-
-////////////////////////// Manual mesh loading //////////////////////////
-
-void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) {
-    // Load data into buffers
-    numIndices = indices.size();
-    vbo.load(Buffer::Type::ARRAY_BUFFER, vertices);
-    ebo.load(Buffer::Type::INDEX_BUFFER, indices);
-
-    // Bind buffers to VAO
-    // TODO: Use DSA instead (but only OpenGL 4.5+, so not on macOS)
-    vao.bind();
-    vbo.bind(Buffer::Type::ARRAY_BUFFER);
-    ebo.bind(Buffer::Type::INDEX_BUFFER);
-    size_t stride = 3 * sizeof(float);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*) (0 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    vao.unbind();
-}
-
-void Mesh::load(const std::vector<VertexPCN>& vertices, const std::vector<unsigned int>& indices) {
-    // Load data into buffers
-    numIndices = indices.size();
-    vbo.load(Buffer::Type::ARRAY_BUFFER, vertices);
-    ebo.load(Buffer::Type::INDEX_BUFFER, indices);
-
-    // Bind buffers to VAO
-    // TODO: Use DSA instead (but only OpenGL 4.5+, so not on macOS)
-    vao.bind();
-    vbo.bind(Buffer::Type::ARRAY_BUFFER);
-    ebo.bind(Buffer::Type::INDEX_BUFFER);
-    // Vertex attributes
-    size_t stride = sizeof(VertexPCN);
-    // (location = 0) position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*) (0 * sizeof(float)));
-    // (location = 1) uv
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*) (3 * sizeof(float)));
-    // (location = 2) normal
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*) (5 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    vao.unbind();
-}
-
-void Mesh::load(const std::vector<VertexPCNT>& vertices, const std::vector<unsigned int>& indices) {
-    // Load data into buffers
-    numIndices = indices.size();
-    vbo.load(Buffer::Type::ARRAY_BUFFER, vertices);
-    ebo.load(Buffer::Type::INDEX_BUFFER, indices);
-
-    // Bind buffers to VAO
-    // TODO: Use DSA instead (but only OpenGL 4.5+, so not on macOS)
-    vao.bind();
-    vbo.bind(Buffer::Type::ARRAY_BUFFER);
-    ebo.bind(Buffer::Type::INDEX_BUFFER);
-    // Vertex attributes
-    size_t stride = sizeof(VertexPCNT);
-    // (location = 0) position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*) (0 * sizeof(float)));
-    // (location = 1) uv
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*) (3 * sizeof(float)));
-    // (location = 2) normal
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void*) (5 * sizeof(float)));
-    // (location = 3) tangent
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride, (void*) (8 * sizeof(float)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
-    vao.unbind();
-}
 
 ////////////////////// Obj loading without tangents //////////////////////
 
@@ -109,7 +35,7 @@ struct std::hash<Mesh::VertexPCN>
     }
 };
 
-void Mesh::load(const std::string& filepath) {
+void ObjParser::parse(const std::string& filepath, std::vector<Mesh::VertexPCN>& vertices, std::vector<unsigned int>& indices) {
     // Parse OBJ file
     std::string rawobj = Common::readFile(filepath);
     tinyobj::ObjReader reader;
@@ -123,13 +49,17 @@ void Mesh::load(const std::string& filepath) {
     auto& attrib = reader.GetAttrib();
     auto& shapes = reader.GetShapes();
 
-    std::unordered_map<VertexPCN, uint32_t> uniqueVertices{};
-    std::vector<VertexPCN> vertices;
-    std::vector<unsigned int> indices;
+    size_t predictedNumVertices = attrib.vertices.size() / 3;
+    size_t predictedNumIndices = predictedNumVertices * 2 * 3; // Euler's polyhedron theorem
+
+    std::unordered_map<Mesh::VertexPCN, uint32_t> uniqueVertices;
+    uniqueVertices.reserve(predictedNumVertices);
+    vertices.reserve(predictedNumVertices);
+    indices.reserve(predictedNumIndices);
 
     for (const auto& shape : shapes) {
         for (const auto& index : shape.mesh.indices) {
-            VertexPCN vertex{};
+            Mesh::VertexPCN vertex;
             
             vertex.position = {
                 attrib.vertices[3 * index.vertex_index + 0],
@@ -156,8 +86,6 @@ void Mesh::load(const std::string& filepath) {
             indices.push_back(uniqueVertices[vertex]);
         }
     }
-
-    load(vertices, indices);
 }
 
 /////////////////////// Obj loading with tangents ///////////////////////
@@ -179,7 +107,7 @@ struct std::hash<Mesh::VertexPCNT>
     }
 };
 
-void Mesh::loadWithTangents(const std::string& filepath) {
+void ObjParser::parse(const std::string& filepath, std::vector<Mesh::VertexPCNT>& vertices, std::vector<unsigned int>& indices) {
     // Parse OBJ file
     std::string rawobj = Common::readFile(filepath);
     tinyobj::ObjReader reader;
@@ -193,13 +121,17 @@ void Mesh::loadWithTangents(const std::string& filepath) {
     auto& attrib = reader.GetAttrib();
     auto& shapes = reader.GetShapes();
 
-    std::unordered_map<VertexPCNT, uint32_t> uniqueVertices{};
-    std::vector<VertexPCNT> vertices;
-    std::vector<unsigned int> indices;
+    size_t predictedNumVertices = attrib.vertices.size() / 3;
+    size_t predictedNumIndices = predictedNumVertices * 2 * 3; // Euler's polyhedron theorem
+
+    std::unordered_map<Mesh::VertexPCNT, uint32_t> uniqueVertices;
+    uniqueVertices.reserve(predictedNumVertices);
+    vertices.reserve(predictedNumVertices);
+    indices.reserve(predictedNumIndices);
 
     for (const auto& shape : shapes) {
         for (const auto& index : shape.mesh.indices) {
-            VertexPCNT vertex{};
+            Mesh::VertexPCNT vertex{};
             
             vertex.position = {
                 attrib.vertices[3 * index.vertex_index + 0],
@@ -237,9 +169,9 @@ void Mesh::loadWithTangents(const std::string& filepath) {
         uint index0 = indices[i + 0u];
         uint index1 = indices[i + 1u];
         uint index2 = indices[i + 2u];
-        VertexPCNT& v0 = vertices[index0];
-        VertexPCNT& v1 = vertices[index1];
-        VertexPCNT& v2 = vertices[index2];
+        Mesh::VertexPCNT& v0 = vertices[index0];
+        Mesh::VertexPCNT& v1 = vertices[index1];
+        Mesh::VertexPCNT& v2 = vertices[index2];
 
         vec3 delta_pos1 = v1.position - v0.position;
         vec3 delta_pos2 = v2.position - v0.position;
@@ -264,14 +196,4 @@ void Mesh::loadWithTangents(const std::string& filepath) {
     for (uint i = 0; i < vertices.size(); i++) {
         if (triangleCount[i] > 0.0f) vertices[i].tangent /= triangleCount[i];
     }
-
-    load(vertices, indices);
-}
-
-///////////////////////////// Mesh drawing /////////////////////////////
-
-void Mesh::draw() {
-    vao.bind();
-    glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
-    vao.unbind();
 }

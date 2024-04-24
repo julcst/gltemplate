@@ -5,10 +5,11 @@
 template <typename T>
 class UniformBuffer {
    public:
-    Buffer buffer;
     UniformBuffer(unsigned int index, const T& uniforms = T{});
     void upload(const T& uniforms);
     void bind(unsigned int index);
+
+    Buffer buffer;
 };
 
 template <typename T>

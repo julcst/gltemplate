@@ -7,7 +7,6 @@
  */
 class VertexArray {
    public:
-    GLuint handle;
     VertexArray();
     // Disable copying
     VertexArray(const VertexArray&) = delete;
@@ -18,6 +17,8 @@ class VertexArray {
     ~VertexArray();
     void bind();
     void unbind();
+
+    GLuint handle;
 
    private:
     void release();

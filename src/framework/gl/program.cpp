@@ -48,14 +48,14 @@ void Program::load(const std::string& vs, const std::string& fs) {
 }
 
 void Program::attach(Shader shader) {
-    glAttachShader(handle, shader.getHandle());
+    glAttachShader(handle, shader.handle);
     shaders.push_back(std::move(shader));
 }
 
 void Program::attach(const std::string& filename, Shader::Type type) {
     Shader shader(type);
     shader.load(filename);
-    glAttachShader(handle, shader.getHandle());
+    glAttachShader(handle, shader.handle);
     shaders.push_back(std::move(shader));
 }
 

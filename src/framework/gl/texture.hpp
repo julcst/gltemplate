@@ -24,7 +24,7 @@ class Texture {
         FLOAT16, // 16-bit floating point
         FLOAT32, // 32-bit floating point
     };
-    GLuint handle;
+
     Texture();
     // Disable copying
     Texture(const Texture&) = delete;
@@ -36,6 +36,8 @@ class Texture {
     void bind(Type type);
     void bind(Type type, GLuint index);
     void load(Format format, const std::string& filename, GLsizei mipmaps);
+
+    GLuint handle;
 
    private:
     void release();
