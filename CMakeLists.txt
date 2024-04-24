@@ -140,14 +140,6 @@ set(INCLUDE
 ####################################################################
 # Resource files
 set(SHADERS
-    shaders/background.frag
-    shaders/debug.glsl
-    shaders/projection.vert
-    shaders/random.glsl
-    shaders/screen.vert
-    shaders/tangentspace.glsl
-    shaders/uniforms.glsl
-    shaders/debug.frag
 )
 set(MESHES
     meshes/bunny.obj

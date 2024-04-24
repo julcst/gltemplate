@@ -9,8 +9,6 @@ Außerdem stellt das Framework Funktionen zum Laden von Modellen, Texturen und S
 
 Das Framework umfasst jedoch keine Rendering-Pipeline, diese müsst ihr selber einbauen indem ihr die Renderschleife `App::render()` überschreibt. GUI-Elemente könnt ihr in der Funktion `App::buildImGui()` spezifiziern, Assets ladet ihr am besten innerhalb des Konstruktors und initiale OpenGL Konfigurationen könnt ihr in der Funktion `App::init()` vornehmen.
 
-In [`mainapp.cpp`](src/mainapp.cpp) findet ihr ein Beispielprogramm.
-
 Assets und neue Codedateien werden nicht automatisch zu eurem Projekt hinzugefügt. Damit das Buildskript neue Dateien erkennt müsst ihr diese in [`CMakeLists.txt`](CMakeLists.txt) explizit auflisten. Dieses Verhalten ist erwünscht, damit CMake erkennt, dass ihr eine Änderung vorgenommen habt, und die Builddateien neu konfiguriert.
 
 Um beispielsweise eine Textur `new_texture.png` hinzuzufügen, ergänzt ihr in [`CMakeLists.txt`](CMakeLists.txt)
