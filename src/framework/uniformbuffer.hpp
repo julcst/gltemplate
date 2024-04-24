@@ -1,6 +1,6 @@
 #pragma once
 
-#include "buffer.hpp"
+#include "gl/buffer.hpp"
 
 template <typename T>
 class UniformBuffer {
