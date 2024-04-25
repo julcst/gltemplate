@@ -26,12 +26,12 @@ class Camera {
     vec3 up = vec3(0.0f, 1.0f, 0.0f);
     float minDist = 0.1f;
     float maxDist = 100.0f;
-    float fov = 45.0f;
+    float fov = radians(60.0f);
     float near = 0.1f;
     float far = 100.0f;
     float aspectRatio = 1.0f;
 
-    /* Memebers recalculated on change*/
+    /* Memebers recalculated on change */
     vec3 cartesianPosition;
     mat4 viewMatrix;
     mat4 projectionMatrix;

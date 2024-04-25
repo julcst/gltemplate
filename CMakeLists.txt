@@ -51,6 +51,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glad)
 
 # GLM
+add_compile_definitions(GLM_FORCE_RADIANS)
 FetchContent_Declare(
     glm
     #GIT_REPOSITORY https://github.com/g-truc/glm.git
