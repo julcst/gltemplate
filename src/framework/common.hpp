@@ -5,8 +5,8 @@
 
 namespace Common {
 
-    std::string readFile(const std::string& filename);
-    void writeToFile(const std::string& content, const std::string& path);
+    std::string readFile(const std::string& filepath);
+    void writeToFile(const std::string& content, const std::string& filepath);
     void filesInDirectory(const std::string& directoryPath, const std::string& extension, std::vector<std::string>& filenames);
 
     template <class T, typename... Rest>
