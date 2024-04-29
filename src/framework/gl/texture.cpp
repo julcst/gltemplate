@@ -7,6 +7,8 @@
 #include <string>
 #include <stdexcept>
 
+#include "common.hpp"
+
 /////////////////////// RAII behavior ///////////////////////
 Texture::Texture() {
     glGenTextures(1, &handle);
@@ -50,6 +52,8 @@ void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) 
     GLenum internalformat, dataformat, type;
     void* data;
 
+    auto rawfile = Common::readFile(filename);
+
     // Load image from file and read format
     stbi_set_flip_vertically_on_load(true);
     switch (format) {
@@ -57,17 +61,17 @@ void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) 
         case Format::SRGB8:
         case Format::NORMAL8:
             type = GL_UNSIGNED_BYTE;
-            data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
+            data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(rawfile.c_str()), rawfile.size(), &width, &height, &channels, 0);
             break;
         case Format::FLOAT16:
         case Format::FLOAT32:
             type = GL_FLOAT;
-            data = stbi_loadf(filename.c_str(), &width, &height, &channels, 0);
+            data = stbi_loadf_from_memory(reinterpret_cast<const stbi_uc*>(rawfile.c_str()), rawfile.size(), &width, &height, &channels, 0);
             break;
         default: assert(false);
     }
 
-    if (!data) throw std::runtime_error("Failed to load image: " + filename);
+    if (!data) throw std::runtime_error("Failed to parse image: " + filename);
 
     switch(format) {
         case Format::LINEAR8:

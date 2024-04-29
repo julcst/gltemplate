@@ -161,9 +161,6 @@ set(ICON
 )
 set(RES "${SHADERS};${MESHES};${TEXTURES}")
 set_source_files_properties(${RES} PROPERTIES HEADER_FILE_ONLY True)
-foreach(mesh ${MESHES})
-    set(MESH_FILES "${MESH_FILES}\"${mesh}\",")
-endforeach()
 
 ####################################################################
 # Add executable

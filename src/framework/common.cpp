@@ -6,8 +6,10 @@
 #include <string>
 #include <vector>
 
+#include "config.hpp"
+
 std::string Common::readFile(const std::string& filepath) {
-    std::filesystem::path path(filepath);
+    std::filesystem::path path(Config::RES_DIR + filepath);
     std::ifstream stream(path);
     if (!stream.is_open()) throw std::runtime_error("Could not open file: " + path.string() + " relative to current working directory: " + std::filesystem::current_path().string());
     std::stringstream buffer;
@@ -16,7 +18,7 @@ std::string Common::readFile(const std::string& filepath) {
 }
 
 void Common::writeToFile(const std::string& content, const std::string& filepath) {
-    std::filesystem::path path(filepath);
+    std::filesystem::path path(Config::RES_DIR + filepath);
     std::filesystem::create_directories(path.parent_path());
     std::ofstream out(path);
     if (!out.is_open()) throw std::runtime_error("Could not open file: " + path.string() + " relative to current working directory: " + std::filesystem::current_path().string());

@@ -3,6 +3,14 @@
 #include <string>
 #include <vector>
 
+// DEBUG COnfiguration
+// NDEBUG is defined in RELEASE mode
+#ifndef NDEBUG
+    // #define COMPOSE_SHADERS // Uncomment to compose shaders in DEBUG mode
+    //                         // Currently disabled because the #line directive serves better for debugging
+    #define USE_ABSOLUTE_PATHS
+#endif
+
 #ifdef __APPLE__
     #include <unistd.h>
     #include <pwd.h>
@@ -13,24 +21,22 @@ namespace Config {
 // Fetch the directory for document files
 #ifdef __APPLE__
     const std::string HOME = std::string(getpwuid(getuid())->pw_dir); // Get home directory on Unix/Linux/MacOS
-    const std::string APP_DIR = HOME + "/Library/Application Support/@PROJECT_NAME@/"; // Writing into the .app bundle is not allowed as it is signed
+    const std::string APP_DIR = HOME + "/Library/Application Support/${PROJECT_NAME}/"; // Writing into the .app bundle is not allowed as it is signed
 #else
     const std::string APP_DIR = ""; // On other platforms just write into the application directory
 #endif
 
-const std::string PROJECT_NAME = "@PROJECT_NAME@";
-const std::string SHADER_DIR = "shaders/";
-const std::string MESH_DIR = "meshes/";
-const std::string TEXTURE_DIR = "textures/";
+const std::string PROJECT_NAME = "${PROJECT_NAME}";
 
-// NDEBUG is defined in RELEASE mode
-#ifndef NDEBUG
-//#define COMPOSE_SHADERS // Uncomment to compose shaders in DEBUG mode
-                          // Currently disabled because the #line directive serves better for debugging
+#ifdef USE_ABSOLUTE_PATHS
+    const std::string RES_DIR = "${CMAKE_SOURCE_DIR}/";
+#else
+    const std::string RES_DIR = "";
 #endif
-const std::string COMPOSED_SHADER_DIR = "@CMAKE_SOURCE_DIR@/composed/";
 
-const std::vector<std::string> MESH_FILES = {@MESH_FILES@};
+const std::string SHADER_DIR = "shaders/";
+
+const std::string COMPOSED_SHADER_DIR = "${CMAKE_SOURCE_DIR}/composed/";
 
 // Number of frames to average for frame time smoothing
 const unsigned int FRAMETIME_SMOOTHING = 60;
