@@ -17,7 +17,7 @@ class Camera {
 
     void invalidate();
     void update();
-    void updateIfChanged();
+    bool updateIfChanged();
     bool hasChanged();
 
     /* Relative position in spherical coordinates: (distance, azimuth, altitude) */

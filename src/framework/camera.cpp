@@ -70,8 +70,13 @@ void Camera::update() {
     hasRecentlyChanged = true;
 }
 
-void Camera::updateIfChanged() {
-    if (!isUpToDate) update();
+bool Camera::updateIfChanged() {
+    if (!isUpToDate) {
+        update();
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool Camera::hasChanged() {
