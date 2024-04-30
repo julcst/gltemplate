@@ -1,9 +1,10 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
-// DEBUG COnfiguration
+// Enable DEBUG switches in DEBUG mode
 // NDEBUG is defined in RELEASE mode
 #ifndef NDEBUG
     // #define COMPOSE_SHADERS // Uncomment to compose shaders in DEBUG mode
@@ -25,20 +26,18 @@ namespace Config {
 #else
     const std::string APP_DIR = ""; // On other platforms just write into the application directory
 #endif
-
 const std::string PROJECT_NAME = "${PROJECT_NAME}";
-
-#ifdef USE_ABSOLUTE_PATHS
-    const std::string RES_DIR = "${CMAKE_SOURCE_DIR}/";
-#else
-    const std::string RES_DIR = "";
-#endif
-
 const std::string SHADER_DIR = "shaders/";
-
 const std::string COMPOSED_SHADER_DIR = "${CMAKE_SOURCE_DIR}/composed/";
-
-// Number of frames to average for frame time smoothing
+/* Number of frames to average for frame time smoothing */
 const unsigned int FRAMETIME_SMOOTHING = 60;
+
+/* Overwrite working directory in DEBUG mode */
+inline void setWorkingDirectory() {
+    #ifdef USE_ABSOLUTE_PATHS
+        const std::filesystem::path RES_DIR{"${CMAKE_SOURCE_DIR}"};
+        std::filesystem::current_path(RES_DIR);
+    #endif
+}
 
 }
