@@ -40,6 +40,8 @@ class Program {
     void set(GLuint loc, const glm::vec4& value);
     void set(GLuint loc, const glm::mat3& value);
     void set(GLuint loc, const glm::mat4& value);
+    template <typename T>
+    void set(const std::string& loc, const T& value);
 
     GLuint handle;
     std::vector<Shader> shaders;
@@ -47,3 +49,8 @@ class Program {
    private:
     void release();
 };
+
+template <typename T>
+inline void Program::set(const std::string& loc, const T& value) {
+    Program::set(Program::uniform(loc), value);
+}
