@@ -85,7 +85,6 @@ void App::initGLFW() {
         app->scrollCallback(static_cast<float>(yoffset));
     });
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);  // Enable VSync
 }
 
 void App::initImGui() {
@@ -221,4 +220,8 @@ void App::close() {
 
 void App::setTitle(const std::string& title) {
     glfwSetWindowTitle(window, title.c_str());
+}
+
+void App::setVSync(bool vsync) {
+    glfwSwapInterval(vsync ? 1 : 0);
 }

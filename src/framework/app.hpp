@@ -56,6 +56,7 @@ class App {
     void close();
     void collectGLErrors();
     void setTitle(const std::string& title);
+    void setVSync(bool vsync);
 
    protected:
     // To be overriden
