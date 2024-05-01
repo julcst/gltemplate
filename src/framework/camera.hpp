@@ -18,7 +18,6 @@ class Camera {
     void invalidate();
     void update();
     bool updateIfChanged();
-    bool hasChanged();
 
     /* Relative position in spherical coordinates: (distance, azimuth, altitude) */
     vec3 sphericalPosition = vec3(5.0f, 0.0f, 0.0f);
@@ -31,14 +30,13 @@ class Camera {
     float far = 100.0f;
     float aspectRatio = 1.0f;
 
-    /* Memebers recalculated on change */
+    /* Members recalculated on change */
     vec3 cartesianPosition;
     mat4 viewMatrix;
+    mat4 cameraMatrix;
     mat4 projectionMatrix;
-    mat4 rotationMatrix;
     float focalLength;
 
   private:
-    bool hasRecentlyChanged = false;
     bool isUpToDate = false;
 };

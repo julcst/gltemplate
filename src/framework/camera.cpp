@@ -33,18 +33,11 @@ void Camera::invalidate() {
     isUpToDate = false;
 }
 
-mat4 calcViewMatrix(vec3 cartesianPosition, vec3 target, vec3 up) {
+mat4 calcViewMatrix(const vec3& cartesianPosition, const vec3& target, const vec3& up) {
     return lookAt(cartesianPosition, target, up);
 }
 
-mat3 calcRotationMatrix(vec3 cartesianPosition, vec3 target, vec3 up) {
-    const vec3 forward = normalize(target - cartesianPosition);
-    const vec3 right = normalize(cross(forward, up));
-    const vec3 newUp = cross(right, forward);
-    return mat3(right, newUp, forward);
-}
-
-vec3 calcCartesianPosition(vec3 sphericalPosition, vec3 target) {
+vec3 calcCartesianPosition(const vec3& sphericalPosition, const vec3& target) {
     const float azimuth = sphericalPosition.y;
     const float altitude = sphericalPosition.z;
     const float radius = sphericalPosition.x;
@@ -63,11 +56,12 @@ float calcFocalLength(float fov) {
 void Camera::update() {
     cartesianPosition = calcCartesianPosition(sphericalPosition, target);
     viewMatrix = calcViewMatrix(cartesianPosition, target, up);
-    rotationMatrix = calcRotationMatrix(cartesianPosition, target, up);
+    // If we only care about the rotation, we can just transpose because rotation matrices are orthonormal
+    // rotationMatrix = transpose(mat3(viewMatrix));
+    cameraMatrix = inverse(viewMatrix);
     projectionMatrix = calcProjectionMatrix(fov, aspectRatio, near, far);
     focalLength = calcFocalLength(fov);
     isUpToDate = true;
-    hasRecentlyChanged = true;
 }
 
 bool Camera::updateIfChanged() {
@@ -77,10 +71,4 @@ bool Camera::updateIfChanged() {
     } else {
         return false;
     }
-}
-
-bool Camera::hasChanged() {
-    bool hasChanged = hasRecentlyChanged;
-    hasRecentlyChanged = false;
-    return hasChanged;
 }
