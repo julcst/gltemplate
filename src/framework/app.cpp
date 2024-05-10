@@ -57,18 +57,21 @@ void App::initGLFW() {
         app->resizeCallback(app->resolution);
     });
     glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int, int action, int) {
+        if (ImGui::GetIO().WantCaptureKeyboard) return;
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         app->keyCallback(static_cast<Key>(key), static_cast<Action>(action));
     });
-    glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int) {
+    glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int modifier) {
+        if (ImGui::GetIO().WantCaptureMouse) return;
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         double x, y;
         glfwGetCursorPos(window, &x, &y);
         app->mouse.x = x;
         app->mouse.y = y;
-        app->clickCallback(static_cast<Button>(button), static_cast<Action>(action), vec2(x, y));
+        app->clickCallback(static_cast<Button>(button), static_cast<Action>(action), static_cast<Modifier>(modifier));
     });
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
+        if (ImGui::GetIO().WantCaptureMouse) return;
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         double x, y;
         glfwGetCursorPos(window, &x, &y);
@@ -81,6 +84,7 @@ void App::initGLFW() {
         app->moveCallback(movement, leftButton, rightButton, middleButton);
     });
     glfwSetScrollCallback(window, [](GLFWwindow* window, double, double yoffset) {
+        if (ImGui::GetIO().WantCaptureMouse) return;
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
         app->scrollCallback(static_cast<float>(yoffset));
     });
@@ -183,7 +187,7 @@ App::~App() {
 void App::init() {}
 void App::render() {}
 void App::keyCallback(Key key, Action action) {}
-void App::clickCallback(Button button, Action action, const vec2& position) {}
+void App::clickCallback(Button button, Action action, Modifier modifier) {}
 void App::scrollCallback(float amount) {}
 void App::moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) {}
 void App::resizeCallback(const vec2& resolution) {}

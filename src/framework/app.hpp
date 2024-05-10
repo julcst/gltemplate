@@ -37,6 +37,22 @@ enum class Action {
     REPEAT
 };
 
+enum class Modifier {
+    SHIFT = GLFW_MOD_SHIFT,
+    CTRL = GLFW_MOD_CONTROL,
+    ALT = GLFW_MOD_ALT,
+    /* Windows or Command key*/
+    SUPER = GLFW_MOD_SUPER,
+    CAPS_LOCK = GLFW_MOD_CAPS_LOCK,
+    NUM_LOCK = GLFW_MOD_NUM_LOCK
+};
+inline bool operator>=(Modifier a, Modifier b) {
+    return static_cast<int>(a) & static_cast<int>(b);
+}
+inline Modifier operator|(Modifier a, Modifier b) {
+    return static_cast<Modifier>(static_cast<int>(a) | static_cast<int>(b));
+}
+
 class App {
    public:
     bool imguiEnabled;
@@ -45,6 +61,7 @@ class App {
     float delta;
     unsigned int frames;
     vec2 mouse;
+    GLFWwindow* window;
 
     App(unsigned int width, unsigned int height);
     App(const App&) = delete;
@@ -64,13 +81,12 @@ class App {
     virtual void buildImGui();
     virtual void render();
     virtual void keyCallback(Key key, Action action);
-    virtual void clickCallback(Button button, Action action, const vec2& position);
+    virtual void clickCallback(Button button, Action action, Modifier modifier);
     virtual void scrollCallback(float amount);
     virtual void moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton);
     virtual void resizeCallback(const vec2& resolution);
 
    private:
-    GLFWwindow* window;
     void initGLFW();
     void initImGui();
     void initGL();
