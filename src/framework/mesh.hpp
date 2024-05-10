@@ -44,6 +44,7 @@ class Mesh {
     void load(const std::string& filepath);
     void loadWithTangents(const std::string& filepath);
     void draw();
+    void draw(GLuint instances);
     
     unsigned int numIndices = 0;
     VertexArray vao;

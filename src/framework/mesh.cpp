@@ -106,3 +106,9 @@ void Mesh::draw() {
     glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
     vao.unbind();
 }
+
+void Mesh::draw(GLuint instances) {
+    vao.bind();
+    glDrawElementsInstanced(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0, instances);
+    vao.unbind();
+}
