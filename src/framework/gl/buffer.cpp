@@ -50,3 +50,8 @@ void Buffer::_set(Type type, GLsizeiptr size, const GLvoid* data, GLintptr offse
     bind(type);
     glBufferSubData(static_cast<GLenum>(type), offset, size, data);
 }
+
+void Buffer::allocate(Type type, GLsizeiptr size, Usage usage) {
+    bind(type);
+    glBufferData(static_cast<GLenum>(type), size, nullptr, static_cast<GLenum>(usage));
+}

@@ -16,6 +16,7 @@ class Buffer {
     };
     enum class Usage {
         STATIC_DRAW = GL_STATIC_DRAW,
+        DYNAMIC_DRAW = GL_DYNAMIC_DRAW,
     };
     
     Buffer();
@@ -40,6 +41,8 @@ class Buffer {
     void set(Type type, const std::vector<T>& data, unsigned int offset = 0);
     template <typename T>
     void set(Type type, const T& data, unsigned int offset = 0);
+
+    void allocate(Type type, GLsizeiptr size, Usage usage = Usage::STATIC_DRAW);
 
     GLuint handle;
 
