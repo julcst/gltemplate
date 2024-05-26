@@ -71,7 +71,7 @@ class App {
     virtual ~App();
     void run();
     void close();
-    void collectGLErrors();
+    void collectGLErrors(const std::string& context = "OpenGL");
     void setTitle(const std::string& title);
     void setVSync(bool vsync);
 

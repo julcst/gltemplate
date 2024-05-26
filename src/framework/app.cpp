@@ -160,10 +160,10 @@ const std::string glErrorToString(GLenum error) {
     }
 }
 
-void App::collectGLErrors() {
+void App::collectGLErrors(const std::string& context) {
     GLenum err;
     while((err = glGetError()) != GL_NO_ERROR) {
-        std::cerr << "[OpenGL] Error: " << glErrorToString(err) << std::endl;
+        std::cerr << "[" << context << "] Error: " << glErrorToString(err) << std::endl;
     }
 }
 
