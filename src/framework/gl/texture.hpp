@@ -23,6 +23,7 @@ class Texture {
         SRGB8,   // 8-bit sRGB with linear alpha
         FLOAT16, // 16-bit floating point
         FLOAT32, // 32-bit floating point
+        DEPTH32F_STENCIL8, // 32-bit floating point depth, 8-bit stencil
     };
 
     Texture();
