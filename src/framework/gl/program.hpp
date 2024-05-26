@@ -40,6 +40,10 @@ class Program {
     void set(GLuint loc, const glm::vec4& value);
     void set(GLuint loc, const glm::mat3& value);
     void set(GLuint loc, const glm::mat4& value);
+    void set(GLuint loc, const std::vector<GLfloat>& values);
+    void set(GLuint loc, const std::vector<glm::vec2>& values);
+    void set(GLuint loc, const std::vector<glm::vec3>& values);
+    void set(GLuint loc, const std::vector<glm::vec4>& values);
     template <typename T>
     void set(const std::string& loc, const T& value);
 
