@@ -137,6 +137,8 @@ include(CPack)
 ######################### Zipping sources #########################
 file(GLOB_RECURSE SRC_FILES *)
 # Ignore build files
+set(BUILD_DIR ${CMAKE_BINARY_DIR})
+cmake_path(RELATIVE_PATH BUILD_DIR)
 list(FILTER SRC_FILES EXCLUDE REGEX ".*.DS_Store$|${BUILD_DIR}//*|.git//*|composed//*|.vscode//*|.idea//*")
 
 add_custom_target(zip ALL
