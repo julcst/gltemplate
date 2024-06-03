@@ -7,7 +7,7 @@
 #include <string>
 #include <stdexcept>
 
-#include "common.hpp"
+#include "framework/common.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
 Texture::Texture() {
@@ -91,6 +91,7 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
             }
         default: assert(false);
     }
+    return GL_NONE;
 }
 
 GLenum getBaseFormat(int channels) {
@@ -101,6 +102,7 @@ GLenum getBaseFormat(int channels) {
         case 4: return GL_RGBA;
         default: assert(false);
     }
+    return GL_NONE;
 }
 
 GLenum getBaseFormat(GLenum internalformat) {
@@ -131,6 +133,7 @@ GLenum getBaseFormat(GLenum internalformat) {
             return GL_DEPTH_STENCIL;
         default: assert(false);
     }
+    return GL_NONE;
 }
 
 void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) {

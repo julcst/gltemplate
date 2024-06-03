@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "common.hpp"
+#include "framework/common.hpp"
 #include "config.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
