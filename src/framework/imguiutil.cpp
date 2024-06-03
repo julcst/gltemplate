@@ -70,6 +70,10 @@ bool ImGui::Combo(const char* label, unsigned int* curr, const std::vector<std::
     return ImGui::Combo(label, reinterpret_cast<int*>(curr), items);
 }
 
+bool ImGui::Combo(const char* label, size_t* curr, const std::vector<std::string>& items) {
+    return ImGui::Combo(label, reinterpret_cast<int*>(curr), items);
+}
+
 bool ImGui::FlagCheckbox(const char* label, unsigned int* flags, unsigned int flagBitIndex) {
     bool flag = (*flags & (1 << flagBitIndex)) != 0;
     bool changed = ImGui::Checkbox(label, &flag);
