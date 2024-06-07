@@ -48,10 +48,10 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Ensure CMake > 3.23
+    - name: Ensure latest CMake
       uses: jwlawson/actions-setup-cmake@v2
       with:
-        cmake-version: '3.23.x'
+        cmake-version: 'latest'
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
