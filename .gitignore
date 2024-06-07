@@ -1,7 +1,8 @@
 # Mac specific
 **/.DS_Store
-# VSCode specific
+# IDE specific
 .vscode/
+.idea/
 # Build files
 build/
 composed/

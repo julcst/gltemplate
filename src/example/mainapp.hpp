@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 using namespace glm;
 
-#include "framework/app.hpp"
+#include <framework/app.hpp>
 
 class MainApp : public App {
    public:

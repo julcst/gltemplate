@@ -1,5 +1,8 @@
-# This code fetches all the required dependencies from their respective repositories
+# This code fetches all the required dependencies from their respective repositories using the FetchContent module
 include(FetchContent)
+
+# Disbale warnings for third party libraries
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 
 # GLFW
 FetchContent_Declare(
@@ -51,13 +54,6 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
 )
 
-# json
-FetchContent_Declare(
-    json
-    URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
-    EXCLUDE_FROM_ALL
-)
-
 # stb
 FetchContent_Declare(
     stb
@@ -66,7 +62,7 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
 )
 
-FetchContent_MakeAvailable(glfw glad glm imgui tinyobjloader json stb)
+FetchContent_MakeAvailable(glfw glad glm imgui tinyobjloader stb)
 
 # ImGui is not build by CMake, so we need to add it manually
 add_library(imgui_glfw STATIC
@@ -80,6 +76,7 @@ add_library(imgui_glfw STATIC
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
 target_include_directories(imgui_glfw PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends ${imgui_SOURCE_DIR}/misc/cpp ${glfw_SOURCE_DIR}/include)
+target_compile_features(imgui_glfw PUBLIC cxx_std_17)
 
 # stb is a header only library, so we need to add it as an interface library
 add_library(stb_impl INTERFACE)

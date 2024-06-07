@@ -4,10 +4,11 @@
 #include <glm/glm.hpp>
 using namespace glm;
 
-#include "config.hpp"
+#include <framework/context.hpp>
 
 MainApp::MainApp() : App(800, 600) {
-    App::setTitle(Config::PROJECT_NAME);
+    App::setTitle(Context::PROJECT_NAME);
+    App::setVSync(true);
     // Allocate resources
 }
 

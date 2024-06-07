@@ -1,0 +1,51 @@
+#pragma once
+
+#include <filesystem>
+#include <string>
+
+// Enable DEBUG switches in DEBUG mode
+// NDEBUG is defined in RELEASE mode
+#ifndef NDEBUG
+    // #define COMPOSE_SHADERS // Uncomment to compose shaders in DEBUG mode
+    //                         // Currently disabled because the #line directive serves better for debugging
+    #define MAKE_PATHS_RELATIVE_TO_SOURCE_DIR
+#endif
+
+#ifdef __APPLE__
+    #include <unistd.h>
+    #include <pwd.h>
+#endif
+
+/**
+ * Contains context information for the application like the project name and source directory.
+ * This is set using the CMake `configure_file` command.
+ */
+namespace Context {
+
+// Fetch the directory for document files
+#ifdef __APPLE__
+    const std::filesystem::path HOME = getpwuid(getuid())->pw_dir; // Get home directory on Unix/Linux/MacOS
+    const std::filesystem::path APP_DIR = HOME / "/Library/Application Support/${CMAKE_PROJECT_NAME}/"; // Writing into the .app bundle is not allowed as it is signed
+#else
+    const std::filesystem::path APP_DIR = ""; // On other platforms just write into the application directory
+#endif
+const std::string PROJECT_NAME = "${CMAKE_PROJECT_NAME}";
+const std::filesystem::path SHADER_DIR = "shaders/";
+
+
+#ifndef NDEBUG
+    /* Source directory, only available in DEBUG mode */
+    const std::filesystem::path SOURCE_DIR = "${CMAKE_SOURCE_DIR}";
+    const std::filesystem::path COMPOSED_SHADER_DIR = "${CMAKE_SOURCE_DIR}/composed/";
+#endif
+
+/**
+ * Overwrites the working directory to make relative paths relative to the source directory in DEBUG mode.
+ */
+inline void setWorkingDirectory() {
+    #ifdef MAKE_PATHS_RELATIVE_TO_SOURCE_DIR
+        std::filesystem::current_path(SOURCE_DIR);
+    #endif
+}
+
+}

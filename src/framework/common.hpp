@@ -2,12 +2,13 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 
 namespace Common {
 
-    std::string readFile(const std::string& filepath);
-    void writeToFile(const std::string& content, const std::string& filepath);
-    void filesInDirectory(const std::string& directoryPath, const std::string& extension, std::vector<std::string>& filenames);
+    std::string readFile(const std::filesystem::path& filepath);
+    void writeToFile(const std::string& content, const std::filesystem::path& filepath);
+    void filesInDirectory(const std::filesystem::path& directoryPath, const std::string& extension, std::vector<std::filesystem::path>& filenames);
 
     template <class T, typename... Rest>
     void hash_combine(std::size_t& seed, const T& v, const Rest&... rest);

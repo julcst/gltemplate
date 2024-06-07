@@ -9,7 +9,7 @@
 #include <string>
 
 #include "framework/common.hpp"
-#include "config.hpp"
+#include "framework/context.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
 Shader::Shader(Type type) {
@@ -42,7 +42,7 @@ void Shader::release() {
 const std::regex includeRegex("(?:^|\n)#include \"([^\"]+)\"");
 
 std::string readShader(const std::string& filename, std::set<std::string>& included) {
-    std::string source = Common::readFile(Config::SHADER_DIR + filename);
+    std::string source = Common::readFile(Context::SHADER_DIR / filename);
     std::smatch match;
     while (std::regex_search(source, match, includeRegex)) {
         if (included.find(match[1].str()) == included.end()) {
@@ -64,7 +64,7 @@ void Shader::load(const std::string& filename) {
     std::set<std::string> included;
     std::string source = readShader(filename, included);
 #ifdef COMPOSE_SHADERS
-    Common::writeToFile(source, Config::COMPOSED_SHADER_DIR + filename);
+    Common::writeToFile(source, Context::COMPOSED_SHADER_DIR + filename);
 #endif
     const char* sourcePtr = source.c_str();
     glShaderSource(handle, 1, &sourcePtr, NULL);

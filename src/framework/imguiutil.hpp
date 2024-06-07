@@ -7,6 +7,9 @@
 
 namespace ImGui {
 
+    /** Number of frames to average for frame time smoothing, used by `void StatisticsWindow()` */
+    const unsigned int FRAMETIME_SMOOTHING = 60;
+
     void StatisticsWindow(float frametime, const glm::vec2& resolution);
     bool SphericalSlider(const char* label, glm::vec3& cartesian);
     bool AngleSlider3(const char* label, glm::vec3& angles);

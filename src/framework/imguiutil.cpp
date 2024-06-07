@@ -8,13 +8,12 @@
 #include <string>
 #include <vector>
 
-#include "config.hpp"
-#include "framework/series.hpp"
+#include "series.hpp"
 
 using namespace glm;
 
 void ImGui::StatisticsWindow(float frametime, const vec2& resolution) {
-    static Series<float, Config::FRAMETIME_SMOOTHING> measurements;
+    static Series<float, FRAMETIME_SMOOTHING> measurements;
     measurements.push(frametime);
     float avg = measurements.avg;
 

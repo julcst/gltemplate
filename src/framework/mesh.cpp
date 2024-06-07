@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "common.hpp"
-#include "config.hpp"
+#include "framework/context.hpp"
 #include "objparser.hpp"
 
 using namespace glm;
