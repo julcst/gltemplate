@@ -49,7 +49,6 @@ function(bundle_resources TARGET)
         )
 
         # Install resource files
-        install(FILE_SET resources DESTINATION .)
 
         # foreach(RES_FILE IN LISTS ${RES_FILES})
         #     cmake_path(GET RES_FILE PARENT_PATH LOC)
