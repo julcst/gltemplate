@@ -3,7 +3,7 @@
 # Bundles resource files into the application bundle/directory and install the target at the right location
 # Parameters:
 #   TARGET: The target to bundle the resources with
-#   RES_FILES: The list of resource files to bundle (in absolute paths)
+#   RES_FILES: The list of resource files to bundle (absolute or relative to CMAKE_SOURCE_DIR)
 function(BundleResources)
     list(POP_FRONT ARGV TARGET) # First argument is the target
     set(RES_FILES ${ARGV}) # The rest are resource files
@@ -32,7 +32,7 @@ function(BundleResources)
             set_source_files_properties(${RES_FILE} PROPERTIES
                 MACOSX_PACKAGE_LOCATION "Resources/${LOC}"
             )
-            message(STATUS "Bundle ${RES_FILE} into macOS Application Bundle at Resources/${LOC}")
+            message(DEBUG "Bundle ${RES_FILE} into macOS Application Bundle for target ${TARGET} at Resources/${LOC}")
         endforeach()
     
         set_source_files_properties(${MACOSX_ICON_FILE} PROPERTIES
