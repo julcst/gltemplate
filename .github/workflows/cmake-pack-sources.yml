@@ -1,8 +1,6 @@
 name: CMake pack sources
 
-on:
-  push:
-    branches: [ "master" ]
+on: push
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -21,17 +19,12 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build GLTemplate.zip
-      run: cmake --build ${{github.workspace}}/build --target GLTemplate-zip --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{github.workspace}}/build --target GLTemplate-zip --target GLTemplate-minimal-zip --config ${{env.BUILD_TYPE}}
 
-    - uses: actions/upload-artifact@v4
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-        name: complete
-        path: ${{github.workspace}}/build/GLTemplate.zip
-
-    - name: Build GLTemplate.zip
-      run: cmake --build ${{github.workspace}}/build --target GLTemplate-minimal-zip --config ${{env.BUILD_TYPE}}
-
-    - uses: actions/upload-artifact@v4
-      with:
-        name: minimal
-        path: ${{github.workspace}}/build/GLTemplate-minimal.zip
+        files: |
+          ${{github.workspace}}/build/GLTemplate.zip
+          ${{github.workspace}}/build/GLTemplate-minimal.zip
