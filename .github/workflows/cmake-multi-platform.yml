@@ -27,12 +27,6 @@ jobs:
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
         include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
@@ -66,7 +60,7 @@ jobs:
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --target GLTemplate-zip --config ${{ matrix.build_type }}
 
     - uses: actions/upload-artifact@v4
       with:
