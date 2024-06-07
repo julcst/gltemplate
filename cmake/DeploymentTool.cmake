@@ -4,9 +4,8 @@
 # Parameters:
 #   TARGET: The target to bundle the resources with
 #   RES_FILES: The list of resource files to bundle (absolute or relative to CMAKE_SOURCE_DIR)
-function(BundleResources)
-    list(POP_FRONT ARGV TARGET) # First argument is the target
-    set(RES_FILES ${ARGV}) # The rest are resource files
+function(bundle_resources TARGET)
+    set(RES_FILES ${ARGN})
 
     set(MACOSX_ICON_FILE ${CMAKE_SOURCE_DIR}/icons/AppIcon.icns)
     cmake_path(GET MACOSX_ICON_FILE FILENAME MACOSX_ICON_FILE_NAME)
@@ -65,7 +64,7 @@ function(BundleResources)
 endfunction()
 
 # Setup CPack for packaging the application
-function(SetupCPack)
+function(setup_cpack)
     if(APPLE)
         set(CPACK_GENERATOR DragNDrop)
     elseif(WIN32)
