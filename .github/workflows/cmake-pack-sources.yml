@@ -1,9 +1,6 @@
 name: CMake pack sources
 
-on:
-  push:
-    tags:
-      - "v*.*.*"
+on: push
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
