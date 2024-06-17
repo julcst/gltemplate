@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#include <string>
+#include <filesystem>
 
 class Shader {
    public:
@@ -20,7 +20,7 @@ class Shader {
     Shader(Shader&& other);
     Shader& operator=(Shader&& other);
     ~Shader();
-    void load(const std::string& filename);
+    void load(const std::filesystem::path& filepath);
     void compile();
 
     GLuint handle;

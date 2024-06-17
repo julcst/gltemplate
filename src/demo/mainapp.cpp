@@ -23,12 +23,12 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     App::setVSync(true); // Enable vertical synchronization
     /* The background is rendered using a triangle that spans the whole frame */
     fullscreenTriangle.load(FULLSCREEN_VERTICES, FULLSCREEN_INDICES);
-    backgroundShader.load("raygen.vert", "background.frag");
+    backgroundShader.load("shaders/raygen.vert", "shaders/background.frag");
     backgroundShader.bindUBO("WorldBuffer", 0);
     backgroundShader.bindUBO("ObjectBuffer", 1);
 
     mesh.loadWithTangents("meshes/bunny.obj");
-    meshShader.load("projection.vert", "debug.frag");
+    meshShader.load("shaders/projection.vert", "shaders/debug.frag");
     meshShader.bindUBO("WorldBuffer", 0);
     meshShader.bindUBO("ObjectBuffer", 1);
     meshShader.bindTextureUnit("tDiffuse", 0);

@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include <string>
+#include <filesystem>
 #include <vector>
 
 #include "gl/buffer.hpp"
@@ -41,8 +41,8 @@ class Mesh {
     void load(const std::vector<float>& vertices, const std::vector<unsigned int>& indices);
     void load(const std::vector<VertexPCN>& vertices, const std::vector<unsigned int>& indices);
     void load(const std::vector<VertexPCNT>& vertices, const std::vector<unsigned int>& indices);
-    void load(const std::string& filepath);
-    void loadWithTangents(const std::string& filepath);
+    void load(const std::filesystem::path& filepath);
+    void loadWithTangents(const std::filesystem::path& filepath);
     void draw();
     void draw(GLuint instances);
     

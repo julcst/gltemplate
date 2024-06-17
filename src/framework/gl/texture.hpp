@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#include <string>
+#include <filesystem>
 
 /**
  * RAII wrapper for OpenGL texture
@@ -36,7 +36,7 @@ class Texture {
     ~Texture();
     void bind(Type type);
     void bind(Type type, GLuint index);
-    void load(Format format, const std::string& filename, GLsizei mipmaps);
+    void load(Format format, const std::filesystem::path& filepath, GLsizei mipmaps);
 
     GLuint handle;
 

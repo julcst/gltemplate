@@ -8,6 +8,7 @@
 using namespace glm;
 
 #include <string>
+#include <filesystem>
 #include <vector>
 #include <unordered_map>
 #include <iostream>
@@ -35,14 +36,14 @@ struct std::hash<Mesh::VertexPCN>
     }
 };
 
-void ObjParser::parse(const std::string& filepath, std::vector<Mesh::VertexPCN>& vertices, std::vector<unsigned int>& indices) {
+void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::VertexPCN>& vertices, std::vector<unsigned int>& indices) {
     // Parse OBJ file
     std::string rawobj = Common::readFile(filepath);
     tinyobj::ObjReader reader;
     tinyobj::ObjReaderConfig reader_config;
     reader_config.triangulate = true;
     if (!reader.ParseFromString(rawobj, "", reader_config))
-        throw std::runtime_error("Failed to load OBJ file \"" + filepath + "\": " + reader.Error());
+        throw std::runtime_error("Failed to load OBJ file \"" + filepath.native() + "\": " + reader.Error());
     if (!reader.Warning().empty())
         std::cout << "Warning loading OBJ file \"" << filepath << "\": " << reader.Warning() << std::endl;
     
@@ -111,14 +112,14 @@ struct std::hash<Mesh::VertexPCNT>
     }
 };
 
-void ObjParser::parse(const std::string& filepath, std::vector<Mesh::VertexPCNT>& vertices, std::vector<unsigned int>& indices) {
+void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::VertexPCNT>& vertices, std::vector<unsigned int>& indices) {
     // Parse OBJ file
     std::string rawobj = Common::readFile(filepath);
     tinyobj::ObjReader reader;
     tinyobj::ObjReaderConfig reader_config;
     reader_config.triangulate = true;
     if (!reader.ParseFromString(rawobj, "", reader_config))
-        throw std::runtime_error("Failed to load OBJ file \"" + filepath + "\": " + reader.Error());
+        throw std::runtime_error("Failed to load OBJ file \"" + filepath.native() + "\": " + reader.Error());
     if (!reader.Warning().empty())
         std::cout << "Warning loading OBJ file \"" << filepath << "\": " << reader.Warning() << std::endl;
     

@@ -136,12 +136,12 @@ GLenum getBaseFormat(GLenum internalformat) {
     return GL_NONE;
 }
 
-void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) {
+void Texture::load(Format format, const std::filesystem::path& filepath, GLsizei mipmaps) {
     int width, height, channels;
     GLenum type;
     void* data;
 
-    auto rawfile = Common::readFile(filename);
+    auto rawfile = Common::readFile(filepath);
 
     // Load image from file and read format
     stbi_set_flip_vertically_on_load(true);
@@ -160,7 +160,7 @@ void Texture::load(Format format, const std::string& filename, GLsizei mipmaps) 
         default: assert(false);
     }
 
-    if (!data) throw std::runtime_error("Failed to parse image: " + filename);
+    if (!data) throw std::runtime_error("Failed to parse image: " + filepath.native());
 
     GLenum internalformat = getInternalFormat(format, channels);
     GLenum baseformat = getBaseFormat(channels);

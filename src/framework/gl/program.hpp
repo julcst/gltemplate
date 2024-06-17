@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <filesystem>
 
 #include "buffer.hpp"
 #include "shader.hpp"
@@ -21,9 +22,9 @@ class Program {
     Program(Program&& other);
     Program& operator=(Program&& other);
     ~Program();
-    void load(const std::string& vs, const std::string& fs);
+    void load(const std::filesystem::path& vs, const std::filesystem::path& fs);
     void attach(Shader shader);
-    void attach(const std::string& filename, Shader::Type type);
+    void attach(const std::filesystem::path& filepath, Shader::Type type);
     void link();
     void bind();
     GLuint uniform(const std::string& name);

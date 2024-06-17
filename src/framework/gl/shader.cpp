@@ -4,9 +4,10 @@
 
 #include <cassert>
 #include <regex>
-#include <set>
+#include <unordered_set>
 #include <stdexcept>
 #include <string>
+#include <filesystem>
 
 #include "framework/common.hpp"
 #include "framework/context.hpp"
@@ -41,17 +42,17 @@ void Shader::release() {
 
 const std::regex includeRegex("(?:^|\n)#include \"([^\"]+)\"");
 
-std::string readShader(const std::string& filename, std::set<std::string>& included) {
-    std::string source = Common::readFile(Context::SHADER_DIR / filename);
+std::string readShader(const std::filesystem::path& filepath, std::unordered_set<std::filesystem::path>& included) {
+    std::string source = Common::readFile(filepath);
     std::smatch match;
     while (std::regex_search(source, match, includeRegex)) {
-        if (included.find(match[1].str()) == included.end()) {
-            included.insert(match[1].str());
+        std::filesystem::path includePath = filepath.parent_path() / match[1].str();
+        if (included.insert(includePath).second) {
             try {
-                std::string include = readShader(match[1].str(), included);
+                std::string include = readShader(includePath, included);
                 source = match.prefix().str() + include + match.suffix().str();
             } catch (const std::runtime_error& e) {
-                throw std::runtime_error("Error including \"" + match[1].str() + "\" in \"" + filename + "\": " + e.what());
+                throw std::runtime_error("Error including \"" + match[1].str() + "\" in \"" + filepath.native() + "\": " + e.what());
             }
         } else {
             source = match.prefix().str() + match.suffix().str();
@@ -60,11 +61,11 @@ std::string readShader(const std::string& filename, std::set<std::string>& inclu
     return source;
 }
 
-void Shader::load(const std::string& filename) {
-    std::set<std::string> included;
-    std::string source = readShader(filename, included);
+void Shader::load(const std::filesystem::path& filepath) {
+    std::unordered_set<std::filesystem::path> included;
+    std::string source = readShader(filepath, included);
 #ifdef COMPOSE_SHADERS
-    Common::writeToFile(source, Context::COMPOSED_SHADER_DIR + filename);
+    Common::writeToFile(source, Context::COMPOSED_SHADER_DIR / filepath.filepath);
 #endif
     const char* sourcePtr = source.c_str();
     glShaderSource(handle, 1, &sourcePtr, NULL);
