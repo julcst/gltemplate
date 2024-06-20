@@ -3,14 +3,16 @@ include(FetchContent)
 
 # Disbale warnings for third party libraries
 set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(FETCHCONTENT_QUIET OFF CACHE BOOL "" FORCE)
 
+# Known issues: Frametimes are weird on macOS with glfw > 3.3 and VSync enabled
 # GLFW
 FetchContent_Declare(
     glfw
     #GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG 3.3
-    URL https://github.com/glfw/glfw/archive/refs/tags/3.3.tar.gz
-    GIT_PROGRESS TRUE
+    GIT_TAG 3.4
+    URL https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz
     EXCLUDE_FROM_ALL
 )
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -24,7 +26,6 @@ FetchContent_Declare(
     #GIT_REPOSITORY https://github.com/cginternals/glbinding.git
     GIT_TAG v3.3.0
     URL https://github.com/cginternals/glbinding/archive/v3.3.0.tar.gz
-    GIT_PROGRESS TRUE
     EXCLUDE_FROM_ALL
 )
 set(OPTION_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
@@ -37,7 +38,6 @@ FetchContent_Declare(
     #GIT_REPOSITORY https://github.com/g-truc/glm.git
     GIT_TAG 1.0.1
     URL https://github.com/g-truc/glm/archive/1.0.1.tar.gz
-    GIT_PROGRESS TRUE
     EXCLUDE_FROM_ALL
 )
 
@@ -47,7 +47,6 @@ FetchContent_Declare(
     #GIT_REPOSITORY https://github.com/ocornut/imgui.git
     GIT_TAG v1.90.4
     URL https://github.com/ocornut/imgui/archive/v1.90.4.tar.gz
-    GIT_PROGRESS TRUE
     EXCLUDE_FROM_ALL
 )
 
@@ -57,7 +56,6 @@ FetchContent_Declare(
     #GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git
     GIT_TAG v2.0.0rc13
     URL https://github.com/tinyobjloader/tinyobjloader/archive/v2.0.0rc13.tar.gz
-    GIT_PROGRESS TRUE
     EXCLUDE_FROM_ALL
 )
 
@@ -65,8 +63,9 @@ FetchContent_Declare(
 FetchContent_Declare(
     stb
     GIT_REPOSITORY https://github.com/nothings/stb.git
-    GIT_TAG ae721c50eaf761660b4f90cc590453cdb0c2acd0
-    GIT_PROGRESS TRUE
+    GIT_TAG 013ac3beddff3dbffafd5177e7972067cd2b5083
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
     EXCLUDE_FROM_ALL
 )
 

@@ -45,6 +45,7 @@ void App::initGLFW() {
     });
 
     // Window hints
+    // Stuck with OpenGL 4.1 for compatibility with macOS
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
