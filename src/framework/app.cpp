@@ -17,6 +17,7 @@
 #include <glbinding-aux/ValidVersions.h>
 #include <glbinding-aux/types_to_string.h>
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <imgui.h>

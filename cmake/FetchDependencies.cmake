@@ -6,7 +6,7 @@ set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(FETCHCONTENT_QUIET OFF CACHE BOOL "" FORCE)
 
-# Known issues: Frametimes are weird on macOS with glfw > 3.3 and VSync enabled
+# Known issues: Frametimes are weird on macOS with glfw > 3.3 and VSync enabled but with glfw < 3.4 deprecation warnings are thrown
 # GLFW
 FetchContent_Declare(
     glfw
@@ -20,7 +20,8 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
-# GLAD
+# Known issues: Generates warning with CMake >= 3.20, see policy CMP0120
+# glbinding
 FetchContent_Declare(
     glbinding
     #GIT_REPOSITORY https://github.com/cginternals/glbinding.git
@@ -32,7 +33,6 @@ set(OPTION_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(OPTION_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 # GLM
-add_compile_definitions(GLM_FORCE_RADIANS)
 FetchContent_Declare(
     glm
     #GIT_REPOSITORY https://github.com/g-truc/glm.git
@@ -40,6 +40,7 @@ FetchContent_Declare(
     URL https://github.com/g-truc/glm/archive/1.0.1.tar.gz
     EXCLUDE_FROM_ALL
 )
+add_compile_definitions(GLM_FORCE_RADIANS)
 
 # ImGui
 FetchContent_Declare(
@@ -59,6 +60,14 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
 )
 
+# Known issues: stb_image_write.h uses sprintf_s which is only available on Windows, on other platforms it uses sprintf throws deprecation warnings, , see https://github.com/nothings/stb/issues/1446
+# Workaround:
+#ifndef __STDC_LIB_EXT1__
+#define __STDC_LIB_EXT1__
+#define sprintf_s snprintf
+#endif
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 # stb
 FetchContent_Declare(
     stb
