@@ -2,6 +2,7 @@
 
 #include <glbinding/gl/gl.h>
 using namespace gl;
+
 #include <glm/glm.hpp>
 
 #include <filesystem>

@@ -1,10 +1,12 @@
 #pragma once
 
-#include <glad/glad.h>
-
 #include <unordered_map>
 
+#include <glbinding/gl/gl.h>
+
 #include "framework/gl/texture.hpp"
+
+using namespace gl;
 
 /**
  * RAII wrapper for OpenGL Framebuffer

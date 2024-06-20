@@ -1,5 +1,9 @@
 #include "app.hpp"
 
+#include <cassert>
+#include <iostream>
+#include <string>
+
 #include <glbinding/gl/gl.h>
 #include <glbinding/glbinding.h>
 #include <glbinding/AbstractFunction.h>
@@ -12,20 +16,18 @@
 #include <glbinding-aux/ContextInfo.h>
 #include <glbinding-aux/ValidVersions.h>
 #include <glbinding-aux/types_to_string.h>
-using namespace gl;
-using namespace glbinding;
-#define GLFW_INCLUDE_NONE
+
 #include <GLFW/glfw3.h>
+
+#include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+
 #include <glm/glm.hpp>
-#include <imgui.h>
 
-#include <cassert>
-#include <iostream>
-#include <string>
-
+using namespace gl;
 using namespace glm;
+
 
 App::App(unsigned int width, unsigned int height) : resolution(width, height), time(0.f), delta(0.f), frames(0), imguiEnabled(true) {
     initGLFW();
@@ -159,9 +161,9 @@ void GLAPIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
 }
 
 void App::registerGLLoggingCallback(bool verbose) {
-    glbinding::setCallbackMaskExcept(CallbackMask::After | CallbackMask::ParametersAndReturnValue | CallbackMask::Logging, { "glGetError" });
+    glbinding::setCallbackMaskExcept(glbinding::CallbackMask::After | glbinding::CallbackMask::ParametersAndReturnValue, { "glGetError" });
     
-    glbinding::setAfterCallback([verbose](const FunctionCall & call) {
+    glbinding::setAfterCallback([verbose](const glbinding::FunctionCall & call) {
         const auto error = glGetError();
         if (error == GL_NO_ERROR && !verbose) return;
         std::ostream &stream = error == GL_NO_ERROR ? std::cout : std::cerr;
@@ -179,21 +181,21 @@ void App::registerGLLoggingCallback(bool verbose) {
             stream << " -> " << call.returnValue.get();
         
         if (error != GL_NO_ERROR)
-            stream << " generated " << aux::Meta::getString(error);
+            stream << " generated " << glbinding::aux::Meta::getString(error);
 
         stream << std::endl;
     });
 
-    Binding::CreateProgram.setAfterCallback(verbose ? [](GLuint id) {
+    glbinding::Binding::CreateProgram.setAfterCallback(verbose ? [](GLuint id) {
         std::cout << "Created Program: " << id << std::endl;
     } : nullptr);
-    Binding::CreateShader.setAfterCallback(verbose ? [](GLuint id, GLenum /*type*/) {
+    glbinding::Binding::CreateShader.setAfterCallback(verbose ? [](GLuint id, GLenum /*type*/) {
         std::cout << "Created Shader: " << id << std::endl;
     } : nullptr);
-    Binding::DeleteProgram.setAfterCallback(verbose ? [](GLuint id) {
+    glbinding::Binding::DeleteProgram.setAfterCallback(verbose ? [](GLuint id) {
         std::cout << "Deleted Program: " << id << std::endl;
     } : nullptr);
-    Binding::DeleteShader.setAfterCallback(verbose ? [](GLuint id) {
+    glbinding::Binding::DeleteShader.setAfterCallback(verbose ? [](GLuint id) {
         std::cout << "Deleted Shader: " << id << std::endl;
     } : nullptr);
 }

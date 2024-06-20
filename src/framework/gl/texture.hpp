@@ -1,10 +1,11 @@
 #pragma once
 
+#include <filesystem>
+
 #include <glbinding/gl/gl.h>
-using namespace gl;
 #include <glm/glm.hpp>
 
-#include <filesystem>
+using namespace gl;
 
 /**
  * RAII wrapper for OpenGL texture
@@ -13,13 +14,13 @@ using namespace gl;
  */
 class Texture {
    public:
-    enum class Format { // See https://www.khronos.org/opengl/wiki/Image_Format
-        LINEAR8, // 8-bit unsigned normalized integer
-        NORMAL8, // 8-bit signed normalized integer
-        SRGB8,   // 8-bit sRGB with linear alpha
-        FLOAT16, // 16-bit floating point
-        FLOAT32, // 32-bit floating point
-        DEPTH32F_STENCIL8, // 32-bit floating point depth, 8-bit stencil
+    enum class Format {     // See https://www.khronos.org/opengl/wiki/Image_Format
+        LINEAR8,            // 8-bit unsigned normalized integer
+        NORMAL8,            // 8-bit signed normalized integer
+        SRGB8,              // 8-bit sRGB with linear alpha
+        FLOAT16,            // 16-bit floating point
+        FLOAT32,            // 32-bit floating point
+        DEPTH32F_STENCIL8,  // 32-bit floating point depth, 8-bit stencil
     };
 
     Texture();

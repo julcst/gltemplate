@@ -1,10 +1,11 @@
 #include "buffer.hpp"
 
-#include <glbinding/gl/gl.h>
-using namespace gl;
-
 #include <cassert>
 #include <vector>
+
+#include <glbinding/gl/gl.h>
+
+using namespace gl;
 
 /////////////////////// RAII behavior ///////////////////////
 Buffer::Buffer() {

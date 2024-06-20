@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glbinding/gl/gl.h>
-using namespace gl;
 
 #include <vector>
 #include <string>
@@ -9,6 +8,8 @@ using namespace gl;
 
 #include "buffer.hpp"
 #include "shader.hpp"
+
+using namespace gl;
 
 /**
  * RAII wrapper for OpenGL program

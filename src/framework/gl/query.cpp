@@ -2,6 +2,10 @@
 
 #include <cassert>
 
+#include <glbinding/gl/gl.h>
+
+using namespace gl;
+
 /////////////////////// RAII behavior ///////////////////////
 Query::Query() {
     glGenQueries(1, &handle);

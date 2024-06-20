@@ -1,12 +1,14 @@
 #include "framebuffer.hpp"
 
-#include <glad/glad.h>
-
 #include <cassert>
 #include <unordered_map>
 #include <iostream>
 
+#include <glbinding/gl/gl.h>
+
 #include "framework/gl/texture.hpp"
+
+using namespace gl;
 
 /////////////////////// RAII behavior ///////////////////////
 Framebuffer::Framebuffer() {

@@ -1,7 +1,6 @@
 #include "program.hpp"
 
 #include <glbinding/gl/gl.h>
-using namespace gl;
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -12,6 +11,7 @@ using namespace gl;
 
 #include "shader.hpp"
 
+using namespace gl;
 using namespace glm;
 
 /////////////////////// RAII behavior ///////////////////////
