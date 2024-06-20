@@ -1,6 +1,7 @@
 #include "vertexarray.hpp"
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
 
 #include <cassert>
 

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
 #include <glm/glm.hpp>
 
 #include <filesystem>
@@ -12,10 +13,10 @@
  */
 class Texture {
    public:
-    enum class Type {
-        TEX1D = GL_TEXTURE_1D,
-        TEX2D = GL_TEXTURE_2D,
-        TEX3D = GL_TEXTURE_3D,
+    enum class Type: uint {
+        TEX1D = static_cast<uint>(GL_TEXTURE_1D),
+        TEX2D = static_cast<uint>(GL_TEXTURE_2D),
+        TEX3D = static_cast<uint>(GL_TEXTURE_3D),
     };
     enum class Format { // See https://www.khronos.org/opengl/wiki/Image_Format
         LINEAR8, // 8-bit unsigned normalized integer

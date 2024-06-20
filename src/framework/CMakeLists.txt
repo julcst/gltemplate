@@ -44,7 +44,8 @@ target_include_directories(framework
 include(FetchDependencies)
 target_link_libraries(framework
     PUBLIC
-        glad
+        glbinding
+        glbinding-aux
         glm
         glfw
         imgui_glfw

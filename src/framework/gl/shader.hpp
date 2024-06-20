@@ -1,15 +1,16 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
 #include <glm/glm.hpp>
 
 #include <filesystem>
 
 class Shader {
    public:
-    enum class Type {
-        VERTEX_SHADER = GL_VERTEX_SHADER,
-        FRAGMENT_SHADER = GL_FRAGMENT_SHADER,
+    enum class Type: uint {
+        VERTEX_SHADER = static_cast<uint>(GL_VERTEX_SHADER),
+        FRAGMENT_SHADER = static_cast<uint>(GL_FRAGMENT_SHADER),
     };
     
     Shader(Type type);

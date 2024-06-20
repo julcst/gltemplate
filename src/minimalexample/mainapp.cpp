@@ -1,8 +1,9 @@
 #include "mainapp.hpp"
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
 #include <glm/glm.hpp>
 using namespace glm;
+using namespace gl;
 
 #include <framework/context.hpp>
 

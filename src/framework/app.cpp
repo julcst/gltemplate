@@ -1,6 +1,19 @@
 #include "app.hpp"
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+#include <glbinding/glbinding.h>
+#include <glbinding/AbstractFunction.h>
+#include <glbinding/Version.h>
+#include <glbinding/CallbackMask.h>
+#include <glbinding/FunctionCall.h>
+#include <glbinding/Binding.h>
+#include <glbinding-aux/debug.h>
+#include <glbinding-aux/Meta.h>
+#include <glbinding-aux/ContextInfo.h>
+#include <glbinding-aux/ValidVersions.h>
+#include <glbinding-aux/types_to_string.h>
+using namespace gl;
+using namespace glbinding;
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <backends/imgui_impl_glfw.h>
@@ -35,7 +48,7 @@ void App::initGLFW() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE); // Enables SRGB rendering
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 #endif
 
     window = glfwCreateWindow(resolution.x, resolution.y, "", NULL, NULL);
@@ -145,35 +158,61 @@ void GLAPIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
     std::cerr << "[" << glSourceToString(source) << "]" << glTypeToString(type) << ": " << message << "(Severity: " << glSeverityToString(severity) << ")" << std::endl;
 }
 
-const std::string glErrorToString(GLenum error) {
-    switch (error) {
-        case GL_NO_ERROR: return "No error";
-        case GL_INVALID_ENUM: return "Invalid enum";
-        case GL_INVALID_VALUE: return "Invalid value";
-        case GL_INVALID_OPERATION: return "Invalid operation";
-        case GL_STACK_OVERFLOW: return "Stack overflow";
-        case GL_STACK_UNDERFLOW: return "Stack underflow";
-        case GL_OUT_OF_MEMORY: return "Out of memory";
-        case GL_INVALID_FRAMEBUFFER_OPERATION: return "Invalid framebuffer operation";
-        case GL_CONTEXT_LOST: return "Context lost";
-        default: return "Unknown error";
+void App::registerGLLoggingCallback(bool verbose) {
+    glbinding::setCallbackMaskExcept(CallbackMask::After | CallbackMask::ParametersAndReturnValue | CallbackMask::Logging, { "glGetError" });
     
-    }
-}
+    glbinding::setAfterCallback([verbose](const FunctionCall & call) {
+        const auto error = glGetError();
+        if (error == GL_NO_ERROR && !verbose) return;
+        std::ostream &stream = error == GL_NO_ERROR ? std::cout : std::cerr;
+        if (error != GL_NO_ERROR) stream << "[Error] ";
 
-void App::collectGLErrors(const std::string& context) {
-    GLenum err;
-    while((err = glGetError()) != GL_NO_ERROR) {
-        std::cerr << "[" << context << "] Error: " << glErrorToString(err) << std::endl;
-    }
+        stream << call.function->name() << "(";
+        for (unsigned i = 0; i < call.parameters.size(); ++i) {
+            stream << call.parameters[i].get();
+            if (i < call.parameters.size() - 1)
+            stream << ", ";
+        }
+        stream << ")";
+
+        if (call.returnValue)
+            stream << " -> " << call.returnValue.get();
+        
+        if (error != GL_NO_ERROR)
+            stream << " generated " << aux::Meta::getString(error);
+
+        stream << std::endl;
+    });
+
+    Binding::CreateProgram.setAfterCallback(verbose ? [](GLuint id) {
+        std::cout << "Created Program: " << id << std::endl;
+    } : nullptr);
+    Binding::CreateShader.setAfterCallback(verbose ? [](GLuint id, GLenum /*type*/) {
+        std::cout << "Created Shader: " << id << std::endl;
+    } : nullptr);
+    Binding::DeleteProgram.setAfterCallback(verbose ? [](GLuint id) {
+        std::cout << "Deleted Program: " << id << std::endl;
+    } : nullptr);
+    Binding::DeleteShader.setAfterCallback(verbose ? [](GLuint id) {
+        std::cout << "Deleted Shader: " << id << std::endl;
+    } : nullptr);
 }
 
 void App::initGL() {
-    int gladLoadGLStatus = gladLoadGL();
-    assert(gladLoadGLStatus);
+    glbinding::initialize(glfwGetProcAddress, false); // only resolve functions that are actually used (lazy)
+
+#ifndef NDEBUG
+    std::cout << std::endl
+        << "OpenGL Version:  " << glbinding::aux::ContextInfo::version() << std::endl
+        << "OpenGL Vendor:   " << glbinding::aux::ContextInfo::vendor() << std::endl
+        << "OpenGL Renderer: " << glbinding::aux::ContextInfo::renderer() << std::endl << std::endl;
+    
+    registerGLLoggingCallback(false);
+#endif
+
     glEnable(GL_FRAMEBUFFER_SRGB); // Enables SRGB rendering
-    // glEnable(GL_DEBUG_OUTPUT); // Enables debug output
-    // glDebugMessageCallback(debugCallback, 0); // Only supported for OpenGL 4.3+
+    //glEnable(GL_DEBUG_OUTPUT); // Enables better debug output, only supported for OpenGL 4.3+
+    //glDebugMessageCallback(debugCallback, 0); // Only supported for OpenGL 4.3+
 }
 
 App::~App() {

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
 
 #include <vector>
 
@@ -9,14 +10,14 @@
  */
 class Buffer {
    public:
-    enum class Type {
-        ARRAY_BUFFER = GL_ARRAY_BUFFER,
-        UNIFORM_BUFFER = GL_UNIFORM_BUFFER,
-        INDEX_BUFFER = GL_ELEMENT_ARRAY_BUFFER,
+    enum class Type: uint {
+        ARRAY_BUFFER = static_cast<uint>(GL_ARRAY_BUFFER),
+        UNIFORM_BUFFER = static_cast<uint>(GL_UNIFORM_BUFFER),
+        INDEX_BUFFER = static_cast<uint>(GL_ELEMENT_ARRAY_BUFFER),
     };
-    enum class Usage {
-        STATIC_DRAW = GL_STATIC_DRAW,
-        DYNAMIC_DRAW = GL_DYNAMIC_DRAW,
+    enum class Usage: uint {
+        STATIC_DRAW = static_cast<uint>(GL_STATIC_DRAW),
+        DYNAMIC_DRAW = static_cast<uint>(GL_DYNAMIC_DRAW),
     };
     
     Buffer();

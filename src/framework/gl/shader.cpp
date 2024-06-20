@@ -1,6 +1,7 @@
 #include "shader.hpp"
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
 
 #include <cassert>
 #include <regex>

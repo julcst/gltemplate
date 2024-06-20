@@ -1,14 +1,15 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
 
 /**
  * RAII wrapper for OpenGL query object
  */
 class Query {
    public:
-    enum class Type {
-        TIME_ELAPSED = GL_TIME_ELAPSED,
+    enum class Type: uint {
+        TIME_ELAPSED = static_cast<uint>(GL_TIME_ELAPSED),
     };
     
     Query();

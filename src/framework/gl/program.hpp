@@ -1,6 +1,7 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
 
 #include <vector>
 #include <string>

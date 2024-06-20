@@ -1,6 +1,7 @@
 #include "program.hpp"
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 

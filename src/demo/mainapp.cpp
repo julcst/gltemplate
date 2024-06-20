@@ -1,6 +1,7 @@
 #include "mainapp.hpp"
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
