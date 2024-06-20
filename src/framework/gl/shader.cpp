@@ -14,7 +14,7 @@ using namespace gl;
 #include "framework/context.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
-Shader::Shader(Type type) {
+Shader::Shader(GLenum type) {
     handle = glCreateShader(static_cast<GLenum>(type));
     assert(handle);
 }

@@ -10,15 +10,6 @@ using namespace gl;
  */
 class Buffer {
    public:
-    enum class Type: uint {
-        ARRAY_BUFFER = static_cast<uint>(GL_ARRAY_BUFFER),
-        UNIFORM_BUFFER = static_cast<uint>(GL_UNIFORM_BUFFER),
-        INDEX_BUFFER = static_cast<uint>(GL_ELEMENT_ARRAY_BUFFER),
-    };
-    enum class Usage: uint {
-        STATIC_DRAW = static_cast<uint>(GL_STATIC_DRAW),
-        DYNAMIC_DRAW = static_cast<uint>(GL_DYNAMIC_DRAW),
-    };
     
     Buffer();
     // Disable copying
@@ -28,22 +19,22 @@ class Buffer {
     Buffer(Buffer&& other);
     Buffer& operator=(Buffer&& other);
     ~Buffer();
-    void bind(Type type);
-    void bind(Type type, GLuint index);
+    void bind(GLenum type);
+    void bind(GLenum type, GLuint index);
 
-    void _load(Type type, GLsizeiptr size, const GLvoid* data, Usage usage = Usage::STATIC_DRAW);
+    void _load(GLenum type, GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
     template <typename T>
-    void load(Type type, const std::vector<T>& data, Usage usage = Usage::STATIC_DRAW);
+    void load(GLenum type, const std::vector<T>& data, GLenum usage = GL_STATIC_DRAW);
     template <typename T>
-    void load(Type type, const T& data, Usage usage = Usage::STATIC_DRAW);
+    void load(GLenum type, const T& data, GLenum usage = GL_STATIC_DRAW);
 
-    void _set(Type type, GLsizeiptr size, const GLvoid* data, GLintptr offset);
+    void _set(GLenum type, GLsizeiptr size, const GLvoid* data, GLintptr offset);
     template <typename T>
-    void set(Type type, const std::vector<T>& data, unsigned int offset = 0);
+    void set(GLenum type, const std::vector<T>& data, unsigned int offset = 0);
     template <typename T>
-    void set(Type type, const T& data, unsigned int offset = 0);
+    void set(GLenum type, const T& data, unsigned int offset = 0);
 
-    void allocate(Type type, GLsizeiptr size, Usage usage = Usage::STATIC_DRAW);
+    void allocate(GLenum type, GLsizeiptr size, GLenum usage = GL_STATIC_DRAW);
 
     GLuint handle;
 
@@ -52,21 +43,21 @@ class Buffer {
 };
 
 template <typename T>
-inline void Buffer::load(Type type, const std::vector<T>& data, Usage usage) {
+inline void Buffer::load(GLenum type, const std::vector<T>& data, GLenum usage) {
     _load(type, sizeof(T) * data.size(), data.data(), usage);
 }
 
 template <typename T>
-inline void Buffer::load(Type type, const T& data, Usage usage) {
+inline void Buffer::load(GLenum type, const T& data, GLenum usage) {
     _load(type, sizeof(T), &data, usage);
 }
 
 template <typename T>
-inline void Buffer::set(Type type, const std::vector<T>& data, unsigned int offset) {
+inline void Buffer::set(GLenum type, const std::vector<T>& data, unsigned int offset) {
     _set(type, sizeof(T) * data.size(), data.data(), offset);
 }
 
 template <typename T>
-inline void Buffer::set(Type type, const T& data, unsigned int offset) {
+inline void Buffer::set(GLenum type, const T& data, unsigned int offset) {
     _set(type, sizeof(T), &data, offset);
 }

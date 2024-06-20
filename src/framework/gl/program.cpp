@@ -43,8 +43,8 @@ void Program::release() {
 /////////////////////////////////////////////////////////////
 
 void Program::load(const std::filesystem::path& vs, const std::filesystem::path& fs) {
-    attach(vs, Shader::Type::VERTEX_SHADER);
-    attach(fs, Shader::Type::FRAGMENT_SHADER);
+    attach(vs, GL_VERTEX_SHADER);
+    attach(fs, GL_FRAGMENT_SHADER);
     link();
 }
 
@@ -53,7 +53,7 @@ void Program::attach(Shader shader) {
     shaders.push_back(std::move(shader));
 }
 
-void Program::attach(const std::filesystem::path& filepath, Shader::Type type) {
+void Program::attach(const std::filesystem::path& filepath, GLenum  type) {
     Shader shader(type);
     shader.load(filepath);
     glAttachShader(handle, shader.handle);

@@ -77,7 +77,7 @@ void MainApp::render() {
 
     /* Render mesh with texture in the foreground */
     glDepthMask(GL_TRUE); // Enable writing to the depth buffer
-    texture.bind(Texture::Type::TEX2D, 0); // Bind texture to texture unit 0
+    texture.bind(GL_TEXTURE_2D, 0); // Bind texture to texture unit 0
     meshShader.bind(); // Bind shader
     mesh.draw(); // Draw mesh
 }

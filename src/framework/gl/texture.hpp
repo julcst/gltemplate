@@ -13,11 +13,6 @@ using namespace gl;
  */
 class Texture {
    public:
-    enum class Type: uint {
-        TEX1D = static_cast<uint>(GL_TEXTURE_1D),
-        TEX2D = static_cast<uint>(GL_TEXTURE_2D),
-        TEX3D = static_cast<uint>(GL_TEXTURE_3D),
-    };
     enum class Format { // See https://www.khronos.org/opengl/wiki/Image_Format
         LINEAR8, // 8-bit unsigned normalized integer
         NORMAL8, // 8-bit signed normalized integer
@@ -35,8 +30,8 @@ class Texture {
     Texture(Texture&& other);
     Texture& operator=(Texture&& other);
     ~Texture();
-    void bind(Type type);
-    void bind(Type type, GLuint index);
+    void bind(GLenum type);
+    void bind(GLenum type, GLuint index);
     void load(Format format, const std::filesystem::path& filepath, GLsizei mipmaps);
 
     GLuint handle;

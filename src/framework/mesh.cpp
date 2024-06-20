@@ -19,14 +19,14 @@ using namespace glm;
 void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numIndices = indices.size();
-    vbo.load(Buffer::Type::ARRAY_BUFFER, vertices);
-    ebo.load(Buffer::Type::INDEX_BUFFER, indices);
+    vbo.load(GL_ARRAY_BUFFER, vertices);
+    ebo.load(GL_ELEMENT_ARRAY_BUFFER, indices);
 
     // Bind buffers to VAO
     // TODO: Use DSA instead (but only OpenGL 4.5+, so not on macOS)
     vao.bind();
-    vbo.bind(Buffer::Type::ARRAY_BUFFER);
-    ebo.bind(Buffer::Type::INDEX_BUFFER);
+    vbo.bind(GL_ARRAY_BUFFER);
+    ebo.bind(GL_ELEMENT_ARRAY_BUFFER);
     size_t stride = 3 * sizeof(float);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*) (0 * sizeof(float)));
     glEnableVertexAttribArray(0);
@@ -36,14 +36,14 @@ void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned i
 void Mesh::load(const std::vector<VertexPCN>& vertices, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numIndices = indices.size();
-    vbo.load(Buffer::Type::ARRAY_BUFFER, vertices);
-    ebo.load(Buffer::Type::INDEX_BUFFER, indices);
+    vbo.load(GL_ARRAY_BUFFER, vertices);
+    ebo.load(GL_ELEMENT_ARRAY_BUFFER, indices);
 
     // Bind buffers to VAO
     // TODO: Use DSA instead (but only OpenGL 4.5+, so not on macOS)
     vao.bind();
-    vbo.bind(Buffer::Type::ARRAY_BUFFER);
-    ebo.bind(Buffer::Type::INDEX_BUFFER);
+    vbo.bind(GL_ARRAY_BUFFER);
+    ebo.bind(GL_ELEMENT_ARRAY_BUFFER);
     // Vertex attributes
     size_t stride = sizeof(VertexPCN);
     // (location = 0) position
@@ -61,14 +61,14 @@ void Mesh::load(const std::vector<VertexPCN>& vertices, const std::vector<unsign
 void Mesh::load(const std::vector<VertexPCNT>& vertices, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numIndices = indices.size();
-    vbo.load(Buffer::Type::ARRAY_BUFFER, vertices);
-    ebo.load(Buffer::Type::INDEX_BUFFER, indices);
+    vbo.load(GL_ARRAY_BUFFER, vertices);
+    ebo.load(GL_ELEMENT_ARRAY_BUFFER, indices);
 
     // Bind buffers to VAO
     // TODO: Use DSA instead (but only OpenGL 4.5+, so not on macOS)
     vao.bind();
-    vbo.bind(Buffer::Type::ARRAY_BUFFER);
-    ebo.bind(Buffer::Type::INDEX_BUFFER);
+    vbo.bind(GL_ARRAY_BUFFER);
+    ebo.bind(GL_ELEMENT_ARRAY_BUFFER);
     // Vertex attributes
     size_t stride = sizeof(VertexPCNT);
     // (location = 0) position

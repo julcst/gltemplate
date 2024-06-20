@@ -36,26 +36,26 @@ void Framebuffer::release() {
 }
 /////////////////////////////////////////////////////////////
 
-void Framebuffer::bind(Type type) {
+void Framebuffer::bind(GLenum type) {
     glBindFramebuffer(static_cast<GLenum>(type), handle);
 }
 
-void Framebuffer::bindDefault(Type type) {
+void Framebuffer::bindDefault(GLenum type) {
     glBindFramebuffer(static_cast<GLenum>(type), 0);
 }
 
-void Framebuffer::attach(Type type, Attachment attachment, Texture texture, GLint level) {
+void Framebuffer::attach(GLenum type, Attachment attachment, Texture texture, GLint level) {
     bind(type);
     glFramebufferTexture(static_cast<GLenum>(type), static_cast<GLenum>(attachment), texture.handle, level);
     attachments[attachment] = std::move(texture);
 }
 
-void Framebuffer::attach(Type type, Attachment attachment, GLuint texture, GLint level) {
+void Framebuffer::attach(GLenum type, Attachment attachment, GLuint texture, GLint level) {
     bind(type);
     glFramebufferTexture(static_cast<GLenum>(type), static_cast<GLenum>(attachment), texture, level);
 }
 
-bool Framebuffer::checkStatus(Type type) {
+bool Framebuffer::checkStatus(GLenum type) {
     bind(type);
     GLenum status = glCheckFramebufferStatus(static_cast<GLenum>(type));
     switch (status) {

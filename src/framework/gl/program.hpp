@@ -25,7 +25,7 @@ class Program {
     ~Program();
     void load(const std::filesystem::path& vs, const std::filesystem::path& fs);
     void attach(Shader shader);
-    void attach(const std::filesystem::path& filepath, Shader::Type type);
+    void attach(const std::filesystem::path& filepath, GLenum  type);
     void link();
     void bind();
     GLuint uniform(const std::string& name);

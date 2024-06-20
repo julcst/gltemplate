@@ -13,7 +13,7 @@ class Shader {
         FRAGMENT_SHADER = static_cast<uint>(GL_FRAGMENT_SHADER),
     };
     
-    Shader(Type type);
+    Shader(GLenum type);
     // Disable copying
     Shader(const Shader&) = delete;
     Shader& operator=(const Shader&) = delete;

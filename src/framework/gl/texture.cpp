@@ -38,11 +38,11 @@ void Texture::release() {
 }
 /////////////////////////////////////////////////////////////
 
-void Texture::bind(Type type) {
+void Texture::bind(GLenum type) {
     glBindTexture(static_cast<GLenum>(type), handle);
 }
 
-void Texture::bind(Type type, GLuint index) {
+void Texture::bind(GLenum type, GLuint index) {
     // On OpenGL 4.5+ one would use the DSA version glBindTextureUnit
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(static_cast<GLenum>(type), handle);
@@ -167,7 +167,7 @@ void Texture::load(Format format, const std::filesystem::path& filepath, GLsizei
     GLenum baseformat = getBaseFormat(channels);
 
     // Upload texture data
-    bind(Type::TEX2D);
+    bind(GL_TEXTURE_2D);
     // This would be the immutable version:
     // Note: On OpenGL 4.5+ one would use the DSA versions glTextureStorage2D and glTextureSubImage2D
     // glTexStorage2D(GL_TEXTURE_2D, mipmaps, internalformat, width, height);
