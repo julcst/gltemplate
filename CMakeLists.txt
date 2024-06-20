@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.26)
 project(GLTemplate VERSION 1.0 LANGUAGES C CXX)
 
 # Load custom modules from the cmake directory
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Build framework
 add_subdirectory(src/framework)
