@@ -96,17 +96,6 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
     return GL_NONE;
 }
 
-GLenum getBaseFormat(int channels) {
-    switch (channels) {
-        case 1: return GL_RED;
-        case 2: return GL_RG;
-        case 3: return GL_RGB;
-        case 4: return GL_RGBA;
-        default: assert(false);
-    }
-    return GL_NONE;
-}
-
 GLenum getBaseFormat(GLenum internalformat) {
     switch (internalformat) {
         case GL_R8:
@@ -165,7 +154,7 @@ void Texture::load(Format format, const std::filesystem::path& filepath, GLsizei
     if (!data) throw std::runtime_error("Failed to parse image: " + filepath.native());
 
     GLenum internalformat = getInternalFormat(format, channels);
-    GLenum baseformat = getBaseFormat(channels);
+    GLenum baseformat = getBaseFormat(internalformat);
 
     // Upload texture data
     bind(GL_TEXTURE_2D);
