@@ -151,7 +151,7 @@ void Texture::load(Format format, const std::filesystem::path& filepath, GLsizei
         default: assert(false);
     }
 
-    if (!data) throw std::runtime_error("Failed to parse image: " + filepath.native());
+    if (!data) throw std::runtime_error("Failed to parse image " + filepath.native() + ": " + stbi_failure_reason());
 
     GLenum internalformat = getInternalFormat(format, channels);
     GLenum baseformat = getBaseFormat(internalformat);
