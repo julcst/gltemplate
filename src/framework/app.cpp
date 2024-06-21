@@ -120,48 +120,6 @@ void App::initImGui() {
     ImGui_ImplOpenGL3_Init();
 }
 
-const std::string glSourceToString(GLenum source) {
-    switch (source) {
-        case GL_DEBUG_SOURCE_API: return "API";
-        case GL_DEBUG_SOURCE_WINDOW_SYSTEM: return "Window System";
-        case GL_DEBUG_SOURCE_SHADER_COMPILER: return "Shader Compiler";
-        case GL_DEBUG_SOURCE_THIRD_PARTY: return "Third Party";
-        case GL_DEBUG_SOURCE_APPLICATION: return "Application";
-        case GL_DEBUG_SOURCE_OTHER: return "Other";
-        default: return "Unknown";
-    }
-}
-
-const std::string glTypeToString(GLenum type) {
-    switch (type) {
-        case GL_DEBUG_TYPE_ERROR: return "Error";
-        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return "Deprecated Behavior";
-        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: return "Undefined Behavior";
-        case GL_DEBUG_TYPE_PORTABILITY: return "Portability";
-        case GL_DEBUG_TYPE_PERFORMANCE: return "Performance";
-        case GL_DEBUG_TYPE_MARKER: return "Marker";
-        case GL_DEBUG_TYPE_PUSH_GROUP: return "Push Group";
-        case GL_DEBUG_TYPE_POP_GROUP: return "Pop Group";
-        case GL_DEBUG_TYPE_OTHER: return "Other";
-        default: return "Unknown";
-    }
-}
-
-const std::string glSeverityToString(GLenum severity) {
-    switch (severity) {
-        case GL_DEBUG_SEVERITY_HIGH: return "High";
-        case GL_DEBUG_SEVERITY_MEDIUM: return "Medium";
-        case GL_DEBUG_SEVERITY_LOW: return "Low";
-        case GL_DEBUG_SEVERITY_NOTIFICATION: return "Notification";
-        default: return "Unknown";
-    }
-}
-
-void GLAPIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
-{
-    std::cerr << "[" << glSourceToString(source) << "]" << glTypeToString(type) << ": " << message << "(Severity: " << glSeverityToString(severity) << ")" << std::endl;
-}
-
 void App::registerGLLoggingCallback(bool verbose) {
     glbinding::setCallbackMaskExcept(glbinding::CallbackMask::After | glbinding::CallbackMask::ParametersAndReturnValue, { "glGetError" });
     
@@ -183,23 +141,10 @@ void App::registerGLLoggingCallback(bool verbose) {
             stream << " -> " << call.returnValue.get();
         
         if (error != GL_NO_ERROR)
-            stream << " generated " << glbinding::aux::Meta::getString(error);
+            stream << " generated " << error;
 
         stream << std::endl;
     });
-
-    glbinding::Binding::CreateProgram.setAfterCallback(verbose ? [](GLuint id) {
-        std::cout << "Created Program: " << id << std::endl;
-    } : nullptr);
-    glbinding::Binding::CreateShader.setAfterCallback(verbose ? [](GLuint id, GLenum /*type*/) {
-        std::cout << "Created Shader: " << id << std::endl;
-    } : nullptr);
-    glbinding::Binding::DeleteProgram.setAfterCallback(verbose ? [](GLuint id) {
-        std::cout << "Deleted Program: " << id << std::endl;
-    } : nullptr);
-    glbinding::Binding::DeleteShader.setAfterCallback(verbose ? [](GLuint id) {
-        std::cout << "Deleted Shader: " << id << std::endl;
-    } : nullptr);
 }
 
 void App::initGL() {
@@ -215,8 +160,12 @@ void App::initGL() {
 #endif
 
     glEnable(GL_FRAMEBUFFER_SRGB); // Enables SRGB rendering
-    //glEnable(GL_DEBUG_OUTPUT); // Enables better debug output, only supported for OpenGL 4.3+
-    //glDebugMessageCallback(debugCallback, 0); // Only supported for OpenGL 4.3+
+
+    // Enables better debug output, only supported for OpenGL 4.3+
+    // glEnable(GL_DEBUG_OUTPUT);
+    // glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void*) {
+    //     std::cerr << "[" << source << "] " << type << ": " << message << "(" << severity << ")" << std::endl;
+    // }, 0);
 }
 
 App::~App() {

@@ -36,24 +36,24 @@ void Buffer::release() {
 /////////////////////////////////////////////////////////////
 
 void Buffer::bind(GLenum type) {
-    glBindBuffer(static_cast<GLenum>(type), handle);
+    glBindBuffer(type, handle);
 }
 
 void Buffer::bind(GLenum type, GLuint index) {
-    glBindBufferBase(static_cast<GLenum>(type), index, handle);
+    glBindBufferBase(type, index, handle);
 }
 
 void Buffer::_load(GLenum type, GLsizeiptr size, const GLvoid* data, GLenum usage) {
     bind(type);
-    glBufferData(static_cast<GLenum>(type), size, data, static_cast<GLenum>(usage));
+    glBufferData(type, size, data, usage);
 }
 
 void Buffer::_set(GLenum type, GLsizeiptr size, const GLvoid* data, GLintptr offset) {
     bind(type);
-    glBufferSubData(static_cast<GLenum>(type), offset, size, data);
+    glBufferSubData(type, offset, size, data);
 }
 
 void Buffer::allocate(GLenum type, GLsizeiptr size, GLenum usage) {
     bind(type);
-    glBufferData(static_cast<GLenum>(type), size, nullptr, static_cast<GLenum>(usage));
+    glBufferData(type, size, nullptr, usage);
 }

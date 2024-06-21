@@ -5,7 +5,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <cassert>
-#include <vector>
 #include <stdexcept>
 #include <string>
 
@@ -50,14 +49,12 @@ void Program::load(const std::filesystem::path& vs, const std::filesystem::path&
 
 void Program::attach(Shader shader) {
     glAttachShader(handle, shader.handle);
-    shaders.push_back(std::move(shader));
 }
 
 void Program::attach(const std::filesystem::path& filepath, GLenum  type) {
     Shader shader(type);
     shader.load(filepath);
     glAttachShader(handle, shader.handle);
-    shaders.push_back(std::move(shader));
 }
 
 void Program::link() {
@@ -92,8 +89,16 @@ void Program::set(GLuint loc, GLint value) {
     glProgramUniform1i(handle, loc, value);
 }
 
+void Program::set(GLuint loc, const std::vector<GLint>& values) {
+    glProgramUniform1iv(handle, loc, values.size(), values.data());
+}
+
 void Program::set(GLuint loc, GLuint value) {
     glProgramUniform1ui(handle, loc, value);
+}
+
+void Program::set(GLuint loc, const std::vector<GLuint>& values) {
+    glProgramUniform1uiv(handle, loc, values.size(), values.data());
 }
 
 void Program::set(GLuint loc, GLfloat value) {
@@ -101,11 +106,15 @@ void Program::set(GLuint loc, GLfloat value) {
 }
 
 void Program::set(GLuint loc, const std::vector<float>& values) {
-    glProgramUniform3fv(handle, loc, values.size(), values.data());
+    glProgramUniform1fv(handle, loc, values.size(), values.data());
 }
 
 void Program::set(GLuint loc, const ivec2& value) {
     glProgramUniform2iv(handle, loc, 1, value_ptr(value));
+}
+
+void Program::set(GLuint loc, const std::vector<ivec2>& values) {
+    glProgramUniform2iv(handle, loc, values.size(), value_ptr(values[0]));
 }
 
 void Program::set(GLuint loc, const vec2& value) {
@@ -120,6 +129,10 @@ void Program::set(GLuint loc, const ivec3& value) {
     glProgramUniform3iv(handle, loc, 1, value_ptr(value));
 }
 
+void Program::set(GLuint loc, const std::vector<ivec3>& values) {
+    glProgramUniform3iv(handle, loc, values.size(), value_ptr(values[0]));
+}
+
 void Program::set(GLuint loc, const vec3& value) {
     glProgramUniform3fv(handle, loc, 1, value_ptr(value));
 }
@@ -132,6 +145,10 @@ void Program::set(GLuint loc, const ivec4& value) {
     glProgramUniform4iv(handle, loc, 1, value_ptr(value));
 }
 
+void Program::set(GLuint loc, const std::vector<ivec4>& values) {
+    glProgramUniform4iv(handle, loc, values.size(), value_ptr(values[0]));
+}
+
 void Program::set(GLuint loc, const vec4& value) {
     glProgramUniform4fv(handle, loc, 1, value_ptr(value));
 }
@@ -140,10 +157,26 @@ void Program::set(GLuint loc, const std::vector<vec4>& values) {
     glProgramUniform4fv(handle, loc, values.size(), value_ptr(values[0]));
 }
 
+void Program::set(GLuint loc, const mat2& value) {
+    glProgramUniformMatrix2fv(handle, loc, 1, GL_FALSE, value_ptr(value));
+}
+
+void Program::set(GLuint loc, const std::vector<mat2>& values) {
+    glProgramUniformMatrix2fv(handle, loc, values.size(), GL_FALSE, value_ptr(values[0]));
+}
+
 void Program::set(GLuint loc, const mat3& value) {
     glProgramUniformMatrix3fv(handle, loc, 1, GL_FALSE, value_ptr(value));
 }
 
+void Program::set(GLuint loc, const std::vector<mat3>& values) {
+    glProgramUniformMatrix3fv(handle, loc, values.size(), GL_FALSE, value_ptr(values[0]));
+}
+
 void Program::set(GLuint loc, const mat4& value) {
     glProgramUniformMatrix4fv(handle, loc, 1, GL_FALSE, value_ptr(value));
+}
+
+void Program::set(GLuint loc, const std::vector<mat4>& values) {
+    glProgramUniformMatrix4fv(handle, loc, values.size(), GL_FALSE, value_ptr(values[0]));
 }

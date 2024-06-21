@@ -40,13 +40,13 @@ void Texture::release() {
 /////////////////////////////////////////////////////////////
 
 void Texture::bind(GLenum type) {
-    glBindTexture(static_cast<GLenum>(type), handle);
+    glBindTexture(type, handle);
 }
 
 void Texture::bind(GLenum type, GLuint index) {
     // On OpenGL 4.5+ one would use the DSA version glBindTextureUnit
     glActiveTexture(GL_TEXTURE0 + index);
-    glBindTexture(static_cast<GLenum>(type), handle);
+    glBindTexture(type, handle);
 }
 
 GLenum getInternalFormat(Texture::Format format, int channels) {

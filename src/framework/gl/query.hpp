@@ -9,9 +9,6 @@ using namespace gl;
  */
 class Query {
    public:
-    enum class Type: uint {
-        TIME_ELAPSED = static_cast<uint>(GL_TIME_ELAPSED),
-    };
     
     Query();
     // Disable copying

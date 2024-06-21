@@ -1,7 +1,5 @@
 #pragma once
 
-#include <unordered_map>
-
 #include <glbinding/gl/gl.h>
 
 #include "framework/gl/texture.hpp"
@@ -21,14 +19,13 @@ class Framebuffer {
     Framebuffer(Framebuffer&& other);
     Framebuffer& operator=(Framebuffer&& other);
     ~Framebuffer();
-    void bind(GLenum type = Type::READ_AND_DRAW);
-    static void bindDefault(GLenum type = Type::READ_AND_DRAW);
-    void attach(GLenum type, Attachment attachment, Texture texture, GLint level = 0);
-    void attach(GLenum type, Attachment attachment, GLuint texture, GLint level = 0);
-    bool checkStatus(GLenum type = Type::READ_AND_DRAW);
+    void bind(GLenum type = GL_FRAMEBUFFER);
+    static void bindDefault(GLenum type = GL_FRAMEBUFFER);
+    void attach(GLenum type, GLenum attachment, Texture texture, GLint level = 0);
+    void attach(GLenum type, GLenum attachment, GLuint texture, GLint level = 0);
+    bool checkStatus(GLenum type = GL_FRAMEBUFFER);
 
     GLuint handle;
-    std::unordered_map<Attachment, Texture> attachments;
 
    private:
     void release();

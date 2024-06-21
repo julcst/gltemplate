@@ -2,7 +2,6 @@
 
 #include <glbinding/gl/gl.h>
 
-#include <vector>
 #include <string>
 #include <filesystem>
 
@@ -32,26 +31,38 @@ class Program {
     GLuint uniform(const std::string& name);
     void bindUBO(const std::string& loc, GLuint index);
     void bindTextureUnit(const std::string& loc, GLint index);
+
+    // Uniform setters with location
     void set(GLuint loc, GLint value);
+    void set(GLuint loc, const std::vector<GLint>& values);
     void set(GLuint loc, GLuint value);
+    void set(GLuint loc, const std::vector<GLuint>& values);
     void set(GLuint loc, GLfloat value);
-    void set(GLuint loc, const glm::ivec2& value);
-    void set(GLuint loc, const glm::vec2& value);
-    void set(GLuint loc, const glm::ivec3& value);
-    void set(GLuint loc, const glm::vec3& value);
-    void set(GLuint loc, const glm::ivec4& value);
-    void set(GLuint loc, const glm::vec4& value);
-    void set(GLuint loc, const glm::mat3& value);
-    void set(GLuint loc, const glm::mat4& value);
     void set(GLuint loc, const std::vector<GLfloat>& values);
+    void set(GLuint loc, const glm::ivec2& value);
+    void set(GLuint loc, const std::vector<glm::ivec2>& values);
+    void set(GLuint loc, const glm::vec2& value);
     void set(GLuint loc, const std::vector<glm::vec2>& values);
+    void set(GLuint loc, const glm::ivec3& value);
+    void set(GLuint loc, const std::vector<glm::ivec3>& values);
+    void set(GLuint loc, const glm::vec3& value);
     void set(GLuint loc, const std::vector<glm::vec3>& values);
+    void set(GLuint loc, const glm::ivec4& value);
+    void set(GLuint loc, const std::vector<glm::ivec4>& values);
+    void set(GLuint loc, const glm::vec4& value);
     void set(GLuint loc, const std::vector<glm::vec4>& values);
+    void set(GLuint loc, const glm::mat2& value);
+    void set(GLuint loc, const std::vector<glm::mat2>& values);
+    void set(GLuint loc, const glm::mat3& value);
+    void set(GLuint loc, const std::vector<glm::mat3>& values);
+    void set(GLuint loc, const glm::mat4& value);
+    void set(GLuint loc, const std::vector<glm::mat4>& values);
+
+    // Uniform setters with name
     template <typename T>
     void set(const std::string& loc, const T& value);
 
     GLuint handle;
-    std::vector<Shader> shaders;
 
    private:
     void release();
