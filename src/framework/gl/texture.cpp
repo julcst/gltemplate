@@ -5,6 +5,7 @@ using namespace gl;
 
 #include <stb_image.h>
 
+#include <array>
 #include <cassert>
 #include <string>
 #include <stdexcept>
@@ -128,7 +129,7 @@ GLenum getBaseFormat(GLenum internalformat) {
     return GL_NONE;
 }
 
-void Texture::load(Format format, const std::filesystem::path& filepath, GLsizei mipmaps) {
+void Texture::_load(GLenum target, Format format, const std::filesystem::path& filepath) {
     int width, height, channels;
     GLenum type;
     void* data;
@@ -157,16 +158,37 @@ void Texture::load(Format format, const std::filesystem::path& filepath, GLsizei
     GLenum baseformat = getBaseFormat(internalformat);
 
     // Upload texture data
-    bind(GL_TEXTURE_2D);
     // This would be the immutable version:
     // Note: On OpenGL 4.5+ one would use the DSA versions glTextureStorage2D and glTextureSubImage2D
     // glTexStorage2D(GL_TEXTURE_2D, mipmaps, internalformat, width, height);
     // glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, baseformat, type, data);
-    glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, baseformat, type, data);
+    glTexImage2D(target, 0, internalformat, width, height, 0, baseformat, type, data);
 
     // Free image data
     stbi_image_free(data);
+}
+
+void Texture::load(Format format, const std::filesystem::path& filepath, GLsizei mipmaps) {
+    bind(GL_TEXTURE_2D);
+    
+    _load(GL_TEXTURE_2D, format, filepath);
 
     // Generate mipmaps
     if (mipmaps > 0) glGenerateMipmap(GL_TEXTURE_2D);
+}
+
+void Texture::loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, GLsizei mipmaps) {
+    // For seamless cubemaps, call glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS)
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+    bind(GL_TEXTURE_CUBE_MAP);
+
+    _load(GL_TEXTURE_CUBE_MAP_POSITIVE_X, format, filepaths[0]);
+    _load(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, format, filepaths[1]);
+    _load(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, format, filepaths[2]);
+    _load(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, format, filepaths[3]);
+    _load(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, format, filepaths[4]);
+    _load(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, format, filepaths[5]);
+
+    if (mipmaps > 0) glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 }

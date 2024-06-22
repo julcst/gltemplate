@@ -35,6 +35,7 @@ class Mesh {
         glm::vec2 texCoord;
         glm::vec3 normal;
     };
+    
     /**
      * Vertex with 3 position components, 2 texture coordinate components, 3 normal vector components, 3 tangent vector components
      */

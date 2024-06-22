@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <filesystem>
 
 #include <glbinding/gl/gl.h>
@@ -33,7 +34,9 @@ class Texture {
     ~Texture();
     void bind(GLenum type);
     void bind(GLenum type, GLuint index);
+    static void _load(GLenum target, Format format, const std::filesystem::path& filepath);
     void load(Format format, const std::filesystem::path& filepath, GLsizei mipmaps);
+    void loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, GLsizei mipmaps);
 
     GLuint handle;
 
