@@ -23,7 +23,7 @@ using namespace gl;
 using namespace glm;
 
 
-App::App(unsigned int width, unsigned int height) : resolution(width, height), verboseLogging(false), imguiEnabled(true) {
+App::App(unsigned int width, unsigned int height) : resolution(width, height), traceOpenGLCalls(false), imguiEnabled(true) {
     initGLFW();
     initImGui();
     initGL();
@@ -118,7 +118,7 @@ void App::registerGLLoggingCallback() {
     
     glbinding::setAfterCallback([&](const glbinding::FunctionCall & call) {
         const auto error = glGetError();
-        if (error == GL_NO_ERROR && !verboseLogging) return;
+        if (error == GL_NO_ERROR && !traceOpenGLCalls) return;
         std::ostream &stream = error == GL_NO_ERROR ? std::cout : std::cerr;
         if (error != GL_NO_ERROR) stream << "[Error] ";
 

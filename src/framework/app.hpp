@@ -60,7 +60,7 @@ class App {
     float time = 0.0f;
     float delta = 0.0f;
     unsigned int frames = 0;
-    bool verboseLogging;
+    bool traceOpenGLCalls;
     vec2 mouse;
     GLFWwindow* window;
 

@@ -38,11 +38,11 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
 }
 
 void MainApp::init() {
-    verboseLogging = true; // Log all OpenGL calls
+    traceOpenGLCalls = true; // Log all OpenGL calls
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    verboseLogging = false;
+    traceOpenGLCalls = false;
 }
 
 void MainApp::render() {
