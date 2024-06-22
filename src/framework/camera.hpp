@@ -31,7 +31,7 @@ class Camera {
     float aspectRatio = 1.0f;
 
     /* Members recalculated on change */
-    vec3 cartesianPosition;
+    vec3 worldPosition;
     mat4 viewMatrix;
     mat4 cameraMatrix;
     mat4 projectionMatrix;

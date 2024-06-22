@@ -33,8 +33,8 @@ void Camera::invalidate() {
     isUpToDate = false;
 }
 
-mat4 calcViewMatrix(const vec3& cartesianPosition, const vec3& target, const vec3& up) {
-    return lookAt(cartesianPosition, target, up);
+mat4 calcViewMatrix(const vec3& worldPosition, const vec3& target, const vec3& up) {
+    return lookAt(worldPosition, target, up);
 }
 
 vec3 calcCartesianPosition(const vec3& sphericalPosition, const vec3& target) {
@@ -54,8 +54,8 @@ float calcFocalLength(float fov) {
 }
 
 void Camera::update() {
-    cartesianPosition = calcCartesianPosition(sphericalPosition, target);
-    viewMatrix = calcViewMatrix(cartesianPosition, target, up);
+    worldPosition = calcCartesianPosition(sphericalPosition, target);
+    viewMatrix = calcViewMatrix(worldPosition, target, up);
     // If we only care about the rotation, we can just transpose because rotation matrices are orthonormal
     // rotationMatrix = transpose(mat3(viewMatrix));
     cameraMatrix = inverse(viewMatrix);
