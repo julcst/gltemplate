@@ -42,7 +42,6 @@ void MainApp::init() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    traceOpenGLCalls = false;
 }
 
 void MainApp::render() {
@@ -82,6 +81,8 @@ void MainApp::render() {
     texture.bind(GL_TEXTURE_2D, 0); // Bind texture to texture unit 0
     meshShader.bind(); // Bind shader
     mesh.draw(); // Draw mesh
+
+    traceOpenGLCalls = false; // Disable logging after first frame
 }
 
 /* Catch window events by overriding the callback functions */

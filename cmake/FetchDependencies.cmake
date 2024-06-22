@@ -96,5 +96,4 @@ target_compile_features(imgui_glfw PUBLIC cxx_std_17)
 
 # stb is a header only library, so we need to add it as an interface library
 add_library(stb_impl INTERFACE)
-target_compile_definitions(stb_impl INTERFACE STB_IMAGE_IMPLEMENTATION)
 target_include_directories(stb_impl INTERFACE ${stb_SOURCE_DIR})

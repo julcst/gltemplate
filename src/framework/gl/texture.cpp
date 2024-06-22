@@ -3,7 +3,14 @@
 #include <glbinding/gl/gl.h>
 using namespace gl;
 
+#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#ifndef __STDC_LIB_EXT1__
+#define __STDC_LIB_EXT1__
+#define sprintf_s snprintf
+#endif
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 
 #include <array>
 #include <cassert>
@@ -166,6 +173,47 @@ void Texture::_load(GLenum target, Format format, const std::filesystem::path& f
 
     // Free image data
     stbi_image_free(data);
+}
+
+bool Texture::writeToFile(const std::filesystem::path& filepath) {
+    bind(GL_TEXTURE_2D);
+
+    int width, height;
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+    GLenum internalformat;
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalformat);
+    GLenum baseformat = getBaseFormat(internalformat);
+    int channels;
+    switch (baseformat) {
+        case GL_RED: channels = 1; break;
+        case GL_RG: channels = 2; break;
+        case GL_RGB: channels = 3; break;
+        case GL_RGBA: channels = 4; break;
+        default: assert(false);
+    }
+
+    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
+    stbi_flip_vertically_on_write(true);
+    GLenum type;
+    if (internalformat == GL_RGBA32F || internalformat == GL_RGB32F || internalformat == GL_RG32F || internalformat == GL_R32F) {
+        type = GL_FLOAT;
+        float fData[width * height * 4];
+        glGetTexImage(GL_TEXTURE_2D, 0, baseformat, type, fData);
+
+        return stbi_write_hdr(filepath.c_str(), width, height, channels, fData);
+    } else {
+        type = GL_UNSIGNED_BYTE;
+        u_char data[width * height * 4];
+        glGetTexImage(GL_TEXTURE_2D, 0, baseformat, type, data);
+        
+        auto ext = filepath.extension();
+        if (ext == ".bmp") return stbi_write_bmp(filepath.c_str(), width, height, channels, data);
+        else if (ext == ".tga") return stbi_write_tga(filepath.c_str(), width, height, channels, data);
+        else if (ext == ".jpg" || ext == ".jpeg") return stbi_write_jpg(filepath.c_str(), width, height, channels, data, 95);
+        else if (ext == ".png") return stbi_write_png(filepath.c_str(), width, height, channels, data, width * channels);
+        else return false;
+    }
 }
 
 void Texture::load(Format format, const std::filesystem::path& filepath, GLsizei mipmaps) {

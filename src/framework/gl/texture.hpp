@@ -37,6 +37,7 @@ class Texture {
     static void _load(GLenum target, Format format, const std::filesystem::path& filepath);
     void load(Format format, const std::filesystem::path& filepath, GLsizei mipmaps);
     void loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, GLsizei mipmaps);
+    bool writeToFile(const std::filesystem::path& filepath);
 
     GLuint handle;
 
