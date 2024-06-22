@@ -8,18 +8,25 @@
 #include "gl/buffer.hpp"
 #include "gl/vertexarray.hpp"
 
-const std::vector<float> FULLSCREEN_VERTICES = {
-    -1.0f, -1.0f, 0.0f,
-     3.0f, -1.0f, 0.0f,
-    -1.0f,  3.0f, 0.0f,
-};
-
-const std::vector<unsigned int> FULLSCREEN_INDICES = {
-    0, 1, 2,
-};
-
 class Mesh {
    public:
+
+    /**
+     * Vertices for a fullscreen triangle
+     */
+    inline static const std::vector<float> FULLSCREEN_VERTICES {
+        -1.0f, -1.0f, 0.0f,
+         3.0f, -1.0f, 0.0f,
+        -1.0f,  3.0f, 0.0f,
+    };
+
+    /**
+     * Indices for a fullscreen triangle
+     */
+    inline static const std::vector<unsigned int> FULLSCREEN_INDICES {
+        0, 1, 2,
+    };
+
     /**
      * Vertex with 3 position components, 2 texture coordinate components, 3 normal vector components
      */

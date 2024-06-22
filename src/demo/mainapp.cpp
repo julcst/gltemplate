@@ -23,7 +23,7 @@ using namespace glm;
 MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     App::setVSync(true); // Enable vertical synchronization
     /* The background is rendered using a triangle that spans the whole frame */
-    fullscreenTriangle.load(FULLSCREEN_VERTICES, FULLSCREEN_INDICES);
+    fullscreenTriangle.load(Mesh::FULLSCREEN_VERTICES, Mesh::FULLSCREEN_INDICES);
     backgroundShader.load("shaders/raygen.vert", "shaders/background.frag");
     backgroundShader.bindUBO("WorldBuffer", 0);
     backgroundShader.bindUBO("ObjectBuffer", 1);
