@@ -46,7 +46,7 @@ void Framebuffer::bindDefault(GLenum type) {
     glBindFramebuffer(type, 0);
 }
 
-void Framebuffer::attach(GLenum type, GLenum attachment, Texture texture, GLint level) {
+void Framebuffer::attach(GLenum type, GLenum attachment, const Texture& texture, GLint level) {
     attach(type, attachment, texture.handle, level);
 }
 

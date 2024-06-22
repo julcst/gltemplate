@@ -47,14 +47,18 @@ void Program::load(const std::filesystem::path& vs, const std::filesystem::path&
     link();
 }
 
-void Program::attach(Shader shader) {
-    glAttachShader(handle, shader.handle);
-}
-
-void Program::attach(const std::filesystem::path& filepath, GLenum  type) {
+void Program::attach(const std::filesystem::path& filepath, GLenum type) {
     Shader shader(type);
     shader.load(filepath);
-    glAttachShader(handle, shader.handle);
+    attach(shader);
+}
+
+void Program::attach(const Shader& shader) {
+    attach(shader.handle);
+}
+
+void Program::attach(GLuint shader) {
+    glAttachShader(handle, shader);
 }
 
 void Program::link() {
