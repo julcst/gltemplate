@@ -10,6 +10,7 @@ using namespace gl;
 #include <stdexcept>
 
 #include "framework/common.hpp"
+#include "framework/context.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
 Texture::Texture() {
@@ -132,21 +133,20 @@ void Texture::load(Format format, const std::filesystem::path& filepath, GLsizei
     GLenum type;
     void* data;
 
-    auto rawfile = Common::readFile(filepath);
-
     // Load image from file and read format
+    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
     stbi_set_flip_vertically_on_load(true);
     switch (format) {
         case Format::LINEAR8:
         case Format::SRGB8:
         case Format::NORMAL8:
             type = GL_UNSIGNED_BYTE;
-            data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(rawfile.c_str()), rawfile.size(), &width, &height, &channels, 0);
+            data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
             break;
         case Format::FLOAT16:
         case Format::FLOAT32:
             type = GL_FLOAT;
-            data = stbi_loadf_from_memory(reinterpret_cast<const stbi_uc*>(rawfile.c_str()), rawfile.size(), &width, &height, &channels, 0);
+            data = stbi_loadf(filepath.c_str(), &width, &height, &channels, 0);
             break;
         default: assert(false);
     }
