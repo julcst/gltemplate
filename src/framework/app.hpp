@@ -57,9 +57,10 @@ class App {
    public:
     bool imguiEnabled;
     vec2 resolution;
-    float time;
-    float delta;
-    unsigned int frames;
+    float time = 0.0f;
+    float delta = 0.0f;
+    unsigned int frames = 0;
+    bool verboseLogging;
     vec2 mouse;
     GLFWwindow* window;
 
@@ -71,9 +72,9 @@ class App {
     virtual ~App();
     void run();
     void close();
-    void registerGLLoggingCallback(bool verbose);
     void setTitle(const std::string& title);
     void setVSync(bool vsync);
+    vec2 convertCursorToClipSpace();
 
    protected:
     // To be overriden
@@ -91,4 +92,5 @@ class App {
     void initImGui();
     void initGL();
     void renderImGui();
+    void registerGLLoggingCallback();
 };

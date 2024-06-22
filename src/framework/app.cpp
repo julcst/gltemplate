@@ -23,7 +23,7 @@ using namespace gl;
 using namespace glm;
 
 
-App::App(unsigned int width, unsigned int height) : resolution(width, height), time(0.f), delta(0.f), frames(0), imguiEnabled(true) {
+App::App(unsigned int width, unsigned int height) : resolution(width, height), verboseLogging(false), imguiEnabled(true) {
     initGLFW();
     initImGui();
     initGL();
@@ -113,12 +113,12 @@ void App::initImGui() {
     ImGui_ImplOpenGL3_Init();
 }
 
-void App::registerGLLoggingCallback(bool verbose) {
+void App::registerGLLoggingCallback() {
     glbinding::setCallbackMaskExcept(glbinding::CallbackMask::After | glbinding::CallbackMask::ParametersAndReturnValue, { "glGetError" });
     
-    glbinding::setAfterCallback([verbose](const glbinding::FunctionCall & call) {
+    glbinding::setAfterCallback([&](const glbinding::FunctionCall & call) {
         const auto error = glGetError();
-        if (error == GL_NO_ERROR && !verbose) return;
+        if (error == GL_NO_ERROR && !verboseLogging) return;
         std::ostream &stream = error == GL_NO_ERROR ? std::cout : std::cerr;
         if (error != GL_NO_ERROR) stream << "[Error] ";
 
@@ -149,7 +149,7 @@ void App::initGL() {
         << "OpenGL Vendor:   " << glbinding::aux::ContextInfo::vendor() << std::endl
         << "OpenGL Renderer: " << glbinding::aux::ContextInfo::renderer() << std::endl << std::endl;
     
-    registerGLLoggingCallback(false);
+    registerGLLoggingCallback();
 #endif
 
     glEnable(GL_FRAMEBUFFER_SRGB); // Enables SRGB rendering
@@ -214,4 +214,12 @@ void App::setTitle(const std::string& title) {
 
 void App::setVSync(bool vsync) {
     glfwSwapInterval(vsync ? 1 : 0);
+}
+
+vec2 App::convertCursorToClipSpace() {
+    ivec2 windowSize;
+    glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
+    vec2 cursor = mouse / vec2(windowSize) * 2.0f - 1.0f;
+    cursor.y = -cursor.y;
+    return cursor;
 }
