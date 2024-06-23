@@ -3,6 +3,7 @@
 /* The input from the vertex shader. This has to be the same format as the output from the vertex shader */
 in vec3 viewDir;
 out vec3 fragColor;
+uniform samplerCube tCubemap;
 
 /* We outsource the definition of the uniforms to a separate file to avoid repetition. */
 #include "uniforms.glsl"
@@ -16,5 +17,6 @@ out vec3 fragColor;
 void main() {
     vec3 rayDir = normalize(viewDir); // Renormalize after interpolation
     vec3 sky = exp(-abs(rayDir.y) / vec3(0.1, 0.3, 0.6));
-    fragColor = sky; // Output to screen
+    // fragColor = sky; // Output to screen
+    fragColor = texture(tCubemap, rayDir).rgb;
 }

@@ -240,3 +240,15 @@ void Texture::loadCubemap(Format format, const std::array<std::filesystem::path,
 
     if (mipmaps > 0) glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 }
+
+void Texture::loadCubemap(Format format, const std::filesystem::path& directory, GLsizei mipmaps) {
+    std::array<std::filesystem::path, 6> filepaths = {
+        directory / "px.hdr",
+        directory / "nx.hdr",
+        directory / "py.hdr",
+        directory / "ny.hdr",
+        directory / "pz.hdr",
+        directory / "nz.hdr"
+    };
+    loadCubemap(format, filepaths, mipmaps);
+}

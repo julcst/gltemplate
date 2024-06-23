@@ -27,6 +27,7 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     backgroundShader.load("shaders/raygen.vert", "shaders/background.frag");
     backgroundShader.bindUBO("WorldBuffer", 0);
     backgroundShader.bindUBO("ObjectBuffer", 1);
+    backgroundShader.bindTextureUnit("tCubemap", 1);
 
     mesh.loadWithTangents("meshes/bunny.obj");
     meshShader.load("shaders/projection.vert", "shaders/debug.frag");
@@ -35,6 +36,10 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     meshShader.bindTextureUnit("tDiffuse", 0);
 
     texture.load(Texture::Format::SRGB8, "textures/checker.png", 5);
+    cubemap.loadCubemap(Texture::Format::FLOAT16, "textures/rnl");
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    cubemap.bind(GL_TEXTURE_CUBE_MAP, 1);
 }
 
 void MainApp::init() {

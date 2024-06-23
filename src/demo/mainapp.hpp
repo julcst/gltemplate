@@ -49,6 +49,7 @@ class MainApp : public App {
     Program backgroundShader;
     Mesh mesh;
     Texture texture;
+    Texture cubemap;
     Program meshShader;
     WorldBuffer world;
     ObjectBuffer object;
