@@ -36,7 +36,7 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     meshShader.bindTextureUnit("tDiffuse", 0);
 
     texture.load(Texture::Format::SRGB8, "textures/checker.png", 5);
-    cubemap.loadCubemap(Texture::Format::FLOAT16, "textures/rnl");
+    cubemap.loadCubemap(Texture::Format::FLOAT16, "textures/uffizi");
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     cubemap.bind(GL_TEXTURE_CUBE_MAP, 1);

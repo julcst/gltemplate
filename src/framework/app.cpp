@@ -39,9 +39,13 @@ void App::initGLFW() {
     });
 
     // Window hints
-    // Stuck with OpenGL 4.1 for compatibility with macOS
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+#ifndef MODERN_GL
+    // Stuck with OpenGL 4.1 for compatibility with macOS
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+#else
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+#endif
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE); // Enables SRGB rendering
 #ifdef __APPLE__
@@ -155,10 +159,12 @@ void App::initGL() {
     glEnable(GL_FRAMEBUFFER_SRGB); // Enables SRGB rendering
 
     // Enables better debug output, only supported for OpenGL 4.3+
-    // glEnable(GL_DEBUG_OUTPUT);
-    // glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void*) {
-    //     std::cerr << "[" << source << "] " << type << ": " << message << "(" << severity << ")" << std::endl;
-    // }, 0);
+#ifdef MODERN_GL
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void*) {
+        std::cerr << "[" << source << "] " << type << ": " << message << "(" << severity << ")" << std::endl;
+    }, 0);
+#endif
 }
 
 App::~App() {
