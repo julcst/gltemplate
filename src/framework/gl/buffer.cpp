@@ -8,7 +8,7 @@
 using namespace gl;
 
 /////////////////////// RAII behavior ///////////////////////
-Buffer::Buffer(GLenum type) : type(type) {
+Buffer::Buffer(GLenum target) : target(target) {
 #ifdef MODERN_GL
     glCreateBuffers(1, &handle);
 #else
@@ -17,7 +17,7 @@ Buffer::Buffer(GLenum type) : type(type) {
     assert(handle);
 }
 
-Buffer::Buffer(Buffer&& other) : handle(other.handle), type(other.type) {
+Buffer::Buffer(Buffer&& other) : handle(other.handle), target(other.target) {
     other.handle = 0;
 }
 
@@ -25,7 +25,7 @@ Buffer& Buffer::operator=(Buffer&& other) {
     if (this != &other) {
         release();
         handle = other.handle;
-        type = other.type;
+        target = other.target;
         other.handle = 0;
     }
     return *this;
@@ -41,11 +41,11 @@ void Buffer::release() {
 /////////////////////////////////////////////////////////////
 
 void Buffer::bind() {
-    glBindBuffer(type, handle);
+    glBindBuffer(target, handle);
 }
 
 void Buffer::bind(GLuint index) {
-    glBindBufferBase(type, index, handle);
+    glBindBufferBase(target, index, handle);
 }
 
 void Buffer::_load(GLsizeiptr size, const GLvoid* data, GLenum usage) {
@@ -53,7 +53,7 @@ void Buffer::_load(GLsizeiptr size, const GLvoid* data, GLenum usage) {
     glNamedBufferData(handle, size, data, usage);
 #else
     bind();
-    glBufferData(type, size, data, usage);
+    glBufferData(target, size, data, usage);
 #endif
 }
 
@@ -62,7 +62,7 @@ void Buffer::_set(GLsizeiptr size, const GLvoid* data, GLintptr offset) {
     glNamedBufferSubData(handle, offset, size, data);
 #else
     bind();
-    glBufferSubData(type, offset, size, data);
+    glBufferSubData(target, offset, size, data);
 #endif
 }
 
@@ -71,6 +71,6 @@ void Buffer::allocate(GLsizeiptr size, GLenum usage) {
     glNamedBufferData(handle, size, nullptr, usage);
 #else
     bind();
-    glBufferData(type, size, nullptr, usage);
+    glBufferData(target, size, nullptr, usage);
 #endif
 }

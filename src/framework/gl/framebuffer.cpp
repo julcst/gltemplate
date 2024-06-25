@@ -42,12 +42,12 @@ void Framebuffer::release() {
 }
 /////////////////////////////////////////////////////////////
 
-void Framebuffer::bind(GLenum type) {
-    glBindFramebuffer(type, handle);
+void Framebuffer::bind(GLenum target) {
+    glBindFramebuffer(target, handle);
 }
 
-void Framebuffer::bindDefault(GLenum type) {
-    glBindFramebuffer(type, 0);
+void Framebuffer::bindDefault(GLenum target) {
+    glBindFramebuffer(target, 0);
 }
 
 void Framebuffer::attach(GLenum attachment, const Texture& texture, GLint level) {
@@ -63,12 +63,12 @@ void Framebuffer::attach(GLenum attachment, GLuint texture, GLint level) {
 #endif
 }
 
-bool Framebuffer::checkStatus(GLenum type) {
+bool Framebuffer::checkStatus(GLenum target) {
 #ifdef MODERN_GL
-    GLenum status = glCheckNamedFramebufferStatus(handle, type);
+    GLenum status = glCheckNamedFramebufferStatus(handle, target);
 #else
-    bind(type);
-    GLenum status = glCheckFramebufferStatus(type);
+    bind(target);
+    GLenum status = glCheckFramebufferStatus(target);
 #endif
 
     switch (status) {

@@ -21,16 +21,16 @@ using namespace gl;
 #include "framework/context.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
-Texture::Texture(GLenum type) : type(type) {
+Texture::Texture(GLenum target) : target(target) {
 #ifdef MODERN_GL
-    glCreateTextures(type, 1, &handle);
+    glCreateTextures(target, 1, &handle);
 #else
     glGenTextures(1, &handle);
 #endif
     assert(handle);
 }
 
-Texture::Texture(Texture&& other) : handle(other.handle), type(other.type) {
+Texture::Texture(Texture&& other) : handle(other.handle), target(other.target) {
     other.handle = 0;
 }
 
@@ -38,7 +38,7 @@ Texture& Texture::operator=(Texture&& other) {
     if (this != &other) {
         release();
         handle = other.handle;
-        type = other.type;
+        target = other.target;
         other.handle = 0;
     }
     return *this;
@@ -54,7 +54,7 @@ void Texture::release() {
 /////////////////////////////////////////////////////////////
 
 void Texture::bind() {
-    glBindTexture(type, handle);
+    glBindTexture(target, handle);
 }
 
 void Texture::bindTextureUnit(GLuint index) {
@@ -63,7 +63,7 @@ void Texture::bindTextureUnit(GLuint index) {
     glBindTextureUnit(index, handle);
 #else
     glActiveTexture(GL_TEXTURE0 + index);
-    glBindTexture(type, handle);
+    glBindTexture(target, handle);
 #endif
 }
 
@@ -256,18 +256,18 @@ void Texture::_load3D(GLint zindex, Format format, const std::filesystem::path& 
     glTextureSubImage3D(handle, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
 #else
     bind();
-    glTexSubImage3D(type, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
+    glTexSubImage3D(target, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
 #endif
 }
 
 void Texture::load(Format format, const std::filesystem::path& filepath, bool mipmaps) {
-    _load2D(type, format, filepath);
+    _load2D(target, format, filepath);
 
     // Generate mipmaps
 #ifdef MODERN_GL
     if (mipmaps) glGenerateTextureMipmap(handle);
 #else
-    if (mipmaps) glGenerateMipmap(type);
+    if (mipmaps) glGenerateMipmap(target);
 #endif
 }
 
@@ -298,7 +298,7 @@ void Texture::loadCubemap(Format format, const std::array<std::filesystem::path,
 #ifdef MODERN_GL
     if (mipmaps) glGenerateTextureMipmap(handle);
 #else
-    if (mipmaps) glGenerateMipmap(type);
+    if (mipmaps) glGenerateMipmap(target);
 #endif
 }
 
@@ -324,9 +324,9 @@ bool Texture::writeToFile(const std::filesystem::path& filepath) {
     glGetTextureLevelParameteriv(handle, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat);
 #else
     bind();
-    glGetTexLevelParameteriv(type, 0, GL_TEXTURE_WIDTH, &width);
-    glGetTexLevelParameteriv(type, 0, GL_TEXTURE_HEIGHT, &height);
-    glGetTexLevelParameteriv(type, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat);
+    glGetTexLevelParameteriv(target, 0, GL_TEXTURE_WIDTH, &width);
+    glGetTexLevelParameteriv(target, 0, GL_TEXTURE_HEIGHT, &height);
+    glGetTexLevelParameteriv(target, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat);
 #endif
 
     GLenum baseFormat = getBaseFormat(internalFormat);
@@ -342,7 +342,7 @@ bool Texture::writeToFile(const std::filesystem::path& filepath) {
     #ifdef MODERN_GL
         glGetTextureImage(handle, 0, baseFormat, dataType, sizeof(floatData), floatData);
     #else
-        glGetTexImage(GL_TEXTURE_2D, 0, baseFormat, dataType, floatData);
+        glGetTexImage(target, 0, baseFormat, dataType, floatData);
     #endif
 
         return stbi_write_hdr(filepath.c_str(), width, height, channels, floatData);
@@ -352,7 +352,7 @@ bool Texture::writeToFile(const std::filesystem::path& filepath) {
     #ifdef MODERN_GL
         glGetTextureImage(handle, 0, baseFormat, dataType, sizeof(byteData), byteData);
     #else
-        glGetTexImage(GL_TEXTURE_2D, 0, baseFormat, dataType, byteData);
+        glGetTexImage(target, 0, baseFormat, dataType, byteData);
     #endif
         
         auto ext = filepath.extension();
@@ -369,7 +369,7 @@ void Texture::set(GLenum parameter, GLint value) {
     glTextureParameteri(handle, parameter, value);
 #else
     bind();
-    glTexParameteri(type, parameter, value);
+    glTexParameteri(target, parameter, value);
 #endif
 }
 
@@ -379,7 +379,7 @@ int Texture::get(GLenum parameter, GLint level) {
     glGetTextureLevelParameteriv(handle, level, parameter, &value);
 #else
     bind();
-    glGetTexLevelParameteriv(type, level, parameter, &value);
+    glGetTexLevelParameteriv(target, level, parameter, &value);
 #endif
     return value;
 }

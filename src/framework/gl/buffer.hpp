@@ -11,7 +11,7 @@ using namespace gl;
 class Buffer {
    public:
     
-    Buffer(GLenum type);
+    Buffer(GLenum target);
     // Disable copying
     Buffer(const Buffer&) = delete;
     Buffer& operator=(const Buffer&) = delete;
@@ -37,7 +37,7 @@ class Buffer {
     void allocate(GLsizeiptr size, GLenum usage = GL_STATIC_DRAW);
 
     GLuint handle;
-    GLenum type;
+    GLenum target;
 
    private:
     void release();

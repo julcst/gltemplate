@@ -24,7 +24,7 @@ class Texture {
         DEPTH32F_STENCIL8,  // 32-bit floating point depth, 8-bit stencil
     };
 
-    Texture(GLenum type);
+    Texture(GLenum target);
     // Disable copying
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;
@@ -44,7 +44,7 @@ class Texture {
     int get(GLenum parameter, GLint level);
 
     GLuint handle;
-    GLenum type;
+    GLenum target;
 
    private:
     void release();

@@ -34,12 +34,12 @@ void Query::release() {
 }
 /////////////////////////////////////////////////////////////
 
-void Query::begin(GLenum type) {
-    glBeginQuery(type, handle);
+void Query::begin(GLenum target) {
+    glBeginQuery(target, handle);
 }
 
-GLuint Query::end(GLenum type) {
-    glEndQuery(type);
+GLuint Query::end(GLenum target) {
+    glEndQuery(target);
     GLuint result;
     glGetQueryObjectuiv(handle, GL_QUERY_RESULT, &result);
     return result;

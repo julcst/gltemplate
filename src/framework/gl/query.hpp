@@ -18,8 +18,8 @@ class Query {
     Query(Query&& other);
     Query& operator=(Query&& other);
     ~Query();
-    void begin(GLenum type);
-    GLuint end(GLenum type);
+    void begin(GLenum target);
+    GLuint end(GLenum target);
 
     GLuint handle;
 
