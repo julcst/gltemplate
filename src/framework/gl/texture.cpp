@@ -186,7 +186,6 @@ void Texture::_load2D(GLenum target, Format format, const std::filesystem::path&
 
     // Load image from file and read format
     Context::setWorkingDirectory(); // Ensure the working directory is set correctly
-    stbi_set_flip_vertically_on_load(true);
     switch (format) {
         case Format::LINEAR8:
         case Format::SRGB8:
@@ -213,10 +212,8 @@ void Texture::_load2D(GLenum target, Format format, const std::filesystem::path&
     // glTexStorage2D(GL_TEXTURE_2D, levels, internalFormat, width, height);
     // glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, baseFormat, dataType, data);
     // Note: On OpenGL 4.5+ one would use the DSA versions glTextureStorage2D and glTextureSubImage2D
-    glTextureStorage2D(handle, 1, internalFormat, width, height);
     glTextureSubImage2D(handle, 0, 0, 0, width, height, baseFormat, dataType, data);
 #else
-    bind();
     glTexImage2D(target, 0, internalFormat, width, height, 0, baseFormat, dataType, data);
 #endif
     // Free image data
@@ -230,7 +227,6 @@ void Texture::_load3D(GLint zindex, Format format, const std::filesystem::path& 
 
     // Load image from file and read format
     Context::setWorkingDirectory(); // Ensure the working directory is set correctly
-    stbi_set_flip_vertically_on_load(true);
     switch (format) {
         case Format::LINEAR8:
         case Format::SRGB8:
@@ -255,12 +251,25 @@ void Texture::_load3D(GLint zindex, Format format, const std::filesystem::path& 
 #ifdef MODERN_GL
     glTextureSubImage3D(handle, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
 #else
-    bind();
     glTexSubImage3D(target, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
 #endif
 }
 
-void Texture::load(Format format, const std::filesystem::path& filepath, bool mipmaps) {
+void Texture::load(Format format, const std::filesystem::path& filepath, GLint mipmaps) {
+    stbi_set_flip_vertically_on_load(true); // OpenGL expects the origin to be at the bottom left
+
+#ifdef MODERN_GL
+    GLsizei width, height, channels;
+    if (!stbi_info(filepath.c_str(), &width, &height, &channels))
+        throw std::runtime_error("Failed to parse image " + filepath.native() + ": " + stbi_failure_reason());
+    GLenum internalFormat = getInternalFormat(format, channels);
+    glTextureStorage2D(handle, mipmaps + 1, internalFormat, width, height);
+#else
+    bind();
+    glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, mipmaps); // Must be set to avoid crashes on some drivers
+#endif
+
     _load2D(target, format, filepath);
 
     // Generate mipmaps
@@ -271,21 +280,32 @@ void Texture::load(Format format, const std::filesystem::path& filepath, bool mi
 #endif
 }
 
-void Texture::loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, bool mipmaps) {
+void Texture::loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, GLint mipmaps) {
     // For seamless cubemaps, call glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS)
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    stbi_set_flip_vertically_on_load(false); // Do not flip cubemap faces
 
 #ifdef MODERN_GL
+    // Should always be set for cubemaps, see https://www.khronos.org/opengl/wiki_opengl/index.php?title=Common_Mistakes&section=14#Creating_a_Cubemap_Texture
+    glTextureParameteri(handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTextureParameteri(handle, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     GLsizei width, height, channels;
-    if (!stbi_info(filepaths[0].c_str(), &width, &height, &channels)) {
+    if (!stbi_info(filepaths[0].c_str(), &width, &height, &channels))
         throw std::runtime_error("Failed to parse image " + filepaths[0].native() + ": " + stbi_failure_reason());
-    }
     GLenum internalFormat = getInternalFormat(format, channels);
-    glTextureStorage2D(handle, 1, internalFormat, width, height);
+    glTextureStorage2D(handle, mipmaps + 1, internalFormat, width, height);
     for (int i = 0; i < 6; i++) {
         _load3D(i, format, filepaths[i]);
     }
 #else
+    bind();
+    // Should always be set for cubemaps, see https://www.khronos.org/opengl/wiki_opengl/index.php?title=Common_Mistakes&section=14#Creating_a_Cubemap_Texture
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, mipmaps); // Must be set to avoid crashes on some drivers
     _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, format, filepaths[0]);
     _load2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, format, filepaths[1]);
     _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, format, filepaths[2]);
@@ -302,7 +322,7 @@ void Texture::loadCubemap(Format format, const std::array<std::filesystem::path,
 #endif
 }
 
-void Texture::loadCubemap(Format format, const std::filesystem::path& directory, bool mipmaps) {
+void Texture::loadCubemap(Format format, const std::filesystem::path& directory, GLint mipmaps) {
     std::array<std::filesystem::path, 6> filepaths = {
         directory / "px.hdr",
         directory / "nx.hdr",
@@ -364,6 +384,15 @@ bool Texture::writeToFile(const std::filesystem::path& filepath) {
     } else return false;
 }
 
+void Texture::set(GLenum parameter, GLenum value) {
+#ifdef MODERN_GL
+    glTextureParameteri(handle, parameter, value);
+#else
+    bind();
+    glTexParameteri(target, parameter, value);
+#endif
+}
+
 void Texture::set(GLenum parameter, GLint value) {
 #ifdef MODERN_GL
     glTextureParameteri(handle, parameter, value);
@@ -373,7 +402,7 @@ void Texture::set(GLenum parameter, GLint value) {
 #endif
 }
 
-int Texture::get(GLenum parameter, GLint level) {
+GLint Texture::get(GLenum parameter, GLint level) {
     GLint value;
 #ifdef MODERN_GL
     glGetTextureLevelParameteriv(handle, level, parameter, &value);

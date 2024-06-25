@@ -196,7 +196,7 @@ void App::run() {
         time = current;
         render();
         if (imguiEnabled) renderImGui();
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window); // Double Buffering
         frames++;
     }
 }

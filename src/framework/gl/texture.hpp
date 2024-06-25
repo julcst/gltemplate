@@ -36,12 +36,18 @@ class Texture {
     void bindTextureUnit(GLuint index);
     void _load2D(GLenum target, Format format, const std::filesystem::path& filepath);
     void _load3D(GLint zindex, Format format, const std::filesystem::path& filepath);
-    void load(Format format, const std::filesystem::path& filepath, bool generateMipmaps = false);
-    void loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, bool generateMipmaps = false);
-    void loadCubemap(Format format, const std::filesystem::path& directory, bool generateMipmaps = false);
+    void load(Format format, const std::filesystem::path& filepath, GLint mipmaps = 1);
+    void loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, GLint mipmaps = 1);
+    /**
+     * Loads a cubemap from a directory containing 6 images, px.hdr, nx.hdr, py.hdr, ny.hdr, pz.hdr, nz.hdr
+     * Such cubemaps can be generated for example with this tool https://matheowis.github.io/HDRI-to-CubeMap/ (choose .hdr and last export option)
+     * You can find free cubemaps at https://hdri-haven.com
+     */
+    void loadCubemap(Format format, const std::filesystem::path& directory, GLint mipmaps = 1);
     bool writeToFile(const std::filesystem::path& filepath);
+    void set(GLenum parameter, GLenum value);
     void set(GLenum parameter, GLint value);
-    int get(GLenum parameter, GLint level);
+    GLint get(GLenum parameter, GLint level);
 
     GLuint handle;
     GLenum target;

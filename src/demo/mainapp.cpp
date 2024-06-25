@@ -27,7 +27,7 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     backgroundShader.load("shaders/raygen.vert", "shaders/background.frag");
     backgroundShader.bindUBO("WorldBuffer", 0);
     backgroundShader.bindUBO("ObjectBuffer", 1);
-    backgroundShader.bindTextureUnit("tCubemap", 1);
+    backgroundShader.bindTextureUnit("tCubemap", 0);
 
     mesh.loadWithTangents("meshes/bunny.obj");
     meshShader.load("shaders/projection.vert", "shaders/debug.frag");
@@ -35,17 +35,16 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     meshShader.bindUBO("ObjectBuffer", 1);
     meshShader.bindTextureUnit("tDiffuse", 0);
 
-    texture.load(Texture::Format::SRGB8, "textures/checker.png");
+    traceOpenGLCalls = true; // Enable OpenGL call tracing
+
+    texture.load(Texture::Format::SRGB8, "textures/checkerbw.png");
     texture.bindTextureUnit(0);
 
-    cubemap.loadCubemap(Texture::Format::FLOAT16, "textures/uffizi");
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    cubemap.bindTextureUnit(1);
+    cubemap.loadCubemap(Texture::Format::FLOAT32, "textures/studio");
+    cubemap.bindTextureUnit(0);
 }
 
 void MainApp::init() {
-    traceOpenGLCalls = true; // Log all OpenGL calls
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -87,8 +86,7 @@ void MainApp::render() {
     glDepthMask(GL_TRUE); // Enable writing to the depth buffer
     meshShader.use(); // Bind shader
     mesh.draw(); // Draw mesh
-
-    traceOpenGLCalls = false; // Disable logging after first frame
+    traceOpenGLCalls = false; // Disable OpenGL call tracing
 }
 
 /* Catch window events by overriding the callback functions */
