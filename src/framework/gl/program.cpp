@@ -72,7 +72,7 @@ void Program::link() {
     }
 }
 
-void Program::bind() {
+void Program::use() {
     glUseProgram(handle);
 }
 

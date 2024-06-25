@@ -12,7 +12,11 @@ using namespace gl;
 
 /////////////////////// RAII behavior ///////////////////////
 Framebuffer::Framebuffer() {
+#ifdef MODERN_GL
+    glCreateFramebuffers(1, &handle);
+#else
     glGenFramebuffers(1, &handle);
+#endif
     assert(handle);
 }
 
@@ -46,18 +50,27 @@ void Framebuffer::bindDefault(GLenum type) {
     glBindFramebuffer(type, 0);
 }
 
-void Framebuffer::attach(GLenum type, GLenum attachment, const Texture& texture, GLint level) {
-    attach(type, attachment, texture.handle, level);
+void Framebuffer::attach(GLenum attachment, const Texture& texture, GLint level) {
+    attach(attachment, texture.handle, level);
 }
 
-void Framebuffer::attach(GLenum type, GLenum attachment, GLuint texture, GLint level) {
-    bind(type);
-    glFramebufferTexture(type, attachment, texture, level);
+void Framebuffer::attach(GLenum attachment, GLuint texture, GLint level) {
+#ifdef MODERN_GL
+    glNamedFramebufferTexture(handle, attachment, texture, level);
+#else
+    bind(GL_DRAW_FRAMEBUFFER);
+    glFramebufferTexture(GL_DRAW_FRAMEBUFFER, attachment, texture, level);
+#endif
 }
 
 bool Framebuffer::checkStatus(GLenum type) {
+#ifdef MODERN_GL
+    GLenum status = glCheckNamedFramebufferStatus(handle, type);
+#else
     bind(type);
     GLenum status = glCheckFramebufferStatus(type);
+#endif
+
     switch (status) {
         case GL_FRAMEBUFFER_COMPLETE:
             return true;

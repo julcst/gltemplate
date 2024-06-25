@@ -21,12 +21,16 @@ using namespace gl;
 #include "framework/context.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
-Texture::Texture() {
+Texture::Texture(GLenum type) : type(type) {
+#ifdef MODERN_GL
+    glCreateTextures(type, 1, &handle);
+#else
     glGenTextures(1, &handle);
+#endif
     assert(handle);
 }
 
-Texture::Texture(Texture&& other) : handle(other.handle) {
+Texture::Texture(Texture&& other) : handle(other.handle), type(other.type) {
     other.handle = 0;
 }
 
@@ -34,6 +38,7 @@ Texture& Texture::operator=(Texture&& other) {
     if (this != &other) {
         release();
         handle = other.handle;
+        type = other.type;
         other.handle = 0;
     }
     return *this;
@@ -48,14 +53,18 @@ void Texture::release() {
 }
 /////////////////////////////////////////////////////////////
 
-void Texture::bind(GLenum type) {
+void Texture::bind() {
     glBindTexture(type, handle);
 }
 
-void Texture::bind(GLenum type, GLuint index) {
+void Texture::bindTextureUnit(GLuint index) {
+#ifdef MODERN_GL
     // On OpenGL 4.5+ one would use the DSA version glBindTextureUnit
+    glBindTextureUnit(index, handle);
+#else
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(type, handle);
+#endif
 }
 
 GLenum getInternalFormat(Texture::Format format, int channels) {
@@ -105,8 +114,8 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
     return GL_NONE;
 }
 
-GLenum getBaseFormat(GLenum internalformat) {
-    switch (internalformat) {
+GLenum getBaseFormat(GLenum internalFormat) {
+    switch (internalFormat) {
         case GL_R8:
         case GL_R16F:
         case GL_R32F:
@@ -129,6 +138,8 @@ GLenum getBaseFormat(GLenum internalformat) {
         case GL_RGBA8_SNORM:
         case GL_SRGB8_ALPHA8:
             return GL_RGBA;
+        case GL_DEPTH_COMPONENT32F:
+            return GL_DEPTH_COMPONENT;
         case GL_DEPTH32F_STENCIL8:
             return GL_DEPTH_STENCIL;
         default: assert(false);
@@ -136,9 +147,41 @@ GLenum getBaseFormat(GLenum internalformat) {
     return GL_NONE;
 }
 
-void Texture::_load(GLenum target, Format format, const std::filesystem::path& filepath) {
-    int width, height, channels;
-    GLenum type;
+/** See: https://gist.github.com/Kos/4739337 */
+GLenum getType(GLenum internalFormat) {
+    switch (internalFormat) {
+        case GL_R8:
+        case GL_RG8:
+        case GL_RGB8:
+        case GL_RGBA8:
+        case GL_R8_SNORM:
+        case GL_RG8_SNORM:
+        case GL_RGB8_SNORM:
+        case GL_RGBA8_SNORM:
+        case GL_SRGB8:
+        case GL_SRGB8_ALPHA8:
+            return GL_UNSIGNED_BYTE;
+        case GL_R16F:
+        case GL_RG16F:
+        case GL_RGB16F:
+        case GL_RGBA16F:
+        case GL_R32F:
+        case GL_RG32F:
+        case GL_RGB32F:
+        case GL_RGBA32F:
+        case GL_DEPTH_COMPONENT32F:
+            return GL_FLOAT;
+        case GL_DEPTH32F_STENCIL8:
+            return GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
+        default: assert(false);
+    }
+    return GL_NONE;
+
+}
+
+void Texture::_load2D(GLenum target, Format format, const std::filesystem::path& filepath) {
+    GLsizei width, height, channels;
+    GLenum dataType;
     void* data;
 
     // Load image from file and read format
@@ -148,12 +191,12 @@ void Texture::_load(GLenum target, Format format, const std::filesystem::path& f
         case Format::LINEAR8:
         case Format::SRGB8:
         case Format::NORMAL8:
-            type = GL_UNSIGNED_BYTE;
+            dataType = GL_UNSIGNED_BYTE;
             data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
             break;
         case Format::FLOAT16:
         case Format::FLOAT32:
-            type = GL_FLOAT;
+            dataType = GL_FLOAT;
             data = stbi_loadf(filepath.c_str(), &width, &height, &channels, 0);
             break;
         default: assert(false);
@@ -161,87 +204,105 @@ void Texture::_load(GLenum target, Format format, const std::filesystem::path& f
 
     if (!data) throw std::runtime_error("Failed to parse image " + filepath.native() + ": " + stbi_failure_reason());
 
-    GLenum internalformat = getInternalFormat(format, channels);
-    GLenum baseformat = getBaseFormat(internalformat);
+    GLenum internalFormat = getInternalFormat(format, channels);
+    GLenum baseFormat = getBaseFormat(internalFormat);
 
     // Upload texture data
+#ifdef MODERN_GL
     // This would be the immutable version:
+    // glTexStorage2D(GL_TEXTURE_2D, levels, internalFormat, width, height);
+    // glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, baseFormat, dataType, data);
     // Note: On OpenGL 4.5+ one would use the DSA versions glTextureStorage2D and glTextureSubImage2D
-    // glTexStorage2D(GL_TEXTURE_2D, mipmaps, internalformat, width, height);
-    // glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, baseformat, type, data);
-    glTexImage2D(target, 0, internalformat, width, height, 0, baseformat, type, data);
-
+    glTextureStorage2D(handle, 1, internalFormat, width, height);
+    glTextureSubImage2D(handle, 0, 0, 0, width, height, baseFormat, dataType, data);
+#else
+    bind();
+    glTexImage2D(target, 0, internalFormat, width, height, 0, baseFormat, dataType, data);
+#endif
     // Free image data
     stbi_image_free(data);
 }
 
-bool Texture::writeToFile(const std::filesystem::path& filepath) {
-    bind(GL_TEXTURE_2D);
+void Texture::_load3D(GLint zindex, Format format, const std::filesystem::path& filepath) {
+    GLsizei width, height, channels;
+    GLenum dataType;
+    void* data;
 
-    int width, height;
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
-    GLenum internalformat;
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalformat);
-    GLenum baseformat = getBaseFormat(internalformat);
-    int channels;
-    switch (baseformat) {
-        case GL_RED: channels = 1; break;
-        case GL_RG: channels = 2; break;
-        case GL_RGB: channels = 3; break;
-        case GL_RGBA: channels = 4; break;
+    // Load image from file and read format
+    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
+    stbi_set_flip_vertically_on_load(true);
+    switch (format) {
+        case Format::LINEAR8:
+        case Format::SRGB8:
+        case Format::NORMAL8:
+            dataType = GL_UNSIGNED_BYTE;
+            data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+            break;
+        case Format::FLOAT16:
+        case Format::FLOAT32:
+            dataType = GL_FLOAT;
+            data = stbi_loadf(filepath.c_str(), &width, &height, &channels, 0);
+            break;
         default: assert(false);
     }
 
-    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
-    stbi_flip_vertically_on_write(true);
-    GLenum type;
-    if (internalformat == GL_RGBA32F || internalformat == GL_RGB32F || internalformat == GL_RG32F || internalformat == GL_R32F) {
-        type = GL_FLOAT;
-        float fData[width * height * 4];
-        glGetTexImage(GL_TEXTURE_2D, 0, baseformat, type, fData);
+    if (!data) throw std::runtime_error("Failed to parse image " + filepath.native() + ": " + stbi_failure_reason());
 
-        return stbi_write_hdr(filepath.c_str(), width, height, channels, fData);
-    } else {
-        type = GL_UNSIGNED_BYTE;
-        u_char data[width * height * 4];
-        glGetTexImage(GL_TEXTURE_2D, 0, baseformat, type, data);
-        
-        auto ext = filepath.extension();
-        if (ext == ".bmp") return stbi_write_bmp(filepath.c_str(), width, height, channels, data);
-        else if (ext == ".tga") return stbi_write_tga(filepath.c_str(), width, height, channels, data);
-        else if (ext == ".jpg" || ext == ".jpeg") return stbi_write_jpg(filepath.c_str(), width, height, channels, data, 95);
-        else if (ext == ".png") return stbi_write_png(filepath.c_str(), width, height, channels, data, width * channels);
-        else return false;
-    }
+    GLenum internalFormat = getInternalFormat(format, channels);
+    GLenum baseFormat = getBaseFormat(internalFormat);
+
+    // Upload texture data
+#ifdef MODERN_GL
+    glTextureSubImage3D(handle, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
+#else
+    bind();
+    glTexSubImage3D(type, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
+#endif
 }
 
-void Texture::load(Format format, const std::filesystem::path& filepath, GLsizei mipmaps) {
-    bind(GL_TEXTURE_2D);
-    
-    _load(GL_TEXTURE_2D, format, filepath);
+void Texture::load(Format format, const std::filesystem::path& filepath, bool mipmaps) {
+    _load2D(type, format, filepath);
 
     // Generate mipmaps
-    if (mipmaps > 0) glGenerateMipmap(GL_TEXTURE_2D);
+#ifdef MODERN_GL
+    if (mipmaps) glGenerateTextureMipmap(handle);
+#else
+    if (mipmaps) glGenerateMipmap(type);
+#endif
 }
 
-void Texture::loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, GLsizei mipmaps) {
+void Texture::loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, bool mipmaps) {
     // For seamless cubemaps, call glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS)
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-    bind(GL_TEXTURE_CUBE_MAP);
+#ifdef MODERN_GL
+    GLsizei width, height, channels;
+    if (!stbi_info(filepaths[0].c_str(), &width, &height, &channels)) {
+        throw std::runtime_error("Failed to parse image " + filepaths[0].native() + ": " + stbi_failure_reason());
+    }
+    GLenum internalFormat = getInternalFormat(format, channels);
+    glTextureStorage2D(handle, 1, internalFormat, width, height);
+    for (int i = 0; i < 6; i++) {
+        _load3D(i, format, filepaths[i]);
+    }
+#else
+    _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, format, filepaths[0]);
+    _load2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, format, filepaths[1]);
+    _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, format, filepaths[2]);
+    _load2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, format, filepaths[3]);
+    _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, format, filepaths[4]);
+    _load2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, format, filepaths[5]);
+#endif
 
-    _load(GL_TEXTURE_CUBE_MAP_POSITIVE_X, format, filepaths[0]);
-    _load(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, format, filepaths[1]);
-    _load(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, format, filepaths[2]);
-    _load(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, format, filepaths[3]);
-    _load(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, format, filepaths[4]);
-    _load(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, format, filepaths[5]);
-
-    if (mipmaps > 0) glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    // Generate mipmaps
+#ifdef MODERN_GL
+    if (mipmaps) glGenerateTextureMipmap(handle);
+#else
+    if (mipmaps) glGenerateMipmap(type);
+#endif
 }
 
-void Texture::loadCubemap(Format format, const std::filesystem::path& directory, GLsizei mipmaps) {
+void Texture::loadCubemap(Format format, const std::filesystem::path& directory, bool mipmaps) {
     std::array<std::filesystem::path, 6> filepaths = {
         directory / "px.hdr",
         directory / "nx.hdr",
@@ -251,4 +312,74 @@ void Texture::loadCubemap(Format format, const std::filesystem::path& directory,
         directory / "nz.hdr"
     };
     loadCubemap(format, filepaths, mipmaps);
+}
+
+bool Texture::writeToFile(const std::filesystem::path& filepath) {
+    int width, height;
+    GLenum internalFormat;
+
+#ifdef MODERN_GL
+    glGetTextureLevelParameteriv(handle, 0, GL_TEXTURE_WIDTH, &width);
+    glGetTextureLevelParameteriv(handle, 0, GL_TEXTURE_HEIGHT, &height);
+    glGetTextureLevelParameteriv(handle, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat);
+#else
+    bind();
+    glGetTexLevelParameteriv(type, 0, GL_TEXTURE_WIDTH, &width);
+    glGetTexLevelParameteriv(type, 0, GL_TEXTURE_HEIGHT, &height);
+    glGetTexLevelParameteriv(type, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat);
+#endif
+
+    GLenum baseFormat = getBaseFormat(internalFormat);
+    GLenum dataType = getType(internalFormat);
+    int channels = 4; // glTexImage2D always returns 4 channels
+
+    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
+    stbi_flip_vertically_on_write(true);
+
+    if (dataType == GL_FLOAT) {
+        float floatData[width * height * channels];
+
+    #ifdef MODERN_GL
+        glGetTextureImage(handle, 0, baseFormat, dataType, sizeof(floatData), floatData);
+    #else
+        glGetTexImage(GL_TEXTURE_2D, 0, baseFormat, dataType, floatData);
+    #endif
+
+        return stbi_write_hdr(filepath.c_str(), width, height, channels, floatData);
+    } else if (dataType == GL_UNSIGNED_BYTE) {
+        u_char byteData[width * height * channels];
+
+    #ifdef MODERN_GL
+        glGetTextureImage(handle, 0, baseFormat, dataType, sizeof(byteData), byteData);
+    #else
+        glGetTexImage(GL_TEXTURE_2D, 0, baseFormat, dataType, byteData);
+    #endif
+        
+        auto ext = filepath.extension();
+        if (ext == ".bmp") return stbi_write_bmp(filepath.c_str(), width, height, channels, byteData);
+        else if (ext == ".tga") return stbi_write_tga(filepath.c_str(), width, height, channels, byteData);
+        else if (ext == ".jpg" || ext == ".jpeg") return stbi_write_jpg(filepath.c_str(), width, height, channels, byteData, 95);
+        else if (ext == ".png") return stbi_write_png(filepath.c_str(), width, height, channels, byteData, width * channels);
+        else return false;
+    } else return false;
+}
+
+void Texture::set(GLenum parameter, GLint value) {
+#ifdef MODERN_GL
+    glTextureParameteri(handle, parameter, value);
+#else
+    bind();
+    glTexParameteri(type, parameter, value);
+#endif
+}
+
+int Texture::get(GLenum parameter, GLint level) {
+    GLint value;
+#ifdef MODERN_GL
+    glGetTextureLevelParameteriv(handle, level, parameter, &value);
+#else
+    bind();
+    glGetTexLevelParameteriv(type, level, parameter, &value);
+#endif
+    return value;
 }

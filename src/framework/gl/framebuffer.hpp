@@ -21,8 +21,8 @@ class Framebuffer {
     ~Framebuffer();
     void bind(GLenum type = GL_FRAMEBUFFER);
     static void bindDefault(GLenum type = GL_FRAMEBUFFER);
-    void attach(GLenum type, GLenum attachment, const Texture& texture, GLint level = 0);
-    void attach(GLenum type, GLenum attachment, GLuint texture, GLint level = 0);
+    void attach(GLenum attachment, const Texture& texture, GLint level = 0);
+    void attach(GLenum attachment, GLuint texture, GLint level = 0);
     bool checkStatus(GLenum type = GL_FRAMEBUFFER);
 
     GLuint handle;

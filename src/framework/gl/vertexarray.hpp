@@ -17,7 +17,6 @@ class VertexArray {
     VertexArray& operator=(VertexArray&& other);
     ~VertexArray();
     void bind();
-    void unbind();
 
     GLuint handle;
 

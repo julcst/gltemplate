@@ -24,7 +24,7 @@ class Texture {
         DEPTH32F_STENCIL8,  // 32-bit floating point depth, 8-bit stencil
     };
 
-    Texture();
+    Texture(GLenum type);
     // Disable copying
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;
@@ -32,15 +32,19 @@ class Texture {
     Texture(Texture&& other);
     Texture& operator=(Texture&& other);
     ~Texture();
-    void bind(GLenum type);
-    void bind(GLenum type, GLuint index);
-    static void _load(GLenum target, Format format, const std::filesystem::path& filepath);
-    void load(Format format, const std::filesystem::path& filepath, GLsizei mipmaps = 0);
-    void loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, GLsizei mipmaps = 0);
-    void loadCubemap(Format format, const std::filesystem::path& directory, GLsizei mipmaps = 0);
+    void bind();
+    void bindTextureUnit(GLuint index);
+    void _load2D(GLenum target, Format format, const std::filesystem::path& filepath);
+    void _load3D(GLint zindex, Format format, const std::filesystem::path& filepath);
+    void load(Format format, const std::filesystem::path& filepath, bool mipmaps = false);
+    void loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, bool mipmaps = false);
+    void loadCubemap(Format format, const std::filesystem::path& directory, bool mipmaps = false);
     bool writeToFile(const std::filesystem::path& filepath);
+    void set(GLenum parameter, GLint value);
+    int get(GLenum parameter, GLint level);
 
     GLuint handle;
+    GLenum type;
 
    private:
     void release();

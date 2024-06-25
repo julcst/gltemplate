@@ -28,17 +28,17 @@ class Program {
     void attach(const Shader& shader);
     void attach(GLuint shader);
     void link();
-    void bind();
+    void use();
     GLuint uniform(const std::string& name);
     void bindUBO(const std::string& loc, GLuint index);
     void bindTextureUnit(const std::string& loc, GLint index);
 
     // Uniform setters with location
-    void set(GLuint loc, GLint value);
+    void set(GLuint loc, const GLint value);
     void set(GLuint loc, const std::vector<GLint>& values);
-    void set(GLuint loc, GLuint value);
+    void set(GLuint loc, const GLuint value);
     void set(GLuint loc, const std::vector<GLuint>& values);
-    void set(GLuint loc, GLfloat value);
+    void set(GLuint loc, const GLfloat value);
     void set(GLuint loc, const std::vector<GLfloat>& values);
     void set(GLuint loc, const glm::ivec2& value);
     void set(GLuint loc, const std::vector<glm::ivec2>& values);

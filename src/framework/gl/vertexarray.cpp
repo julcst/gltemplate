@@ -7,7 +7,11 @@ using namespace gl;
 
 /////////////////////// RAII behavior ///////////////////////
 VertexArray::VertexArray() {
+#ifdef MODERN_GL
+    glCreateVertexArrays(1, &handle);
+#else
     glGenVertexArrays(1, &handle);
+#endif
     assert(handle);
 }
 
@@ -35,8 +39,4 @@ void VertexArray::release() {
 
 void VertexArray::bind() {
     glBindVertexArray(handle);
-}
-
-void VertexArray::unbind() {
-    glBindVertexArray(0);
 }

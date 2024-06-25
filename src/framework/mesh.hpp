@@ -1,5 +1,8 @@
 #pragma once
 
+#include <glbinding/gl/gl.h>
+using namespace gl;
+
 #include <glm/glm.hpp>
 
 #include <filesystem>
@@ -56,6 +59,6 @@ class Mesh {
     
     unsigned int numIndices = 0;
     VertexArray vao;
-    Buffer vbo;
-    Buffer ebo;
+    Buffer vbo{GL_ARRAY_BUFFER};
+    Buffer ebo{GL_ELEMENT_ARRAY_BUFFER};
 };

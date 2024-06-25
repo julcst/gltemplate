@@ -36,10 +36,12 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     meshShader.bindTextureUnit("tDiffuse", 0);
 
     texture.load(Texture::Format::SRGB8, "textures/checker.png", 5);
+    texture.bindTextureUnit(0);
+
     cubemap.loadCubemap(Texture::Format::FLOAT16, "textures/uffizi");
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    cubemap.bind(GL_TEXTURE_CUBE_MAP, 1);
+    cubemap.bindTextureUnit(1);
 }
 
 void MainApp::init() {
@@ -68,7 +70,7 @@ void MainApp::render() {
 
     /* Render procedural sky in the background */
     glDepthMask(GL_FALSE); // Disable writing to the depth buffer
-    backgroundShader.bind(); // Bind shader
+    backgroundShader.use(); // Bind shader
     fullscreenTriangle.draw(); // Draw fullscreen
 
     /* Calculate object transformation */
@@ -83,8 +85,7 @@ void MainApp::render() {
 
     /* Render mesh with texture in the foreground */
     glDepthMask(GL_TRUE); // Enable writing to the depth buffer
-    texture.bind(GL_TEXTURE_2D, 0); // Bind texture to texture unit 0
-    meshShader.bind(); // Bind shader
+    meshShader.use(); // Bind shader
     mesh.draw(); // Draw mesh
 
     traceOpenGLCalls = false; // Disable logging after first frame

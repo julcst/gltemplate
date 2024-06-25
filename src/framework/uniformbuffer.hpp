@@ -13,17 +13,17 @@ class UniformBuffer {
 };
 
 template <typename T>
-UniformBuffer<T>::UniformBuffer(unsigned int index, const T& uniforms) : buffer() {
-    buffer.bind(GL_UNIFORM_BUFFER, index);
-    buffer.load(GL_UNIFORM_BUFFER, uniforms);
+UniformBuffer<T>::UniformBuffer(unsigned int index, const T& uniforms) : buffer(GL_UNIFORM_BUFFER) {
+    buffer.bind(index);
+    buffer.load(uniforms);
 }
 
 template <typename T>
 void UniformBuffer<T>::upload(const T& uniforms) {
-    buffer.set(GL_UNIFORM_BUFFER, uniforms);
+    buffer.set(uniforms);
 }
 
 template <typename T>
 void UniformBuffer<T>::bind(unsigned int index) {
-    buffer.bind(GL_UNIFORM_BUFFER, index);
+    buffer.bind(index);
 }
