@@ -40,6 +40,10 @@ target_include_directories(framework
         ${CMAKE_CURRENT_BINARY_DIR}/..
         ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
+# Enables OpenGL 4.6 when not on macOS, else falls back to 4.1
+if(NOT APPLE)
+    target_compile_definitions(framework PUBLIC MODERN_GL)
+endif()
 
 include(FetchDependencies)
 target_link_libraries(framework
