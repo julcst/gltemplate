@@ -35,7 +35,7 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
     meshShader.bindUBO("ObjectBuffer", 1);
     meshShader.bindTextureUnit("tDiffuse", 0);
 
-    texture.load(Texture::Format::SRGB8, "textures/checker.png", 5);
+    texture.load(Texture::Format::SRGB8, "textures/checker.png");
     texture.bindTextureUnit(0);
 
     cubemap.loadCubemap(Texture::Format::FLOAT16, "textures/uffizi");

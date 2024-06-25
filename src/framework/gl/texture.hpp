@@ -36,9 +36,9 @@ class Texture {
     void bindTextureUnit(GLuint index);
     void _load2D(GLenum target, Format format, const std::filesystem::path& filepath);
     void _load3D(GLint zindex, Format format, const std::filesystem::path& filepath);
-    void load(Format format, const std::filesystem::path& filepath, bool mipmaps = false);
-    void loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, bool mipmaps = false);
-    void loadCubemap(Format format, const std::filesystem::path& directory, bool mipmaps = false);
+    void load(Format format, const std::filesystem::path& filepath, bool generateMipmaps = false);
+    void loadCubemap(Format format, const std::array<std::filesystem::path, 6>& filepaths, bool generateMipmaps = false);
+    void loadCubemap(Format format, const std::filesystem::path& directory, bool generateMipmaps = false);
     bool writeToFile(const std::filesystem::path& filepath);
     void set(GLenum parameter, GLint value);
     int get(GLenum parameter, GLint level);
