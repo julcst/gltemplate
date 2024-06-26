@@ -46,34 +46,123 @@ enum class Modifier {
     CAPS_LOCK = GLFW_MOD_CAPS_LOCK,
     NUM_LOCK = GLFW_MOD_NUM_LOCK
 };
+
+/**
+ * @brief Check if a modifier is part of a combination of modifiers.
+ * SHIFT >= SHIFT | CTRL | ALT -> true
+ * SHIFT >= CTRL | ALT -> false
+ */
 inline bool operator>=(Modifier a, Modifier b) {
     return static_cast<int>(a) & static_cast<int>(b);
 }
+
+/**
+ * @brief Combines modifiers
+ */
 inline Modifier operator|(Modifier a, Modifier b) {
     return static_cast<Modifier>(static_cast<int>(a) | static_cast<int>(b));
 }
 
 class App {
    public:
+    /**
+     * @brief Enable or disable the ImGui interface.
+     */
     bool imguiEnabled;
+
+    /**
+     * @brief The width and height of the window in pixels.
+     */
     vec2 resolution;
+
+    /**
+     * @brief Time in seconds since the start of the application.
+     */
     float time = 0.0f;
+
+    /**
+     * @brief Time in seconds since the last frame.
+     */
     float delta = 0.0f;
+
+    /**
+     * @brief The number of frames since the start of the application.
+     */
     unsigned int frames = 0;
+
+    /**
+     * @brief Enable or disable logging of all OpenGL calls.
+     */
     bool traceOpenGLCalls;
+
+    /**
+     * @brief The position of the mouse cursor in screen coordinates.
+     * Can be converted to clip space with `convertCursorToClipSpace()`.
+     */
     vec2 mouse;
+
+    /**
+     * @brief Identifier of the GLFW window.
+     */
     GLFWwindow* window;
 
+    /**
+     * @brief Constructs an App object with the specified width and height.
+     * Initializes GLFW and OpenGL.
+     * @param width The width of the window in pixels.
+     * @param height The height of the window in pixels.
+     */
     App(unsigned int width, unsigned int height);
+
+    /**
+     * @brief Copy constructor (deleted).
+     */
     App(const App&) = delete;
+
+    /**
+     * @brief Copy assignment operator (deleted).
+     */
     App& operator=(const App&) = delete;
+
+    /**
+     * @brief Move constructor (deleted).
+     */
     App(App&& other) = delete;
+
+    /**
+     * @brief Move assignment operator (deleted).
+     */
     App& operator=(App&& other) = delete;
+
+    /**
+     * @brief Destructor, closes the GLFW window.
+     */
     virtual ~App();
+
+    /**
+     * @brief Starts the render loop.
+     */
     void run();
+
+    /**
+     * @brief Marks the window for closing.
+     */
     void close();
+
+    /**
+     * @brief Sets the title of the window.
+     * @param title The new title of the window.
+     */
     void setTitle(const std::string& title);
+
+    /**
+     * @brief Enables or disables vertical synchronization.
+     */
     void setVSync(bool vsync);
+
+    /**
+     * @brief Converts the cursor position to clip space.
+     */
     vec2 convertCursorToClipSpace();
 
    protected:

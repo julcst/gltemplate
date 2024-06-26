@@ -15,7 +15,7 @@ class Mesh {
    public:
 
     /**
-     * Vertices for a fullscreen triangle
+     * Vertices of a fullscreen triangle
      */
     inline static const std::vector<float> FULLSCREEN_VERTICES {
         -1.0f, -1.0f, 0.0f,
@@ -24,7 +24,7 @@ class Mesh {
     };
 
     /**
-     * Indices for a fullscreen triangle
+     * Indices of a fullscreen triangle
      */
     inline static const std::vector<unsigned int> FULLSCREEN_INDICES {
         0, 1, 2,
