@@ -53,6 +53,6 @@ target_link_libraries(framework
         glm
         glfw
         imgui_glfw
-        stb_impl
+        stb
         tinyobjloader
 )

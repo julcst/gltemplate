@@ -46,8 +46,8 @@ add_compile_definitions(GLM_FORCE_RADIANS)
 FetchContent_Declare(
     imgui
     #GIT_REPOSITORY https://github.com/ocornut/imgui.git
-    GIT_TAG v1.90.4
-    URL https://github.com/ocornut/imgui/archive/v1.90.4.tar.gz
+    GIT_TAG v1.90.8
+    URL https://github.com/ocornut/imgui/archive/v1.90.8.tar.gz
     EXCLUDE_FROM_ALL
 )
 
@@ -60,25 +60,7 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
 )
 
-# Known issues: stb_image_write.h uses sprintf_s which is only available on Windows, on other platforms it uses sprintf throws deprecation warnings, , see https://github.com/nothings/stb/issues/1446
-# Workaround:
-#ifndef __STDC_LIB_EXT1__
-#define __STDC_LIB_EXT1__
-#define sprintf_s snprintf
-#endif
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
-# stb
-FetchContent_Declare(
-    stb
-    GIT_REPOSITORY https://github.com/nothings/stb.git
-    GIT_TAG 013ac3beddff3dbffafd5177e7972067cd2b5083
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    EXCLUDE_FROM_ALL
-)
-
-FetchContent_MakeAvailable(glfw glbinding glm imgui tinyobjloader stb)
+FetchContent_MakeAvailable(glfw glbinding glm imgui tinyobjloader)
 
 # ImGui is not build by CMake, so we need to add it manually
 add_library(imgui_glfw STATIC
@@ -92,8 +74,26 @@ add_library(imgui_glfw STATIC
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
 target_include_directories(imgui_glfw PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends ${imgui_SOURCE_DIR}/misc/cpp ${glfw_SOURCE_DIR}/include)
+#target_link_libraries(imgui_glfw PUBLIC glfw) # glfw is already linked to framework
 target_compile_features(imgui_glfw PUBLIC cxx_std_17)
 
-# stb is a header only library, so we need to add it as an interface library
-add_library(stb_impl INTERFACE)
-target_include_directories(stb_impl INTERFACE ${stb_SOURCE_DIR})
+# stb is a header only library without CMake so we need to add it manually
+set(stb_SOURCE_DIR ${CMAKE_BINARY_DIR}/external/stb)
+file(DOWNLOAD https://raw.githubusercontent.com/nothings/stb/master/stb_image.h ${stb_SOURCE_DIR}/stb_image.h)
+file(DOWNLOAD https://raw.githubusercontent.com/nothings/stb/master/stb_image_write.h ${stb_SOURCE_DIR}/stb_image_write.h)
+# Known issues: stb_image_write.h uses sprintf_s which is only available on Windows, on other platforms it uses sprintf throws deprecation warnings, see https://github.com/nothings/stb/issues/1446
+# Workaround:
+file(GENERATE
+    OUTPUT ${stb_SOURCE_DIR}/stb.cpp
+    CONTENT
+"#ifndef __STDC_LIB_EXT1__
+#define __STDC_LIB_EXT1__
+#define sprintf_s snprintf
+#endif
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>"
+)
+add_library(stb STATIC ${stb_SOURCE_DIR}/stb.cpp)
+target_include_directories(stb PUBLIC ${stb_SOURCE_DIR})
