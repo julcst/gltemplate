@@ -1,0 +1,6 @@
+icons/                  export-ignore
+meshes/                 export-ignore
+shaders/                export-ignore
+textures/               export-ignore
+src/demo/               export-ignore
+src/minimalexample      export-ignore

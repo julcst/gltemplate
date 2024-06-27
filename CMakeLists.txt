@@ -13,9 +13,9 @@ if(PROJECT_IS_TOP_LEVEL)
     # Zip sources
     include(ZippingTool)
     # Full source zip, containing examples and resources
-    zip_sources(${PROJECT_NAME})
+    #zip_sources(${PROJECT_NAME})
     # Minimal source zip, only containing the framework
-    zip_sources(${PROJECT_NAME}-minimal IGNORE icons/* meshes/* shaders/* textures/* src/demo/* src/minimalexample/*)
+    #zip_sources(${PROJECT_NAME}-minimal IGNORE icons/* meshes/* shaders/* textures/* src/demo/* src/minimalexample/*)
 
     # Build examples
     include(DeploymentTool)
