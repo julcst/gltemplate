@@ -23,7 +23,20 @@ jobs:
 
     - name: Release
       uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
           ${{github.workspace}}/build/GLTemplate.zip
           ${{github.workspace}}/build/GLTemplate-minimal.zip
+
+    - name: Minimal archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: minimal-archive
+          path: ${{github.workspace}}/build/GLTemplate-minimal.zip
+
+    - name: Full archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-archive
+          path: ${{github.workspace}}/build/GLTemplate.zip
