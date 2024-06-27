@@ -9,11 +9,12 @@ set(FETCHCONTENT_QUIET OFF CACHE BOOL "" FORCE)
 # Known issues: Frametimes are weird on macOS with glfw > 3.3 and VSync enabled but with glfw < 3.4 deprecation warnings are thrown
 # GLFW
 FetchContent_Declare(
-    glfw
+    glfw3
     #GIT_REPOSITORY https://github.com/glfw/glfw.git
     GIT_TAG 3.4
     URL https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz
     EXCLUDE_FROM_ALL
+    FIND_PACKAGE_ARGS # First try to find the package in the system, if not found download it locally. For example use `brew install glfw` on macOS
 )
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -28,6 +29,7 @@ FetchContent_Declare(
     GIT_TAG v3.3.0
     URL https://github.com/cginternals/glbinding/archive/v3.3.0.tar.gz
     EXCLUDE_FROM_ALL
+    FIND_PACKAGE_ARGS # First try to find the package in the system, if not found download it locally. For example use `brew install glbinding` on macOS
 )
 set(OPTION_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(OPTION_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -39,6 +41,7 @@ FetchContent_Declare(
     GIT_TAG 1.0.1
     URL https://github.com/g-truc/glm/archive/1.0.1.tar.gz
     EXCLUDE_FROM_ALL
+    FIND_PACKAGE_ARGS # First try to find the package in the system, if not found download it locally. For example use `brew install glm` on macOS
 )
 add_compile_definitions(GLM_FORCE_RADIANS)
 
@@ -60,7 +63,7 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
 )
 
-FetchContent_MakeAvailable(glfw glbinding glm imgui tinyobjloader)
+FetchContent_MakeAvailable(glbinding glfw3 glm imgui tinyobjloader)
 
 # ImGui is not build by CMake, so we need to add it manually
 add_library(imgui_glfw STATIC
@@ -74,7 +77,7 @@ add_library(imgui_glfw STATIC
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
 target_include_directories(imgui_glfw PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends ${imgui_SOURCE_DIR}/misc/cpp ${glfw_SOURCE_DIR}/include)
-#target_link_libraries(imgui_glfw PUBLIC glfw) # glfw is already linked to framework
+target_link_libraries(imgui_glfw PUBLIC glfw)
 target_compile_features(imgui_glfw PUBLIC cxx_std_17)
 
 # stb is a header only library without CMake so we need to add it manually
