@@ -30,13 +30,13 @@ jobs:
           ${{github.workspace}}/build/GLTemplate-minimal.zip
 
     - name: Minimal archive
-        uses: actions/upload-artifact@v4
-        with:
-          name: minimal-archive
-          path: ${{github.workspace}}/build/GLTemplate-minimal.zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: minimal-archive
+        path: ${{github.workspace}}/build/GLTemplate-minimal.zip
 
     - name: Full archive
-        uses: actions/upload-artifact@v4
-        with:
-          name: full-archive
-          path: ${{github.workspace}}/build/GLTemplate.zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: full-archive
+        path: ${{github.workspace}}/build/GLTemplate.zip
