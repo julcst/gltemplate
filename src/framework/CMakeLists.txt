@@ -6,6 +6,7 @@ set(SRC
     mesh.cpp
     objparser.cpp
     gl/buffer.cpp
+    gl/framebuffer.cpp
     gl/program.cpp
     gl/query.cpp
     gl/shader.cpp
