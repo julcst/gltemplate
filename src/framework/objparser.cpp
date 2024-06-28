@@ -43,7 +43,7 @@ void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::V
     tinyobj::ObjReaderConfig reader_config;
     reader_config.triangulate = true;
     if (!reader.ParseFromString(rawobj, "", reader_config))
-        throw std::runtime_error("Failed to load OBJ file \"" + filepath.native() + "\": " + reader.Error());
+        throw std::runtime_error("Failed to load OBJ file \"" + filepath.string() + "\": " + reader.Error());
     if (!reader.Warning().empty())
         std::cout << "Warning loading OBJ file \"" << filepath << "\": " << reader.Warning() << std::endl;
     
@@ -119,7 +119,7 @@ void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::V
     tinyobj::ObjReaderConfig reader_config;
     reader_config.triangulate = true;
     if (!reader.ParseFromString(rawobj, "", reader_config))
-        throw std::runtime_error("Failed to load OBJ file \"" + filepath.native() + "\": " + reader.Error());
+        throw std::runtime_error("Failed to load OBJ file \"" + filepath.string() + "\": " + reader.Error());
     if (!reader.Warning().empty())
         std::cout << "Warning loading OBJ file \"" << filepath << "\": " << reader.Warning() << std::endl;
     

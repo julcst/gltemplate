@@ -76,7 +76,7 @@ class Buffer {
      * @param data The pointer to the data to load into the buffer object.
      * @param usage The usage pattern of the data, e.g. `GL_STATIC_DRAW`, `GL_DYNAMIC_DRAW`, `GL_STREAM_DRAW` (See https://www.khronos.org/opengl/wiki/Buffer_Object#Usage_patterns).
      */
-    void _load(GLsizeiptr size, const GLvoid* data, GLenum usage = GL_STATIC_DRAW);
+    void _load(GLsizeiptr size, const GLvoid* data, GLenum usage);
 
     /**
      * @brief Loads data as an array of a custom struct into the buffer object.
@@ -87,7 +87,7 @@ class Buffer {
      * @param usage The usage pattern of the data, e.g. `GL_STATIC_DRAW`, `GL_DYNAMIC_DRAW`, `GL_STREAM_DRAW` (See https://www.khronos.org/opengl/wiki/Buffer_Object#Usage_patterns).
      */
     template <typename T>
-    void load(const std::vector<T>& data, GLenum usage = GL_STATIC_DRAW);
+    void load(const std::vector<T>& data, GLenum usage);
 
     /**
      * @brief Loads a single element into the buffer object.
@@ -98,7 +98,7 @@ class Buffer {
      * @param usage The usage pattern of the data, e.g. `GL_STATIC_DRAW`, `GL_DYNAMIC_DRAW`, `GL_STREAM_DRAW` (See https://www.khronos.org/opengl/wiki/Buffer_Object#Usage_patterns).
      */
     template <typename T>
-    void load(const T& data, GLenum usage = GL_STATIC_DRAW);
+    void load(const T& data, GLenum usage);
 
     /**
      * @brief Sets data into the buffer object.

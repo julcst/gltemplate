@@ -53,7 +53,7 @@ std::string readShader(const std::filesystem::path& filepath, std::unordered_set
                 std::string include = readShader(includePath, included);
                 source = match.prefix().str() + include + match.suffix().str();
             } catch (const std::runtime_error& e) {
-                throw std::runtime_error("Error including \"" + match[1].str() + "\" in \"" + filepath.native() + "\": " + e.what());
+                throw std::runtime_error("Error including \"" + match[1].str() + "\" in \"" + filepath.string().c_str() + "\": " + e.what());
             }
         } else {
             source = match.prefix().str() + match.suffix().str();

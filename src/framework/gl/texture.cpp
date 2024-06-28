@@ -185,17 +185,17 @@ void Texture::_load2D(GLenum target, Format format, const std::filesystem::path&
         case Format::SRGB8:
         case Format::NORMAL8:
             dataType = GL_UNSIGNED_BYTE;
-            data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+            data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
             break;
         case Format::FLOAT16:
         case Format::FLOAT32:
             dataType = GL_FLOAT;
-            data = stbi_loadf(filepath.c_str(), &width, &height, &channels, 0);
+            data = stbi_loadf(filepath.string().c_str(), &width, &height, &channels, 0);
             break;
         default: assert(false);
     }
 
-    if (!data) throw std::runtime_error("Failed to parse image " + filepath.native() + ": " + stbi_failure_reason());
+    if (!data) throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
 
     GLenum internalFormat = getInternalFormat(format, channels);
     GLenum baseFormat = getBaseFormat(internalFormat);
@@ -226,17 +226,17 @@ void Texture::_load3D(GLint zindex, Format format, const std::filesystem::path& 
         case Format::SRGB8:
         case Format::NORMAL8:
             dataType = GL_UNSIGNED_BYTE;
-            data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+            data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
             break;
         case Format::FLOAT16:
         case Format::FLOAT32:
             dataType = GL_FLOAT;
-            data = stbi_loadf(filepath.c_str(), &width, &height, &channels, 0);
+            data = stbi_loadf(filepath.string().c_str(), &width, &height, &channels, 0);
             break;
         default: assert(false);
     }
 
-    if (!data) throw std::runtime_error("Failed to parse image " + filepath.native() + ": " + stbi_failure_reason());
+    if (!data) throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
 
     GLenum internalFormat = getInternalFormat(format, channels);
     GLenum baseFormat = getBaseFormat(internalFormat);
@@ -254,8 +254,8 @@ void Texture::load(Format format, const std::filesystem::path& filepath, GLint m
 
 #ifdef MODERN_GL
     GLsizei width, height, channels;
-    if (!stbi_info(filepath.c_str(), &width, &height, &channels))
-        throw std::runtime_error("Failed to parse image " + filepath.native() + ": " + stbi_failure_reason());
+    if (!stbi_info(filepath.string().c_str(), &width, &height, &channels))
+        throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
     GLenum internalFormat = getInternalFormat(format, channels);
     glTextureStorage2D(handle, mipmaps + 1, internalFormat, width, height);
 #else
@@ -285,8 +285,8 @@ void Texture::loadCubemap(Format format, const std::array<std::filesystem::path,
     glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTextureParameteri(handle, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     GLsizei width, height, channels;
-    if (!stbi_info(filepaths[0].c_str(), &width, &height, &channels))
-        throw std::runtime_error("Failed to parse image " + filepaths[0].native() + ": " + stbi_failure_reason());
+    if (!stbi_info(filepaths[0].string().c_str(), &width, &height, &channels))
+        throw std::runtime_error("Failed to parse image " + filepaths[0].string() + ": " + stbi_failure_reason());
     GLenum internalFormat = getInternalFormat(format, channels);
     glTextureStorage2D(handle, mipmaps + 1, internalFormat, width, height);
     for (int i = 0; i < 6; i++) {
@@ -351,7 +351,7 @@ bool Texture::writeToFile(const std::filesystem::path& filepath) {
     stbi_flip_vertically_on_write(true);
 
     if (dataType == GL_FLOAT) {
-        float floatData[width * height * channels];
+        float* floatData = new float[width * height * channels];
 
     #ifdef MODERN_GL
         glGetTextureImage(handle, 0, baseFormat, dataType, sizeof(floatData), floatData);
@@ -359,9 +359,11 @@ bool Texture::writeToFile(const std::filesystem::path& filepath) {
         glGetTexImage(target, 0, baseFormat, dataType, floatData);
     #endif
 
-        return stbi_write_hdr(filepath.c_str(), width, height, channels, floatData);
+        auto status = stbi_write_hdr(filepath.string().c_str(), width, height, channels, floatData);
+        delete[] floatData;
+        return status;
     } else if (dataType == GL_UNSIGNED_BYTE) {
-        u_char byteData[width * height * channels];
+        uint8_t* byteData = new uint8_t[width * height * channels];
 
     #ifdef MODERN_GL
         glGetTextureImage(handle, 0, baseFormat, dataType, sizeof(byteData), byteData);
@@ -370,11 +372,13 @@ bool Texture::writeToFile(const std::filesystem::path& filepath) {
     #endif
         
         auto ext = filepath.extension();
-        if (ext == ".bmp") return stbi_write_bmp(filepath.c_str(), width, height, channels, byteData);
-        else if (ext == ".tga") return stbi_write_tga(filepath.c_str(), width, height, channels, byteData);
-        else if (ext == ".jpg" || ext == ".jpeg") return stbi_write_jpg(filepath.c_str(), width, height, channels, byteData, 95);
-        else if (ext == ".png") return stbi_write_png(filepath.c_str(), width, height, channels, byteData, width * channels);
-        else return false;
+        bool status = false;
+        if (ext == ".bmp") status = stbi_write_bmp(filepath.string().c_str(), width, height, channels, byteData);
+        else if (ext == ".tga") status = stbi_write_tga(filepath.string().c_str(), width, height, channels, byteData);
+        else if (ext == ".jpg" || ext == ".jpeg") status = stbi_write_jpg(filepath.string().c_str(), width, height, channels, byteData, 95);
+        else if (ext == ".png") status = stbi_write_png(filepath.string().c_str(), width, height, channels, byteData, width * channels);
+        delete[] byteData;
+        return status;
     } else return false;
 }
 

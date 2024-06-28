@@ -15,7 +15,7 @@ class UniformBuffer {
 template <typename T>
 UniformBuffer<T>::UniformBuffer(unsigned int index, const T& uniforms) : buffer(GL_UNIFORM_BUFFER) {
     buffer.bind(index);
-    buffer.load(uniforms);
+    buffer.load(uniforms, GL_DYNAMIC_DRAW);
 }
 
 template <typename T>
