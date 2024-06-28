@@ -83,9 +83,12 @@ target_compile_features(imgui_glfw PUBLIC cxx_std_17)
 # stb is a header only library without CMake so we need to add it manually
 set(stb_SOURCE_DIR ${CMAKE_BINARY_DIR}/external/stb)
 file(DOWNLOAD https://raw.githubusercontent.com/nothings/stb/master/stb_image.h ${stb_SOURCE_DIR}/stb_image.h)
+file(DOWNLOAD https://raw.githubusercontent.com/nothings/stb/master/stb_image_write.h  ${stb_SOURCE_DIR}/stb_image_write.h)
 # Known issues: stb_image_write.h uses sprintf_s which is only available on Windows, on other platforms it uses sprintf throws deprecation warnings, see https://github.com/nothings/stb/issues/1446
-# Workaround: Use a fixed version of stb_image_write.h
-file(DOWNLOAD https://raw.githubusercontent.com/ismagilli/stb/fix_sprintf/stb_image_write.h ${stb_SOURCE_DIR}/stb_image_write.h)
+# Workaround: Replace sprintf with snprintf
+file(READ ${stb_SOURCE_DIR}/stb_image_write.h stb_image_write_content)
+string(REPLACE "sprintf(buffer," "snprintf(buffer, sizeof(buffer)," stb_image_write_content "${stb_image_write_content}")
+file(WRITE ${stb_SOURCE_DIR}/stb_image_write.h "${stb_image_write_content}")
 file(GENERATE
     OUTPUT ${stb_SOURCE_DIR}/stb.cpp
     CONTENT
