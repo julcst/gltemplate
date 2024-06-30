@@ -3,9 +3,9 @@
 #include <cassert>
 #include <vector>
 
-#include <glbinding/gl/gl.h>
+#include <glbinding/gl46core/gl.h>
 
-using namespace gl;
+using namespace gl46core;
 
 /////////////////////// RAII behavior ///////////////////////
 Buffer::Buffer(GLenum target) : target(target) {

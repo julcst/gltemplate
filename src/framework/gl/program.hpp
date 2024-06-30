@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glbinding/gl/gl.h>
+#include <glbinding/gl46core/gl.h>
 
 #include <string>
 #include <filesystem>
@@ -8,7 +8,7 @@
 #include "buffer.hpp"
 #include "shader.hpp"
 
-using namespace gl;
+using namespace gl46core;
 
 /**
  * @file program.hpp

@@ -1,7 +1,7 @@
 #include "mesh.hpp"
 
-#include <glbinding/gl/gl.h>
-using namespace gl;
+#include <glbinding/gl46core/gl.h>
+using namespace gl46core;
 #include <glm/glm.hpp>
 
 #include <filesystem>

@@ -4,11 +4,11 @@
 #include <unordered_map>
 #include <iostream>
 
-#include <glbinding/gl/gl.h>
+#include <glbinding/gl46core/gl.h>
 
 #include "framework/gl/texture.hpp"
 
-using namespace gl;
+using namespace gl46core;
 
 /////////////////////// RAII behavior ///////////////////////
 Framebuffer::Framebuffer() {

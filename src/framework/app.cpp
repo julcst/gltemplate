@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include <glbinding/gl/gl.h>
+#include <glbinding/gl46core/gl.h>
 #include <glbinding/glbinding.h>
 
 #include <glbinding-aux/ContextInfo.h>
@@ -19,7 +19,7 @@
 
 #include <glm/glm.hpp>
 
-using namespace gl;
+using namespace gl46core;
 using namespace glm;
 
 

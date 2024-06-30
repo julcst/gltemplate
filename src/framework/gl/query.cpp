@@ -2,9 +2,9 @@
 
 #include <cassert>
 
-#include <glbinding/gl/gl.h>
+#include <glbinding/gl46core/gl.h>
 
-using namespace gl;
+using namespace gl46core;
 
 /////////////////////// RAII behavior ///////////////////////
 Query::Query() {

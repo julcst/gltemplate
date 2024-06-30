@@ -1,6 +1,6 @@
 #include "program.hpp"
 
-#include <glbinding/gl/gl.h>
+#include <glbinding/gl46core/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -10,7 +10,7 @@
 
 #include "shader.hpp"
 
-using namespace gl;
+using namespace gl46core;
 using namespace glm;
 
 /////////////////////// RAII behavior ///////////////////////

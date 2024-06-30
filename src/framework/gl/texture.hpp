@@ -3,10 +3,10 @@
 #include <array>
 #include <filesystem>
 
-#include <glbinding/gl/gl.h>
+#include <glbinding/gl46core/gl.h>
 #include <glm/glm.hpp>
 
-using namespace gl;
+using namespace gl46core;
 
 /**
  * @file texture.hpp
