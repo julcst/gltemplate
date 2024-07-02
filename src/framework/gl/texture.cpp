@@ -67,15 +67,11 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
                 case 2: return GL_RG8;
                 case 3: return GL_RGB8;
                 case 4: return GL_RGBA8;
-                default: static_assert(false);
             }
         case Texture::Format::SRGB8:
             switch (channels) {
-                case 1: static_assert(false);
-                case 2: static_assert(false);
                 case 3: return GL_SRGB8;
                 case 4: return GL_SRGB8_ALPHA8;
-                default: static_assert(false);
             }
         case Texture::Format::FLOAT16:
             switch (channels) {
@@ -83,7 +79,6 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
                 case 2: return GL_RG16F;
                 case 3: return GL_RGB16F;
                 case 4: return GL_RGBA16F;
-                default: static_assert(false);
             }
         case Texture::Format::FLOAT32:
             switch (channels) {
@@ -91,7 +86,6 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
                 case 2: return GL_RG32F;
                 case 3: return GL_RGB32F;
                 case 4: return GL_RGBA32F;
-                default: static_assert(false);
             }
         case Texture::Format::NORMAL8:
             switch (channels) {
@@ -99,10 +93,9 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
                 case 2: return GL_RG8_SNORM;
                 case 3: return GL_RGB8_SNORM;
                 case 4: return GL_RGBA8_SNORM;
-                default: static_assert(false);
             }
-        default: static_assert(false);
     }
+    throw std::runtime_error("Unsupported texture format");
     return GL_NONE;
 }
 
@@ -134,7 +127,7 @@ GLenum getBaseFormat(GLenum internalFormat) {
             return GL_DEPTH_COMPONENT;
         case GL_DEPTH32F_STENCIL8:
             return GL_DEPTH_STENCIL;
-        default: static_assert(false);
+        default: throw std::runtime_error("Unsupported internal format");
     }
     return GL_NONE;
 }
@@ -165,7 +158,7 @@ GLenum getType(GLenum internalFormat) {
             return GL_FLOAT;
         case GL_DEPTH32F_STENCIL8:
             return GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
-        default: static_assert(false);
+        default: throw std::runtime_error("Unsupported internal format");
     }
     return GL_NONE;
 
@@ -190,7 +183,7 @@ void Texture::_load2D(GLenum target, Format format, const std::filesystem::path&
             dataType = GL_FLOAT;
             data = stbi_loadf(filepath.string().c_str(), &width, &height, &channels, 0);
             break;
-        default: static_assert(false);
+        default: throw std::runtime_error("Unsupported texture format");
     }
 
     if (!data) throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
@@ -231,7 +224,7 @@ void Texture::_load3D(GLint zindex, Format format, const std::filesystem::path& 
             dataType = GL_FLOAT;
             data = stbi_loadf(filepath.string().c_str(), &width, &height, &channels, 0);
             break;
-        default: static_assert(false);
+        default: throw std::runtime_error("Unsupported texture format");
     }
 
     if (!data) throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
