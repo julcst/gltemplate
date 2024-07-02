@@ -7,7 +7,6 @@ using namespace gl46core;
 #include <stb_image_write.h>
 
 #include <array>
-#include <cassert>
 #include <string>
 #include <stdexcept>
 
@@ -21,7 +20,6 @@ Texture::Texture(GLenum target) : target(target) {
 #else
     glGenTextures(1, &handle);
 #endif
-    assert(handle);
 }
 
 Texture::Texture(Texture&& other) : handle(other.handle), target(other.target) {
@@ -69,15 +67,15 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
                 case 2: return GL_RG8;
                 case 3: return GL_RGB8;
                 case 4: return GL_RGBA8;
-                default: assert(false);
+                default: static_assert(false);
             }
         case Texture::Format::SRGB8:
             switch (channels) {
-                case 1: assert(false);
-                case 2: assert(false);
+                case 1: static_assert(false);
+                case 2: static_assert(false);
                 case 3: return GL_SRGB8;
                 case 4: return GL_SRGB8_ALPHA8;
-                default: assert(false);
+                default: static_assert(false);
             }
         case Texture::Format::FLOAT16:
             switch (channels) {
@@ -85,7 +83,7 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
                 case 2: return GL_RG16F;
                 case 3: return GL_RGB16F;
                 case 4: return GL_RGBA16F;
-                default: assert(false);
+                default: static_assert(false);
             }
         case Texture::Format::FLOAT32:
             switch (channels) {
@@ -93,7 +91,7 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
                 case 2: return GL_RG32F;
                 case 3: return GL_RGB32F;
                 case 4: return GL_RGBA32F;
-                default: assert(false);
+                default: static_assert(false);
             }
         case Texture::Format::NORMAL8:
             switch (channels) {
@@ -101,9 +99,9 @@ GLenum getInternalFormat(Texture::Format format, int channels) {
                 case 2: return GL_RG8_SNORM;
                 case 3: return GL_RGB8_SNORM;
                 case 4: return GL_RGBA8_SNORM;
-                default: assert(false);
+                default: static_assert(false);
             }
-        default: assert(false);
+        default: static_assert(false);
     }
     return GL_NONE;
 }
@@ -136,7 +134,7 @@ GLenum getBaseFormat(GLenum internalFormat) {
             return GL_DEPTH_COMPONENT;
         case GL_DEPTH32F_STENCIL8:
             return GL_DEPTH_STENCIL;
-        default: assert(false);
+        default: static_assert(false);
     }
     return GL_NONE;
 }
@@ -167,7 +165,7 @@ GLenum getType(GLenum internalFormat) {
             return GL_FLOAT;
         case GL_DEPTH32F_STENCIL8:
             return GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
-        default: assert(false);
+        default: static_assert(false);
     }
     return GL_NONE;
 
@@ -192,7 +190,7 @@ void Texture::_load2D(GLenum target, Format format, const std::filesystem::path&
             dataType = GL_FLOAT;
             data = stbi_loadf(filepath.string().c_str(), &width, &height, &channels, 0);
             break;
-        default: assert(false);
+        default: static_assert(false);
     }
 
     if (!data) throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
@@ -233,7 +231,7 @@ void Texture::_load3D(GLint zindex, Format format, const std::filesystem::path& 
             dataType = GL_FLOAT;
             data = stbi_loadf(filepath.string().c_str(), &width, &height, &channels, 0);
             break;
-        default: assert(false);
+        default: static_assert(false);
     }
 
     if (!data) throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
@@ -351,34 +349,30 @@ bool Texture::writeToFile(const std::filesystem::path& filepath) {
     stbi_flip_vertically_on_write(true);
 
     if (dataType == GL_FLOAT) {
-        float* floatData = new float[width * height * channels];
+        auto floatData = std::make_unique<float[]>(width * height * channels);
 
     #ifdef MODERN_GL
-        glGetTextureImage(handle, 0, baseFormat, dataType, sizeof(floatData), floatData);
+        glGetTextureImage(handle, 0, baseFormat, dataType, width * height * channels * sizeof(float), floatData.get());
     #else
-        glGetTexImage(target, 0, baseFormat, dataType, floatData);
+        glGetTexImage(target, 0, baseFormat, dataType, floatData.get());
     #endif
 
-        auto status = stbi_write_hdr(filepath.string().c_str(), width, height, channels, floatData);
-        delete[] floatData;
-        return status;
+        return stbi_write_hdr(filepath.string().c_str(), width, height, channels, floatData.get());
     } else if (dataType == GL_UNSIGNED_BYTE) {
-        uint8_t* byteData = new uint8_t[width * height * channels];
+        auto byteData = std::make_unique<unsigned char[]>(width * height * channels);
 
     #ifdef MODERN_GL
-        glGetTextureImage(handle, 0, baseFormat, dataType, sizeof(byteData), byteData);
+        glGetTextureImage(handle, 0, baseFormat, dataType, width * height * channels * sizeof(unsigned char), byteData.get());
     #else
-        glGetTexImage(target, 0, baseFormat, dataType, byteData);
+        glGetTexImage(target, 0, baseFormat, dataType, byteData.get());
     #endif
         
         auto ext = filepath.extension();
-        bool status = false;
-        if (ext == ".bmp") status = stbi_write_bmp(filepath.string().c_str(), width, height, channels, byteData);
-        else if (ext == ".tga") status = stbi_write_tga(filepath.string().c_str(), width, height, channels, byteData);
-        else if (ext == ".jpg" || ext == ".jpeg") status = stbi_write_jpg(filepath.string().c_str(), width, height, channels, byteData, 95);
-        else if (ext == ".png") status = stbi_write_png(filepath.string().c_str(), width, height, channels, byteData, width * channels);
-        delete[] byteData;
-        return status;
+        if (ext == ".bmp") return stbi_write_bmp(filepath.string().c_str(), width, height, channels, byteData.get());
+        else if (ext == ".tga") return stbi_write_tga(filepath.string().c_str(), width, height, channels, byteData.get());
+        else if (ext == ".jpg" || ext == ".jpeg") return stbi_write_jpg(filepath.string().c_str(), width, height, channels, byteData.get(), 95);
+        else if (ext == ".png") return stbi_write_png(filepath.string().c_str(), width, height, channels, byteData.get(), width * channels);
+        return false;
     } else return false;
 }
 

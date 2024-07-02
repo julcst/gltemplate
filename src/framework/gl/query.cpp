@@ -1,7 +1,5 @@
 #include "query.hpp"
 
-#include <cassert>
-
 #include <glbinding/gl46core/gl.h>
 
 using namespace gl46core;
@@ -9,7 +7,6 @@ using namespace gl46core;
 /////////////////////// RAII behavior ///////////////////////
 Query::Query() {
     glGenQueries(1, &handle);
-    assert(handle);
 }
 
 Query::Query(Query&& other) : handle(other.handle) {

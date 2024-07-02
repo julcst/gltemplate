@@ -84,8 +84,11 @@ class Framebuffer {
      */
     void attach(GLenum attachment, GLuint texture, GLint level = 0);
 
-
-    bool checkStatus(GLenum target = GL_FRAMEBUFFER);
+    /**
+     * @brief Checks the status of the framebuffer.
+     * @throws std::runtime_error if the framebuffer is incomplete.
+     */
+    void checkStatus(GLenum target = GL_FRAMEBUFFER);
 
     /**
      * @brief The unique handle that identifies the framebuffer object on the GPU.
