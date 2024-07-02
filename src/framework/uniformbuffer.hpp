@@ -5,12 +5,19 @@
 template <typename T>
 class UniformBuffer {
    public:
-    UniformBuffer(unsigned int index, const T& uniforms = T{});
+    UniformBuffer(unsigned int index);
+    UniformBuffer(unsigned int index, const T& uniforms);
     void upload(const T& uniforms);
     void bind(unsigned int index);
 
     Buffer buffer;
 };
+
+template <typename T>
+UniformBuffer<T>::UniformBuffer(unsigned int index) : buffer(GL_UNIFORM_BUFFER) {
+    buffer.bind(index);
+    buffer.allocate(sizeof(T), GL_DYNAMIC_DRAW);
+}
 
 template <typename T>
 UniformBuffer<T>::UniformBuffer(unsigned int index, const T& uniforms) : buffer(GL_UNIFORM_BUFFER) {
