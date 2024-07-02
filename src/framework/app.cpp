@@ -1,6 +1,6 @@
 #include "app.hpp"
 
-#include <cassert>
+
 #include <iostream>
 #include <string>
 
@@ -32,7 +32,7 @@ App::App(unsigned int width, unsigned int height) : resolution(width, height), t
 void App::initGLFW() {
     // Init GLFW
     int glfwInitStatus = glfwInit();
-    assert(glfwInitStatus);
+    if (!glfwInitStatus) throw std::runtime_error("Failed to initialize GLFW");
 
     glfwSetErrorCallback([](int error, const char* description) {
         std::cerr << "[GLFW] Error: " << description << std::endl;
@@ -53,7 +53,8 @@ void App::initGLFW() {
 #endif
 
     window = glfwCreateWindow(resolution.x, resolution.y, "", NULL, NULL);
-    assert(window);
+    if (!window) throw std::runtime_error("Failed to create window");
+    
     glfwSetWindowUserPointer(window, this);
     // Measure real resolution
     int w, h;

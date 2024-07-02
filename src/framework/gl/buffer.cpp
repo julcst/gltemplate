@@ -1,6 +1,5 @@
 #include "buffer.hpp"
 
-#include <cassert>
 #include <vector>
 
 #include <glbinding/gl46core/gl.h>
@@ -14,7 +13,6 @@ Buffer::Buffer(GLenum target) : target(target) {
 #else
     glGenBuffers(1, &handle);
 #endif
-    assert(handle);
 }
 
 Buffer::Buffer(Buffer&& other) : handle(other.handle), target(other.target) {

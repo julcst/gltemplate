@@ -3,7 +3,6 @@
 #include <glbinding/gl46core/gl.h>
 using namespace gl46core;
 
-#include <cassert>
 #include <regex>
 #include <unordered_set>
 #include <stdexcept>
@@ -16,7 +15,6 @@ using namespace gl46core;
 /////////////////////// RAII behavior ///////////////////////
 Shader::Shader(GLenum type) {
     handle = glCreateShader(type);
-    assert(handle);
 }
 
 Shader::Shader(Shader&& other) : handle(other.handle) {

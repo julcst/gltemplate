@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <cassert>
 #include <stdexcept>
 #include <string>
 
@@ -16,7 +15,6 @@ using namespace glm;
 /////////////////////// RAII behavior ///////////////////////
 Program::Program() {
     handle = glCreateProgram();
-    assert(handle);
 }
 
 Program::Program(Program&& other) : handle(other.handle) {

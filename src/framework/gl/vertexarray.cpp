@@ -3,8 +3,6 @@
 #include <glbinding/gl46core/gl.h>
 using namespace gl46core;
 
-#include <cassert>
-
 /////////////////////// RAII behavior ///////////////////////
 VertexArray::VertexArray() {
 #ifdef MODERN_GL
@@ -12,7 +10,6 @@ VertexArray::VertexArray() {
 #else
     glGenVertexArrays(1, &handle);
 #endif
-    assert(handle);
 }
 
 VertexArray::VertexArray(VertexArray&& other) : handle(other.handle) {
