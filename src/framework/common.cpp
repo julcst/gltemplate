@@ -19,7 +19,7 @@ std::string Common::readFile(const std::filesystem::path& filepath) {
     return buffer.str();
 }
 
-void Common::writeToFile(const std::string& content, const std::filesystem::path& filepath) {
+void Common::writeToFile(std::string_view content, const std::filesystem::path& filepath) {
     Context::setWorkingDirectory();
     std::filesystem::create_directories(filepath.parent_path());
     std::ofstream out{filepath};
@@ -29,7 +29,7 @@ void Common::writeToFile(const std::string& content, const std::filesystem::path
     out.close();
 }
 
-void Common::filesInDirectory(const std::filesystem::path& directoryPath, const std::string& extension, std::vector<std::filesystem::path>& filenames) {
+void Common::filesInDirectory(const std::filesystem::path& directoryPath, std::string_view extension, std::vector<std::filesystem::path>& filenames) {
     Context::setWorkingDirectory();
     if (std::filesystem::exists(directoryPath) && std::filesystem::is_directory(directoryPath)) {
         for (const auto& entry : std::filesystem::directory_iterator(directoryPath)) {

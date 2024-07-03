@@ -22,8 +22,8 @@ namespace Common {
      * @param content The content to write.
      * @param filepath The path to the file.
      */
-    void writeToFile(const std::string& content, const std::filesystem::path& filepath);
-    void filesInDirectory(const std::filesystem::path& directoryPath, const std::string& extension, std::vector<std::filesystem::path>& filenames);
+    void writeToFile(std::string_view content, const std::filesystem::path& filepath);
+    void filesInDirectory(const std::filesystem::path& directoryPath, std::string_view extension, std::vector<std::filesystem::path>& filenames);
 
     template <class T, typename... Rest>
     void hash_combine(std::size_t& seed, const T& v, const Rest&... rest);
