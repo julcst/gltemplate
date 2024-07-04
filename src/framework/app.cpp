@@ -52,7 +52,7 @@ void App::initGLFW() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 #endif
 
-    window = glfwCreateWindow(resolution.x, resolution.y, "", NULL, NULL);
+    window = glfwCreateWindow(resolution.x, resolution.y, "", nullptr, nullptr);
     if (!window) throw std::runtime_error("Failed to create window");
     
     glfwSetWindowUserPointer(window, this);
@@ -230,7 +230,7 @@ void App::run() {
     frames = 0;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
-        float current = static_cast<float>(glfwGetTime());
+        auto current = static_cast<float>(glfwGetTime());
         delta = current - time;
         time = current;
         render();

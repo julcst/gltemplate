@@ -22,11 +22,11 @@ Texture::Texture(GLenum target) : target(target) {
 #endif
 }
 
-Texture::Texture(Texture&& other) : handle(other.handle), target(other.target) {
+Texture::Texture(Texture &&other) noexcept : handle(other.handle), target(other.target) {
     other.handle = 0;
 }
 
-Texture& Texture::operator=(Texture&& other) {
+Texture &Texture::operator=(Texture &&other) noexcept {
     if (this != &other) {
         release();
         handle = other.handle;
@@ -320,7 +320,7 @@ void Texture::loadCubemap(Format format, const std::filesystem::path& directory,
 }
 
 bool Texture::writeToFile(const std::filesystem::path& filepath) {
-    int width, height;
+    GLint width, height;
     GLenum internalFormat;
 
 #ifdef MODERN_GL

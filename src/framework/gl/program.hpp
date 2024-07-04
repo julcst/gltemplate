@@ -46,7 +46,7 @@ class Program {
      * (RAII idiom, see https://www.khronos.org/opengl/wiki/Common_Mistakes#RAII_and_hidden_destructor_calls)
      * @param other The Program object to move from.
      */
-    Program(Program&& other);
+    Program(Program &&other) noexcept;
 
     /**
      * @brief Move assignment operator, deletes the current Program object and invalidates the other Program object.
@@ -54,7 +54,7 @@ class Program {
      * @param other The Program object to move from.
      * @return A reference to the moved Program object.
      */
-    Program& operator=(Program&& other);
+    Program &operator=(Program &&other) noexcept;
 
     /**
      * @brief Destructor, frees the OpenGL object.
@@ -110,7 +110,7 @@ class Program {
      * @param name The name of the uniform variable.
      * @return The location of the uniform variable.
      */
-    GLuint uniform(const std::string& name);
+    GLint uniform(const std::string& name);
 
     /**
      * @brief Binds a uniform block to the specified index.
@@ -133,30 +133,30 @@ class Program {
      * @param loc The location of the uniform variable.
      * @param value The value to set the uniform variable to.
      */
-    void set(GLuint loc, const GLint value);
-    void set(GLuint loc, const std::vector<GLint>& values);
-    void set(GLuint loc, const GLuint value);
-    void set(GLuint loc, const std::vector<GLuint>& values);
-    void set(GLuint loc, const GLfloat value);
-    void set(GLuint loc, const std::vector<GLfloat>& values);
-    void set(GLuint loc, const glm::ivec2& value);
-    void set(GLuint loc, const std::vector<glm::ivec2>& values);
-    void set(GLuint loc, const glm::vec2& value);
-    void set(GLuint loc, const std::vector<glm::vec2>& values);
-    void set(GLuint loc, const glm::ivec3& value);
-    void set(GLuint loc, const std::vector<glm::ivec3>& values);
-    void set(GLuint loc, const glm::vec3& value);
-    void set(GLuint loc, const std::vector<glm::vec3>& values);
-    void set(GLuint loc, const glm::ivec4& value);
-    void set(GLuint loc, const std::vector<glm::ivec4>& values);
-    void set(GLuint loc, const glm::vec4& value);
-    void set(GLuint loc, const std::vector<glm::vec4>& values);
-    void set(GLuint loc, const glm::mat2& value);
-    void set(GLuint loc, const std::vector<glm::mat2>& values);
-    void set(GLuint loc, const glm::mat3& value);
-    void set(GLuint loc, const std::vector<glm::mat3>& values);
-    void set(GLuint loc, const glm::mat4& value);
-    void set(GLuint loc, const std::vector<glm::mat4>& values);
+    void set(GLint loc, const GLint value);
+    void set(GLint loc, const std::vector<GLint>& values);
+    void set(GLint loc, const GLuint value);
+    void set(GLint loc, const std::vector<GLuint>& values);
+    void set(GLint loc, const GLfloat value);
+    void set(GLint loc, const std::vector<GLfloat>& values);
+    void set(GLint loc, const glm::ivec2& value);
+    void set(GLint loc, const std::vector<glm::ivec2>& values);
+    void set(GLint loc, const glm::vec2& value);
+    void set(GLint loc, const std::vector<glm::vec2>& values);
+    void set(GLint loc, const glm::ivec3& value);
+    void set(GLint loc, const std::vector<glm::ivec3>& values);
+    void set(GLint loc, const glm::vec3& value);
+    void set(GLint loc, const std::vector<glm::vec3>& values);
+    void set(GLint loc, const glm::ivec4& value);
+    void set(GLint loc, const std::vector<glm::ivec4>& values);
+    void set(GLint loc, const glm::vec4& value);
+    void set(GLint loc, const std::vector<glm::vec4>& values);
+    void set(GLint loc, const glm::mat2& value);
+    void set(GLint loc, const std::vector<glm::mat2>& values);
+    void set(GLint loc, const glm::mat3& value);
+    void set(GLint loc, const std::vector<glm::mat3>& values);
+    void set(GLint loc, const glm::mat4& value);
+    void set(GLint loc, const std::vector<glm::mat4>& values);
 
     /**
      * @brief Sets the value of a uniform variable.

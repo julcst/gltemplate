@@ -42,7 +42,7 @@ class Buffer {
      * (RAII idiom, see https://www.khronos.org/opengl/wiki/Common_Mistakes#RAII_and_hidden_destructor_calls)
      * @param other The Buffer object to move from.
      */
-    Buffer(Buffer&& other);
+    Buffer(Buffer &&other) noexcept;
 
     /**
      * @brief Move assignment operator, deletes the current Buffer object and invalidates the other Buffer object.
@@ -50,7 +50,7 @@ class Buffer {
      * @param other The Buffer object to move from.
      * @return A reference to the moved Buffer object.
      */
-    Buffer& operator=(Buffer&& other);
+    Buffer &operator=(Buffer &&other) noexcept;
 
     /**
      * @brief Destructor, releases the OpenGL object.

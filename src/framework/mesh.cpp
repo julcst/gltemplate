@@ -23,7 +23,7 @@ void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned i
     ebo.load(indices, GL_STATIC_DRAW);
 
     // Bind buffers to VAO
-    size_t stride = 3 * sizeof(float);
+    GLsizei stride = 3 * sizeof(float);
 
 #ifdef MODERN_GL
     glVertexArrayVertexBuffer(vao.handle, 0, vbo.handle, 0, stride);
@@ -47,7 +47,7 @@ void Mesh::load(const std::vector<VertexPCN>& vertices, const std::vector<unsign
     ebo.load(indices, GL_STATIC_DRAW);
 
     // Bind buffers to VAO
-    size_t stride = sizeof(VertexPCN);
+    GLsizei stride = sizeof(VertexPCN);
 
 #ifdef MODERN_GL
     glVertexArrayVertexBuffer(vao.handle, 0, vbo.handle, 0, stride);
@@ -86,7 +86,7 @@ void Mesh::load(const std::vector<VertexPCNT>& vertices, const std::vector<unsig
 
     // Bind buffers to VAO
     // TODO: Use DSA instead (but only OpenGL 4.5+, so not on macOS)
-    size_t stride = sizeof(VertexPCNT);
+    GLsizei stride = sizeof(VertexPCNT);
 
 #ifdef MODERN_GL
     glVertexArrayVertexBuffer(vao.handle, 0, vbo.handle, 0, stride);
@@ -144,7 +144,7 @@ void Mesh::draw() {
     glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
 }
 
-void Mesh::draw(GLuint instances) {
+void Mesh::draw(GLsizei instances) {
     vao.bind();
     glDrawElementsInstanced(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0, instances);
 }

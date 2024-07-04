@@ -39,7 +39,7 @@ class Query {
      * (RAII idiom, see https://www.khronos.org/opengl/wiki/Common_Mistakes#RAII_and_hidden_destructor_calls)
      * @param other The Query object to move from.
      */
-    Query(Query&& other);
+    Query(Query &&other) noexcept;
 
     /**
      * @brief Move assignment operator, deletes the current Query object and invalidates the other Query object.
@@ -47,7 +47,7 @@ class Query {
      * @param other The Query object to move from.
      * @return A reference to the moved Query object.
      */
-    Query& operator=(Query&& other);
+    Query &operator=(Query &&other) noexcept;
 
     /**
      * @brief Destructor, frees the OpenGL object.

@@ -39,7 +39,7 @@ class VertexArray {
      * (RAII idiom, see https://www.khronos.org/opengl/wiki/Common_Mistakes#RAII_and_hidden_destructor_calls)
      * @param other The VertexArray object to move from.
      */
-    VertexArray(VertexArray&& other);
+    VertexArray(VertexArray &&other) noexcept;
 
     /**
      * @brief Move assignment operator, deletes the current VertexArray object and invalidates the other VertexArray object.
@@ -47,7 +47,7 @@ class VertexArray {
      * @param other The VertexArray object to move from.
      * @return A reference to the moved VertexArray object.
      */
-    VertexArray& operator=(VertexArray&& other);
+    VertexArray &operator=(VertexArray &&other) noexcept;
 
     /**
      * @brief Destructor, releases the OpenGL object.

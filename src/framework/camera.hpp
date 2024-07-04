@@ -7,10 +7,10 @@ using namespace glm;
 const float ALTITUDE_DELTA = 0.1f;
 
 /**
- * @class Camera
+ * @struct Camera
  * @brief Represents a camera orbiting around a target in spherical coordinates.
  */
-class Camera {
+struct Camera {
    public:
     Camera();
     Camera(const vec3& sphericalPosition, const vec3& target, const vec3& up, float minDist, float maxDist, float fov);

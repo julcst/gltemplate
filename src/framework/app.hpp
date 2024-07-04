@@ -68,7 +68,7 @@ class App {
     /**
      * @brief Enable or disable the ImGui interface.
      */
-    bool imguiEnabled;
+    bool imguiEnabled = true;
 
     /**
      * @brief The width and height of the window in pixels.
@@ -93,7 +93,7 @@ class App {
     /**
      * @brief Enable or disable logging of all OpenGL calls.
      */
-    bool traceOpenGLCalls;
+    bool traceOpenGLCalls = false;
 
     /**
      * @brief The position of the mouse cursor in screen coordinates.

@@ -12,11 +12,11 @@ VertexArray::VertexArray() {
 #endif
 }
 
-VertexArray::VertexArray(VertexArray&& other) : handle(other.handle) {
+VertexArray::VertexArray(VertexArray &&other) noexcept : handle(other.handle) {
     other.handle = 0;
 }
 
-VertexArray& VertexArray::operator=(VertexArray&& other) {
+VertexArray &VertexArray::operator=(VertexArray &&other) noexcept {
     if (this != &other) {
         release();
         handle = other.handle;

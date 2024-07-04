@@ -41,7 +41,7 @@ class Framebuffer {
      * (RAII idiom, see https://www.khronos.org/opengl/wiki/Common_Mistakes#RAII_and_hidden_destructor_calls)
      * @param other The Framebuffer object to move from.
      */
-    Framebuffer(Framebuffer&& other);
+    Framebuffer(Framebuffer &&other) noexcept;
 
     /**
      * @brief Move assignment operator, deletes the current Framebuffer object and invalidates the other Framebuffer object.
@@ -49,7 +49,7 @@ class Framebuffer {
      * @param other The Framebuffer object to move from.
      * @return A reference to the moved Framebuffer object.
      */
-    Framebuffer& operator=(Framebuffer&& other);
+    Framebuffer &operator=(Framebuffer &&other) noexcept;
 
     /**
      * @brief Destructor, releases the OpenGL object.

@@ -17,11 +17,11 @@ Framebuffer::Framebuffer() {
 #endif
 }
 
-Framebuffer::Framebuffer(Framebuffer&& other) : handle(other.handle) {
+Framebuffer::Framebuffer(Framebuffer &&other) noexcept : handle(other.handle) {
     other.handle = 0;
 }
 
-Framebuffer& Framebuffer::operator=(Framebuffer&& other) {
+Framebuffer &Framebuffer::operator=(Framebuffer &&other) noexcept {
     if (this != &other) {
         release();
         handle = other.handle;

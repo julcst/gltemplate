@@ -8,20 +8,19 @@ using namespace gl46core;
 #include <stdexcept>
 #include <string>
 #include <filesystem>
+#include <array>
 
 #include "framework/common.hpp"
 #include "framework/context.hpp"
 
 /////////////////////// RAII behavior ///////////////////////
-Shader::Shader(GLenum type) {
-    handle = glCreateShader(type);
-}
+Shader::Shader(GLenum type) : handle(glCreateShader(type)) {}
 
-Shader::Shader(Shader&& other) : handle(other.handle) {
+Shader::Shader(Shader &&other) noexcept : handle(other.handle) {
     other.handle = 0;
 }
 
-Shader& Shader::operator=(Shader&& other) {
+Shader &Shader::operator=(Shader &&other) noexcept {
     if (this != &other) {
         release();
         handle = other.handle;
@@ -67,7 +66,7 @@ void Shader::load(const std::filesystem::path& filepath) {
     Common::writeToFile(source, Context::COMPOSED_SHADER_DIR / filepath.filepath);
 #endif
     const char* sourcePtr = source.c_str();
-    glShaderSource(handle, 1, &sourcePtr, NULL);
+    glShaderSource(handle, 1, &sourcePtr, nullptr);
     compile();
 }
 
@@ -76,8 +75,8 @@ void Shader::compile() {
     int success;
     glGetShaderiv(handle, GL_COMPILE_STATUS, &success);
     if (!success) {
-        char infoLog[512];
-        glGetShaderInfoLog(handle, 512, NULL, infoLog);
-        throw std::runtime_error("Shader compilation failed: " + std::string(infoLog));
+        std::array<char, 512> infoLog;
+        glGetShaderInfoLog(handle, 512, nullptr, infoLog.data());
+        throw std::runtime_error("Shader compilation failed: " + std::string(infoLog.data()));
     }
 }

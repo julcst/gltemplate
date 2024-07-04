@@ -55,9 +55,9 @@ class Mesh {
     void load(const std::filesystem::path& filepath);
     void loadWithTangents(const std::filesystem::path& filepath);
     void draw();
-    void draw(GLuint instances);
+    void draw(GLsizei instances);
     
-    unsigned int numIndices = 0;
+    GLsizei numIndices = 0;
     VertexArray vao;
     Buffer vbo{GL_ARRAY_BUFFER};
     Buffer ebo{GL_ELEMENT_ARRAY_BUFFER};

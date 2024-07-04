@@ -9,11 +9,11 @@ Query::Query() {
     glGenQueries(1, &handle);
 }
 
-Query::Query(Query&& other) : handle(other.handle) {
+Query::Query(Query &&other) noexcept : handle(other.handle) {
     other.handle = 0;
 }
 
-Query& Query::operator=(Query&& other) {
+Query &Query::operator=(Query &&other) noexcept {
     if (this != &other) {
         release();
         handle = other.handle;

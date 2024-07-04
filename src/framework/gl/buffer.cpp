@@ -15,11 +15,11 @@ Buffer::Buffer(GLenum target) : target(target) {
 #endif
 }
 
-Buffer::Buffer(Buffer&& other) : handle(other.handle), target(other.target) {
+Buffer::Buffer(Buffer &&other) noexcept : handle(other.handle), target(other.target) {
     other.handle = 0;
 }
 
-Buffer& Buffer::operator=(Buffer&& other) {
+Buffer &Buffer::operator=(Buffer &&other) noexcept {
     if (this != &other) {
         release();
         handle = other.handle;

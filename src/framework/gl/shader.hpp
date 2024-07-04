@@ -44,7 +44,7 @@ class Shader {
      * (RAII idiom, see https://www.khronos.org/opengl/wiki/Common_Mistakes#RAII_and_hidden_destructor_calls)
      * @param other The Shader object to move from.
      */
-    Shader(Shader&& other);
+    Shader(Shader &&other) noexcept;
 
     /**
      * @brief Move assignment operator, deletes the current Texture object and invalidates the other Texture object.
@@ -52,7 +52,7 @@ class Shader {
      * @param other The Texture object to move from.
      * @return A reference to the moved Texture object.
      */
-    Shader& operator=(Shader&& other);
+    Shader &operator=(Shader &&other) noexcept;
 
     /**
      * @brief Destructor, frees the OpenGL object.

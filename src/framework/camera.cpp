@@ -6,7 +6,7 @@
 
 using namespace glm;
 
-Camera::Camera() {}
+Camera::Camera() = default;
 
 Camera::Camera(const vec3& sphericalPosition, const vec3& target, const vec3& up, float near, float far, float fov)
     : sphericalPosition(sphericalPosition), target(target), up(up), minDist(near), maxDist(far), fov(fov), near(near), far(far) {}
