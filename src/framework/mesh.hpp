@@ -59,6 +59,6 @@ class Mesh {
     
     GLsizei numIndices = 0;
     VertexArray vao;
-    Buffer vbo{GL_ARRAY_BUFFER};
-    Buffer ebo{GL_ELEMENT_ARRAY_BUFFER};
+    Buffer<GL_ARRAY_BUFFER> vbo;
+    Buffer<GL_ELEMENT_ARRAY_BUFFER> ebo;
 };

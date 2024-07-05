@@ -47,10 +47,6 @@ void Framebuffer::bindDefault(GLenum target) {
     glBindFramebuffer(target, 0);
 }
 
-void Framebuffer::attach(GLenum attachment, const Texture& texture, GLint level) {
-    attach(attachment, texture.handle, level);
-}
-
 void Framebuffer::attach(GLenum attachment, GLuint texture, GLint level) {
 #ifdef MODERN_GL
     glNamedFramebufferTexture(handle, attachment, texture, level);

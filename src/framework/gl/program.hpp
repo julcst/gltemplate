@@ -1,15 +1,15 @@
 #pragma once
 
 #include <glbinding/gl46core/gl.h>
+using namespace gl46core;
+
+#include <glm/glm.hpp>
 
 #include <string>
 #include <filesystem>
 
 #include "buffer.hpp"
 #include "shader.hpp"
-
-using namespace gl46core;
-
 /**
  * @file program.hpp
  * @brief Defines a Program class wrapper around the OpenGL program object.
@@ -78,15 +78,17 @@ class Program {
      * Internally, this function creates a Shader object, calls Shader::load, attaches it to the program, and deletes the Shader object as it is no longer needed.
      * @throw `std::runtime_error` when the shader could not be loaded.
      * @param filepath The file path to the shader source code.
-     * @param type The type of shader, e.g. `GL_VERTEX_SHADER`, `GL_FRAGMENT_SHADER`, `GL_COMPUTE_SHADER`.
+     * @tparam type The type of shader, e.g. `GL_VERTEX_SHADER`, `GL_FRAGMENT_SHADER`, `GL_COMPUTE_SHADER`.
      */
-    void attach(const std::filesystem::path& filepath, GLenum type);
+    template <GLenum type>
+    void attach(const std::filesystem::path& filepath);
 
     /**
      * @brief Attaches a shader to the program.
      * @param shader The Shader object to attach.
      */
-    void attach(const Shader& shader);
+    template <GLenum type>
+    void attach(const Shader<type>& shader);
 
     /**
      * @brief Attaches a shader to the program.
@@ -183,4 +185,16 @@ class Program {
 template <typename T>
 inline void Program::set(const std::string& loc, const T& value) {
     Program::set(Program::uniform(loc), value);
+}
+
+template <GLenum type>
+void Program::attach(const std::filesystem::path& filepath) {
+    Shader<type> shader;
+    shader.load(filepath);
+    attach(shader);
+}
+
+template <GLenum type>
+void Program::attach(const Shader<type>& shader) {
+    attach(shader.handle);
 }

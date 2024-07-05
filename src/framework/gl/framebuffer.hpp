@@ -74,7 +74,8 @@ class Framebuffer {
      * @param texture The texture to attach.
      * @param level The mipmap level to attach.
      */
-    void attach(GLenum attachment, const Texture& texture, GLint level = 0);
+    template<GLenum target>
+    void attach(GLenum attachment, const Texture<target>& texture, GLint level = 0);
 
     /**
      * @brief Attaches a texture to the framebuffer.
@@ -101,3 +102,8 @@ class Framebuffer {
      */
     void release();
 };
+
+template <GLenum target>
+void Framebuffer::attach(GLenum attachment, const Texture<target>& texture, GLint level) {
+    attach(attachment, texture.handle, level);
+}

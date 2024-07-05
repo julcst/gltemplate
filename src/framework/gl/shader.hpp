@@ -3,9 +3,15 @@
 #include <glbinding/gl46core/gl.h>
 using namespace gl46core;
 
-#include <glm/glm.hpp>
-
+#include <regex>
+#include <unordered_set>
+#include <stdexcept>
+#include <string>
 #include <filesystem>
+#include <array>
+
+#include "framework/common.hpp"
+#include "framework/context.hpp"
 
 /**
  * @file shader.hpp
@@ -16,16 +22,16 @@ using namespace gl46core;
  * @class Shader
  * @brief RAII wrapper for OpenGL shader with helper functions for loading and compiling shaders.
  * See https://www.khronos.org/opengl/wiki/Shader_Compilation for more information.
+ * @tparam target The type of shader, e.g. `GL_VERTEX_SHADER`, `GL_FRAGMENT_SHADER`, `GL_COMPUTE_SHADER`.
  */
+template <GLenum type>
 class Shader {
    public:
     /**
      * @brief Constructs a Shader object with the specified target.
      * The identifier of the OpenGL object is stored in `Shader::handle`.
-     * Initialize a Shader object like this in the header file: `Shader shader { GL_VERTEX_SHADER };`
-     * @param target The type of shader, e.g. `GL_VERTEX_SHADER`, `GL_FRAGMENT_SHADER`, `GL_COMPUTE_SHADER`.
      */
-    Shader(GLenum type);
+    Shader();
 
     /**
      * @brief Copy constructor (deleted).
@@ -87,3 +93,78 @@ class Shader {
      */
     void release();
 };
+
+/////////////////////// RAII behavior ///////////////////////
+template <GLenum type>
+Shader<type>::Shader() : handle(glCreateShader(type)) {}
+
+template <GLenum type>
+Shader<type>::Shader(Shader<type> &&other) noexcept : handle(other.handle) {
+    other.handle = 0;
+}
+
+template <GLenum type>
+Shader<type> &Shader<type>::operator=(Shader<type> &&other) noexcept {
+    if (this != &other) {
+        release();
+        handle = other.handle;
+        other.handle = 0;
+    }
+    return *this;
+}
+
+template <GLenum type>
+Shader<type>::~Shader() {
+    release();
+}
+
+template <GLenum type>
+void Shader<type>::release() {
+    if (handle) glDeleteShader(handle);
+}
+/////////////////////////////////////////////////////////////
+
+const std::regex includeRegex("(?:^|\n)#include \"([^\"]+)\"");
+
+inline std::string readShader(const std::filesystem::path& filepath, std::unordered_set<std::filesystem::path>& included) {
+    std::string source = Common::readFile(filepath);
+    std::smatch match;
+    while (std::regex_search(source, match, includeRegex)) {
+        std::filesystem::path includePath = filepath.parent_path() / match[1].str();
+        if (included.insert(includePath).second) {
+            try {
+                std::string include = readShader(includePath, included);
+                source = match.prefix().str() + include + match.suffix().str();
+            } catch (const std::runtime_error& e) {
+                throw std::runtime_error("Error including \"" + match[1].str() + "\" in \"" + filepath.string().c_str() + "\": " + e.what());
+            }
+        } else {
+            source = match.prefix().str() + match.suffix().str();
+        }
+    }
+    return source;
+}
+
+template <GLenum type>
+void Shader<type>::load(const std::filesystem::path& filepath) {
+    std::unordered_set<std::filesystem::path> included;
+    std::string source = readShader(filepath, included);
+#ifdef COMPOSE_SHADERS
+    Common::writeToFile(source, Context::COMPOSED_SHADER_DIR / filepath.filepath);
+#endif
+    const char* sourcePtr = source.c_str();
+    glShaderSource(handle, 1, &sourcePtr, nullptr);
+    compile();
+}
+
+template <GLenum type>
+void Shader<type>::compile() {
+    glCompileShader(handle);
+    int success;
+    glGetShaderiv(handle, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        std::array<char, 512> infoLog;
+        glGetShaderInfoLog(handle, 512, nullptr, infoLog.data());
+        throw std::runtime_error("Shader compilation failed: " + std::string(infoLog.data()));
+    }
+}

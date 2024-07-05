@@ -48,8 +48,8 @@ class MainApp : public App {
     Mesh fullscreenTriangle;
     Program backgroundShader;
     Mesh mesh;
-    Texture texture {GL_TEXTURE_2D};
-    Texture cubemap {GL_TEXTURE_CUBE_MAP};
+    Texture<GL_TEXTURE_2D> texture;
+    Texture<GL_TEXTURE_CUBE_MAP> cubemap;
     Program meshShader;
     WorldBuffer world;
     ObjectBuffer object;

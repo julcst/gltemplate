@@ -37,10 +37,10 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
 
     traceOpenGLCalls = true; // Enable OpenGL call tracing
 
-    texture.load(Texture::Format::SRGB8, "textures/checkerbw.png");
+    texture.load(TextureFormat::SRGB8, "textures/checkerbw.png");
     texture.bindTextureUnit(0);
 
-    cubemap.loadCubemap(Texture::Format::FLOAT32, "textures/studio");
+    cubemap.loadCubemap(TextureFormat::FLOAT32, "textures/studio");
     cubemap.bindTextureUnit(0);
 }
 

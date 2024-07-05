@@ -5,12 +5,9 @@ set(SRC
     imguiutil.cpp
     mesh.cpp
     objparser.cpp
-    gl/buffer.cpp
     gl/framebuffer.cpp
     gl/program.cpp
     gl/query.cpp
-    gl/shader.cpp
-    gl/texture.cpp
     gl/vertexarray.cpp
 )
 
