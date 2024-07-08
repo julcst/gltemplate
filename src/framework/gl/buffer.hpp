@@ -141,7 +141,7 @@ class Buffer {
     /**
      * @brief The unique handle that identifies the buffer object on the GPU.
      */
-    GLuint handle;
+    GLuint handle = 0;
 
    private:
     void release();

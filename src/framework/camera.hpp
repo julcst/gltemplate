@@ -4,7 +4,7 @@
 
 using namespace glm;
 
-const float ALTITUDE_DELTA = 0.1f;
+const float ALTITUDE_DELTA = 0.01f;
 
 /**
  * @struct Camera
@@ -13,7 +13,7 @@ const float ALTITUDE_DELTA = 0.1f;
 struct Camera {
    public:
     Camera();
-    Camera(const vec3& sphericalPosition, const vec3& target, const vec3& up, float minDist, float maxDist, float fov);
+    Camera(const vec3& worldPosition, const vec3& target, const vec3& up, float minDist, float maxDist, float fov);
 
     /**
      * @brief Rotate the camera around the target.
@@ -52,11 +52,6 @@ struct Camera {
     bool updateIfChanged();
 
     /**
-     * @brief Relative position in spherical coordinates: (distance, azimuth, altitude). Position is relative to the target, the camera orbits around the target.
-     */
-    vec3 sphericalPosition = vec3(5.0f, 0.0f, 0.0f);
-
-    /**
      * @brief Target position in world coordinates. The target is where the camera looks at and orbits around.
      */
     vec3 target = vec3(0.0f);
@@ -69,7 +64,7 @@ struct Camera {
     /**
      * @brief Minimal distance between camera and target. The camera will not get closer to the target than this distance when calling zoom.
      */
-    float minDist = 0.1f;
+    float minDist = 1.0f;
 
     /**
      * @brief Maximal distance between camera and target. The camera will not get further away from the target than this distance when calling zoom.
@@ -98,9 +93,9 @@ struct Camera {
 
     /**
      * @brief The world space position of the camera.
-     * @note This value is automatically calculated by `update()`.
+     * @note This value is changed by `rotate()` and `zoom()`.
      */
-    vec3 worldPosition;
+    vec3 worldPosition = vec3(5.0f, 0.0f, 0.0f);
 
     /**
      * @brief The view matrix of the camera transforms world space to camera space.
