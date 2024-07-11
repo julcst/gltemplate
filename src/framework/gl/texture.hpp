@@ -89,7 +89,7 @@ class Texture {
      * @brief Loads a 2D texture from memory.
      * @note Prefer `Texture::load`, as this function is incomplete and requires the texture first to be bound.
      * @param texTarget The target texture type to load the texture into, cubemaps require special targets per face.
-     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F` and for normal maps `GL_RGB8_SNORM`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param width The width of the texture.
      * @param height The height of the texture.
      * @param data The image data.
@@ -101,7 +101,7 @@ class Texture {
      * @note Prefer `Texture::load`, as this function is incomplete and requires the texture first to be bound.
      * @throw `std::runtime_error` when the file could not be parsed.
      * @param texTarget The target texture type to load the texture into, cubemaps require special targets per face.
-     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F` and for normal maps `GL_RGB8_SNORM`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param filepath The path to the image file.
      */
     void _load2D(GLenum texTarget, GLenum format, const std::filesystem::path& filepath);
@@ -110,7 +110,7 @@ class Texture {
      * @brief Loads a 3D texture slice from memory.
      * @note Prefer `Texture::load`, as this function is incomplete and requires the texture first to be bound.
      * @param zindex The z-index of the texture slice.
-     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F` and for normal maps `GL_RGB8_SNORM`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param width The width of the texture.
      * @param height The height of the texture.
      * @param data The image data.
@@ -122,7 +122,7 @@ class Texture {
      * @note This function is incomplete and requires the texture first to be bound.
      * @throw `std::runtime_error` when the file could not be parsed.
      * @param zindex The z-index of the texture slice.
-     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F` and for normal maps `GL_RGB8_SNORM`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param filepath The path to the image file.
      */
     void _load3D(GLint zindex, GLenum format, const std::filesystem::path& filepath);
@@ -130,7 +130,7 @@ class Texture {
     /**
      * @brief Loads a texture from a file.
      * @throw `std::runtime_error` when the file could not be parsed.
-     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F` and for normal maps `GL_RGB8_SNORM`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param filepath The path to the image file.
      * @param mipmaps The number of mipmaps to generate (default is 0, which means to generate no mipmaps).
      */
@@ -141,7 +141,7 @@ class Texture {
      * Such cubemaps can be generated for example with this tool https://matheowis.github.io/HDRI-to-CubeMap/ (choose `.hdr` and last export option)
      * You can find free cubemaps at https://hdri-haven.com
      * @throw `std::runtime_error` when the file could not be parsed.
-     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F` and for normal maps `GL_RGB8_SNORM`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param filepaths An array of paths to the image files (6 files for each face of the cubemap in the order +X, -X, +Y, -Y, +Z, -Z).
      * @param mipmaps The number of mipmaps to generate (default is 0, which means to generate no mipmaps).
      * @note You may have to flip the cubemap by accessing it with `texture(tCubemap, rayDir * vec3(-1, 1, 1)).rgb;`
@@ -153,7 +153,7 @@ class Texture {
      * Such cubemaps can be generated for example with this tool https://matheowis.github.io/HDRI-to-CubeMap/ (choose .hdr and last export option)
      * You can find free cubemaps at https://hdri-haven.com
      * @throw `std::runtime_error` when the file could not be parsed.
-     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F` and for normal maps `GL_RGB8_SNORM`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param directory The path to the directory containing the image files as `px.hdr`, `nx.hdr`, `py.hdr`, `ny.hdr`, `pz.hdr`, and `nz.hdr`.
      * @param mipmaps The number of mipmaps to generate (default is 0, which means to generate no mipmaps).
      * @note You may have to flip the cubemap by accessing it with `texture(tCubemap, rayDir * vec3(-1, 1, 1)).rgb;`
@@ -305,13 +305,14 @@ inline GLenum getType(GLenum internalFormat) {
         case GL_RG8:
         case GL_RGB8:
         case GL_RGBA8:
+        case GL_SRGB8:
+        case GL_SRGB8_ALPHA8:
+            return GL_UNSIGNED_BYTE;
         case GL_R8_SNORM:
         case GL_RG8_SNORM:
         case GL_RGB8_SNORM:
         case GL_RGBA8_SNORM:
-        case GL_SRGB8:
-        case GL_SRGB8_ALPHA8:
-            return GL_UNSIGNED_BYTE;
+            return GL_BYTE;
         case GL_R16F:
         case GL_RG16F:
         case GL_RGB16F:
@@ -359,6 +360,11 @@ void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, const std
         case GL_UNSIGNED_BYTE:
             data = stbi_load(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
             break;
+        case GL_BYTE:
+            data = stbi_load(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
+            // Convert from unsigned to signed bytes
+            for (int i = 0; i < width * height * channels; i++) static_cast<char*>(data)[i] -= 128;
+            break;
         case GL_FLOAT:
             data = stbi_loadf(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
             break;
@@ -397,6 +403,11 @@ void Texture<target>::_load3D(GLint zindex, GLenum internalFormat, const std::fi
     switch (dataType) {
         case GL_UNSIGNED_BYTE:
             data = stbi_load(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
+            break;
+        case GL_BYTE:
+            data = stbi_load(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
+            // Convert from unsigned to signed bytes
+            for (int i = 0; i < width * height * channels; i++) static_cast<char*>(data)[i] -= 128;
             break;
         case GL_FLOAT:
             data = stbi_loadf(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
