@@ -20,23 +20,6 @@ using namespace gl46core;
  */
 
 /**
- * @enum TextureFormat
- * @brief Formats that can be used to specify how to load a texture.
- * For standard color textures, use `SRGB8`.
- * For normal maps, use `NORMAL8`.
- * For HDR textures, use `FLOAT16` or `FLOAT32`.
- * See https://www.khronos.org/opengl/wiki/Image_Format for more information.
- */
-enum class TextureFormat {
-    LINEAR8,            // 8-bit unsigned normalized integer
-    NORMAL8,            // 8-bit signed normalized integer
-    SRGB8,              // 8-bit sRGB with linear alpha
-    FLOAT16,            // 16-bit floating point
-    FLOAT32,            // 32-bit floating point
-};
-
-
-/**
  * @class Texture
  * @brief RAII wrapper for OpenGL texture with helper functions for loading 2D textures and cubemaps.
  * For OpenGL 4.1 the textures are mutable, mutable texture creation with `glTexImage2D` though should be avoided because it is slower and more error-prone.
@@ -103,57 +86,79 @@ class Texture {
     void bindTextureUnit(GLuint index);
 
     /**
+     * @brief Loads a 2D texture from memory.
+     * @note Prefer `Texture::load`, as this function is incomplete and requires the texture first to be bound.
+     * @param texTarget The target texture type to load the texture into, cubemaps require special targets per face.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param width The width of the texture.
+     * @param height The height of the texture.
+     * @param data The image data.
+     */
+    void _load2D(GLenum texTarget, GLenum format, GLint width, GLint height, void* data);
+
+    /**
      * @brief Loads a 2D texture from a file.
      * @note Prefer `Texture::load`, as this function is incomplete and requires the texture first to be bound.
      * @throw `std::runtime_error` when the file could not be parsed.
      * @param texTarget The target texture type to load the texture into, cubemaps require special targets per face.
-     * @param format The format of the texture.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param filepath The path to the image file.
      */
-    void _load2D(GLenum texTarget, TextureFormat format, const std::filesystem::path& filepath);
+    void _load2D(GLenum texTarget, GLenum format, const std::filesystem::path& filepath);
+
+    /**
+     * @brief Loads a 3D texture slice from memory.
+     * @note Prefer `Texture::load`, as this function is incomplete and requires the texture first to be bound.
+     * @param zindex The z-index of the texture slice.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param width The width of the texture.
+     * @param height The height of the texture.
+     * @param data The image data.
+     */
+    void _load3D(GLint zindex, GLenum format, GLint width, GLint height, void* data);
 
     /**
      * @brief Loads a 3D texture slice from a file.
      * @note This function is incomplete and requires the texture first to be bound.
      * @throw `std::runtime_error` when the file could not be parsed.
      * @param zindex The z-index of the texture slice.
-     * @param format The format of the texture.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param filepath The path to the image file.
      */
-    void _load3D(GLint zindex, TextureFormat format, const std::filesystem::path& filepath);
+    void _load3D(GLint zindex, GLenum format, const std::filesystem::path& filepath);
 
     /**
      * @brief Loads a texture from a file.
      * @throw `std::runtime_error` when the file could not be parsed.
-     * @param format The format of the texture.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param filepath The path to the image file.
      * @param mipmaps The number of mipmaps to generate (default is 0, which means to generate no mipmaps).
      */
-    void load(TextureFormat format, const std::filesystem::path& filepath, GLint mipmaps = 0);
+    void load(GLenum format, const std::filesystem::path& filepath, GLint mipmaps = 0);
 
     /**
      * @brief Loads a cubemap texture from multiple image files.
      * Such cubemaps can be generated for example with this tool https://matheowis.github.io/HDRI-to-CubeMap/ (choose `.hdr` and last export option)
      * You can find free cubemaps at https://hdri-haven.com
      * @throw `std::runtime_error` when the file could not be parsed.
-     * @param format The format of the texture.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param filepaths An array of paths to the image files (6 files for each face of the cubemap in the order +X, -X, +Y, -Y, +Z, -Z).
      * @param mipmaps The number of mipmaps to generate (default is 0, which means to generate no mipmaps).
      * @note You may have to flip the cubemap by accessing it with `texture(tCubemap, rayDir * vec3(-1, 1, 1)).rgb;`
      */
-    void loadCubemap(TextureFormat format, const std::array<std::filesystem::path, 6>& filepaths, GLint mipmaps = 0);
+    void loadCubemap(GLenum format, const std::array<std::filesystem::path, 6>& filepaths, GLint mipmaps = 0);
 
     /**
      * @brief Loads a cubemap texture from a directory containing 6 image files.
      * Such cubemaps can be generated for example with this tool https://matheowis.github.io/HDRI-to-CubeMap/ (choose .hdr and last export option)
      * You can find free cubemaps at https://hdri-haven.com
      * @throw `std::runtime_error` when the file could not be parsed.
-     * @param format The format of the texture.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
      * @param directory The path to the directory containing the image files as `px.hdr`, `nx.hdr`, `py.hdr`, `ny.hdr`, `pz.hdr`, and `nz.hdr`.
      * @param mipmaps The number of mipmaps to generate (default is 0, which means to generate no mipmaps).
      * @note You may have to flip the cubemap by accessing it with `texture(tCubemap, rayDir * vec3(-1, 1, 1)).rgb;`
      */
-    void loadCubemap(TextureFormat format, const std::filesystem::path& directory, GLint mipmaps = 0);
+    void loadCubemap(GLenum format, const std::filesystem::path& directory, GLint mipmaps = 0);
 
     /**
      * @brief Writes the texture data to a file.
@@ -250,44 +255,14 @@ void Texture<target>::bindTextureUnit(GLuint index) {
 #endif
 }
 
-inline GLenum getInternalFormat(TextureFormat format, int channels) {
-    switch (format) {
-        case TextureFormat::LINEAR8:
-            switch (channels) {
-                case 1: return GL_R8;
-                case 2: return GL_RG8;
-                case 3: return GL_RGB8;
-                case 4: return GL_RGBA8;
-            }
-        case TextureFormat::SRGB8:
-            switch (channels) {
-                case 3: return GL_SRGB8;
-                case 4: return GL_SRGB8_ALPHA8;
-            }
-        case TextureFormat::FLOAT16:
-            switch (channels) {
-                case 1: return GL_R16F;
-                case 2: return GL_RG16F;
-                case 3: return GL_RGB16F;
-                case 4: return GL_RGBA16F;
-            }
-        case TextureFormat::FLOAT32:
-            switch (channels) {
-                case 1: return GL_R32F;
-                case 2: return GL_RG32F;
-                case 3: return GL_RGB32F;
-                case 4: return GL_RGBA32F;
-            }
-        case TextureFormat::NORMAL8:
-            switch (channels) {
-                case 1: return GL_R8_SNORM;
-                case 2: return GL_RG8_SNORM;
-                case 3: return GL_RGB8_SNORM;
-                case 4: return GL_RGBA8_SNORM;
-            }
+inline GLsizei getChannels(GLenum baseFormat) {
+    switch(baseFormat) {
+        case GL_RED: return 1;
+        case GL_RG: return 2;
+        case GL_RGB: return 3;
+        case GL_RGBA: return 4;
+        default: throw std::runtime_error("Unsupported base format");
     }
-    throw std::runtime_error("Unsupported texture format");
-    return GL_NONE;
 }
 
 inline GLenum getBaseFormat(GLenum internalFormat) {
@@ -356,92 +331,95 @@ inline GLenum getType(GLenum internalFormat) {
 }
 
 template<GLenum target>
-void Texture<target>::_load2D(GLenum texTarget, TextureFormat format, const std::filesystem::path& filepath) {
-    GLsizei width, height, channels;
-    GLenum dataType;
+void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, GLint width, GLint height, void* data) {
+    GLenum baseFormat = getBaseFormat(internalFormat);
+    GLenum dataType = getType(internalFormat);
+    #ifdef MODERN_GL
+        // This would be the immutable version:
+        // glTexStorage2D(GL_TEXTURE_2D, levels, internalFormat, width, height);
+        // glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, baseFormat, dataType, data);
+        // Note: On OpenGL 4.5+ one would use the DSA versions glTextureStorage2D and glTextureSubImage2D
+        glTextureSubImage2D(handle, 0, 0, 0, width, height, baseFormat, dataType, data);
+    #else
+        glTexImage2D(texTarget, 0, internalFormat, width, height, 0, baseFormat, dataType, data);
+    #endif
+}
+
+template<GLenum target>
+void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, const std::filesystem::path& filepath) {
+    GLsizei width, height, channelsInFile;
+    GLenum baseFormat = getBaseFormat(internalFormat);
+    GLsizei channels = getChannels(baseFormat);
+    GLenum dataType = getType(internalFormat);
     void* data;
 
     // Load image from file and read format
     Context::setWorkingDirectory(); // Ensure the working directory is set correctly
-    switch (format) {
-        case TextureFormat::LINEAR8:
-        case TextureFormat::SRGB8:
-        case TextureFormat::NORMAL8:
-            dataType = GL_UNSIGNED_BYTE;
-            data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
+    switch (dataType) {
+        case GL_UNSIGNED_BYTE:
+            data = stbi_load(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
             break;
-        case TextureFormat::FLOAT16:
-        case TextureFormat::FLOAT32:
-            dataType = GL_FLOAT;
-            data = stbi_loadf(filepath.string().c_str(), &width, &height, &channels, 0);
+        case GL_FLOAT:
+            data = stbi_loadf(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
             break;
         default: throw std::runtime_error("Unsupported texture format");
     }
 
     if (!data) throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
 
-    GLenum internalFormat = getInternalFormat(format, channels);
-    GLenum baseFormat = getBaseFormat(internalFormat);
+    _load2D(texTarget, internalFormat, width, height, data);
 
-    // Upload texture data
-#ifdef MODERN_GL
-    // This would be the immutable version:
-    // glTexStorage2D(GL_TEXTURE_2D, levels, internalFormat, width, height);
-    // glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, baseFormat, dataType, data);
-    // Note: On OpenGL 4.5+ one would use the DSA versions glTextureStorage2D and glTextureSubImage2D
-    glTextureSubImage2D(handle, 0, 0, 0, width, height, baseFormat, dataType, data);
-#else
-    glTexImage2D(texTarget, 0, internalFormat, width, height, 0, baseFormat, dataType, data);
-#endif
     // Free image data
     stbi_image_free(data);
 }
 
 template<GLenum target>
-void Texture<target>::_load3D(GLint zindex, TextureFormat format, const std::filesystem::path& filepath) {
-    GLsizei width, height, channels;
-    GLenum dataType;
+void Texture<target>::_load3D(GLint zindex, GLenum internalFormat, GLint width, GLint height, void* data) {
+    GLenum baseFormat = getBaseFormat(internalFormat);
+    GLenum dataType = getType(internalFormat);
+    #ifdef MODERN_GL
+        glTextureSubImage3D(handle, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
+    #else
+        glTexSubImage3D(target, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
+    #endif
+}
+
+template<GLenum target>
+void Texture<target>::_load3D(GLint zindex, GLenum internalFormat, const std::filesystem::path& filepath) {
+    GLsizei width, height, channelsInFile;
+    GLenum baseFormat = getBaseFormat(internalFormat);
+    GLsizei channels = getChannels(baseFormat);
+    GLenum dataType = getType(internalFormat);
     void* data;
 
     // Load image from file and read format
     Context::setWorkingDirectory(); // Ensure the working directory is set correctly
-    switch (format) {
-        case TextureFormat::LINEAR8:
-        case TextureFormat::SRGB8:
-        case TextureFormat::NORMAL8:
-            dataType = GL_UNSIGNED_BYTE;
-            data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
+    switch (dataType) {
+        case GL_UNSIGNED_BYTE:
+            data = stbi_load(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
             break;
-        case TextureFormat::FLOAT16:
-        case TextureFormat::FLOAT32:
-            dataType = GL_FLOAT;
-            data = stbi_loadf(filepath.string().c_str(), &width, &height, &channels, 0);
+        case GL_FLOAT:
+            data = stbi_loadf(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
             break;
         default: throw std::runtime_error("Unsupported texture format");
     }
 
     if (!data) throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
 
-    GLenum internalFormat = getInternalFormat(format, channels);
-    GLenum baseFormat = getBaseFormat(internalFormat);
+    _load3D(zindex, internalFormat, width, height, data);
 
-    // Upload texture data
-#ifdef MODERN_GL
-    glTextureSubImage3D(handle, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
-#else
-    glTexSubImage3D(target, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
-#endif
+    // Free image data
+    stbi_image_free(data);
 }
 
 template<GLenum target>
-void Texture<target>::load(TextureFormat format, const std::filesystem::path& filepath, GLint mipmaps) {
+void Texture<target>::load(GLenum internalFormat, const std::filesystem::path& filepath, GLint mipmaps) {
     stbi_set_flip_vertically_on_load(true); // OpenGL expects the origin to be at the bottom left
 
 #ifdef MODERN_GL
     GLsizei width, height, channels;
     if (!stbi_info(filepath.string().c_str(), &width, &height, &channels))
         throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
-    GLenum internalFormat = getInternalFormat(format, channels);
     glTextureStorage2D(handle, mipmaps + 1, internalFormat, width, height);
 #else
     bind();
@@ -449,7 +427,7 @@ void Texture<target>::load(TextureFormat format, const std::filesystem::path& fi
     glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, mipmaps); // Must be set to avoid crashes on some drivers
 #endif
 
-    _load2D(target, format, filepath);
+    _load2D(target, internalFormat, filepath);
 
     // Generate mipmaps
 #ifdef MODERN_GL
@@ -460,7 +438,7 @@ void Texture<target>::load(TextureFormat format, const std::filesystem::path& fi
 }
 
 template<GLenum target>
-void Texture<target>::loadCubemap(TextureFormat format, const std::array<std::filesystem::path, 6>& filepaths, GLint mipmaps) {
+void Texture<target>::loadCubemap(GLenum internalFormat, const std::array<std::filesystem::path, 6>& filepaths, GLint mipmaps) {
     // For seamless cubemaps, call glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS)
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     stbi_set_flip_vertically_on_load(false); // Do not flip cubemap faces
@@ -473,10 +451,9 @@ void Texture<target>::loadCubemap(TextureFormat format, const std::array<std::fi
     GLsizei width, height, channels;
     if (!stbi_info(filepaths[0].string().c_str(), &width, &height, &channels))
         throw std::runtime_error("Failed to parse image " + filepaths[0].string() + ": " + stbi_failure_reason());
-    GLenum internalFormat = getInternalFormat(format, channels);
     glTextureStorage2D(handle, mipmaps + 1, internalFormat, width, height);
-    for (int i = 0; i < 6; i++) {
-        _load3D(i, format, filepaths[i]);
+    for (int i = 0; i < filepaths.size(); i++) {
+        _load3D(i, internalFormat, filepaths[i]);
     }
 #else
     bind();
@@ -486,12 +463,12 @@ void Texture<target>::loadCubemap(TextureFormat format, const std::array<std::fi
     glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
     glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, mipmaps); // Must be set to avoid crashes on some drivers
-    _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, format, filepaths[0]);
-    _load2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, format, filepaths[1]);
-    _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, format, filepaths[2]);
-    _load2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, format, filepaths[3]);
-    _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, format, filepaths[4]);
-    _load2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, format, filepaths[5]);
+    _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, internalFormat, filepaths[0]);
+    _load2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, internalFormat, filepaths[1]);
+    _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, internalFormat, filepaths[2]);
+    _load2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, internalFormat, filepaths[3]);
+    _load2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, internalFormat, filepaths[4]);
+    _load2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, internalFormat, filepaths[5]);
 #endif
 
     // Generate mipmaps
@@ -503,7 +480,7 @@ void Texture<target>::loadCubemap(TextureFormat format, const std::array<std::fi
 }
 
 template<GLenum target>
-void Texture<target>::loadCubemap(TextureFormat format, const std::filesystem::path& directory, GLint mipmaps) {
+void Texture<target>::loadCubemap(GLenum internalFormat, const std::filesystem::path& directory, GLint mipmaps) {
     std::array<std::filesystem::path, 6> filepaths = {
         directory / "px.hdr",
         directory / "nx.hdr",
@@ -512,7 +489,7 @@ void Texture<target>::loadCubemap(TextureFormat format, const std::filesystem::p
         directory / "pz.hdr",
         directory / "nz.hdr"
     };
-    loadCubemap(format, filepaths, mipmaps);
+    loadCubemap(internalFormat, filepaths, mipmaps);
 }
 
 template<GLenum target>
