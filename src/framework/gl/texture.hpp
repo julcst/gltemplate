@@ -86,6 +86,15 @@ class Texture {
     void bindTextureUnit(GLuint index);
 
     /**
+     * @brief Allocates storage for a 2D texture.
+     * @param internalFormat The internal format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F` and for normal maps `GL_RGB8_SNORM`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param width The width of the texture.
+     * @param height The height of the texture.
+     * @param mipmaps The number of mipmaps to allocate.
+     */
+    void allocate2D(GLenum internalFormat, GLint width, GLint height, GLint mipmaps = 0);
+
+    /**
      * @brief Loads a 2D texture from memory.
      * @note Prefer `Texture::load`, as this function is incomplete and requires the texture first to be bound.
      * @param texTarget The target texture type to load the texture into, cubemaps require special targets per face.
@@ -329,6 +338,20 @@ inline GLenum getType(GLenum internalFormat) {
     }
     return GL_NONE;
 
+}
+
+template<GLenum target>
+void Texture<target>::allocate2D(GLenum internalFormat, GLint width, GLint height, GLint mipmaps) {
+    #ifdef MODERN_GL
+        glTextureStorage2D(handle, mipmaps + 1, internalFormat, width, height);
+    #else
+        GLenum baseFormat = getBaseFormat(internalFormat);
+        GLenum dataType = getType(internalFormat);
+        bind();
+        glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
+        glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, mipmaps); // Must be set to avoid crashes on some drivers
+        glTexImage2D(target, 0, internalFormat, width, height, 0, baseFormat, dataType, nullptr);
+    #endif
 }
 
 template<GLenum target>
