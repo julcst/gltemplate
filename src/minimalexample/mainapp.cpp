@@ -13,7 +13,7 @@ MainApp::MainApp() : App(800, 600) {
     // Allocate resources
 }
 
-void MainApp::keyCallback(Key key, Action action) {
+void MainApp::keyCallback(Key key, Action action, Modifier modifier) {
     // Close the application when pressing ESC
     if (key == Key::ESC && action == Action::PRESS) App::close();
 }

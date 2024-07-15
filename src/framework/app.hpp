@@ -2,11 +2,15 @@
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
+using namespace glm;
+
+#include <glbinding/gl46core/gl.h>
+using namespace gl46core;
 
 #include <string>
-
-using namespace glm;
+#include <filesystem>
 
 enum class Key {
     UNKNOWN = GLFW_KEY_UNKNOWN,
@@ -165,12 +169,21 @@ class App {
      */
     vec2 convertCursorToClipSpace();
 
+    /**
+     * @brief Writes the color attachment of the default framebuffer to a file.
+     * @param path The path to write the image to. Supported formats are PNG, BMP, TGA, and JPG. BMP and TGA are generally fastest because they are uncompressed.
+     * @param baseFormat The base format of the image, e.g. `GL_RGBA`, `GL_RGB`, mainly used to enable/disable reading the alpha channel.
+     * @param attachment The attachment point, e.g. `GL_FRONT`, `GL_BACK`, (Reading from specialized attachments like `GL_COLOR_ATTACHMENTi` and `GL_DEPTH_ATTACHMENT` is not supported for the default framebuffer).
+     * By default `GL_BACK` as in double-buffered configurations reading from the front buffer is not advisable.
+     */
+    bool takeScreenshot(const std::filesystem::path& path, GLenum baseFormat = GL_RGB, GLenum attachment = GL_BACK);
+
    protected:
     // To be overriden
     virtual void init();
     virtual void buildImGui();
     virtual void render();
-    virtual void keyCallback(Key key, Action action);
+    virtual void keyCallback(Key key, Action action, Modifier modifier);
     virtual void clickCallback(Button button, Action action, Modifier modifier);
     virtual void scrollCallback(float amount);
     virtual void moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton);

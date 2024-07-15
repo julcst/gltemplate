@@ -264,6 +264,10 @@ void Texture<target>::bindTextureUnit(GLuint index) {
 #endif
 }
 
+/**
+ * @brief Gets the number of channels from a base format, e.g. `GL_RED` returns 1, `GL_RGB` returns 3, etc.
+ * @note See: https://gist.github.com/Kos/4739337
+ */
 inline GLsizei getChannels(GLenum baseFormat) {
     switch(baseFormat) {
         case GL_RED: return 1;
@@ -274,6 +278,10 @@ inline GLsizei getChannels(GLenum baseFormat) {
     }
 }
 
+/**
+ * @brief Gets the base format from an internal format, e.g. `GL_R8` returns `GL_RED`, `GL_RGB8` returns `GL_RGB`, etc.
+ * @note See: https://gist.github.com/Kos/4739337
+ */
 inline GLenum getBaseFormat(GLenum internalFormat) {
     switch (internalFormat) {
         case GL_R8:
@@ -307,8 +315,11 @@ inline GLenum getBaseFormat(GLenum internalFormat) {
     return GL_NONE;
 }
 
-/** See: https://gist.github.com/Kos/4739337 */
-inline GLenum getType(GLenum internalFormat) {
+/**
+ * @brief Gets the preferred data type from an internal format, e.g. `GL_R8` returns `GL_UNSIGNED_BYTE`, `GL_RGB32F` returns `GL_FLOAT`, etc.
+ * @note See: https://gist.github.com/Kos/4739337
+ */
+inline GLenum getDataType(GLenum internalFormat) {
     switch (internalFormat) {
         case GL_R8:
         case GL_RG8:
@@ -346,7 +357,7 @@ void Texture<target>::allocate2D(GLenum internalFormat, GLint width, GLint heigh
         glTextureStorage2D(handle, mipmaps + 1, internalFormat, width, height);
     #else
         GLenum baseFormat = getBaseFormat(internalFormat);
-        GLenum dataType = getType(internalFormat);
+        GLenum dataType = getDataType(internalFormat);
         bind();
         glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
         glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, mipmaps); // Must be set to avoid crashes on some drivers
@@ -357,7 +368,7 @@ void Texture<target>::allocate2D(GLenum internalFormat, GLint width, GLint heigh
 template<GLenum target>
 void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, GLint width, GLint height, void* data) {
     GLenum baseFormat = getBaseFormat(internalFormat);
-    GLenum dataType = getType(internalFormat);
+    GLenum dataType = getDataType(internalFormat);
     #ifdef MODERN_GL
         // This would be the immutable version:
         // glTexStorage2D(GL_TEXTURE_2D, levels, internalFormat, width, height);
@@ -374,7 +385,7 @@ void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, const std
     GLsizei width, height, channelsInFile;
     GLenum baseFormat = getBaseFormat(internalFormat);
     GLsizei channels = getChannels(baseFormat);
-    GLenum dataType = getType(internalFormat);
+    GLenum dataType = getDataType(internalFormat);
     void* data;
 
     // Load image from file and read format
@@ -405,7 +416,7 @@ void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, const std
 template<GLenum target>
 void Texture<target>::_load3D(GLint zindex, GLenum internalFormat, GLint width, GLint height, void* data) {
     GLenum baseFormat = getBaseFormat(internalFormat);
-    GLenum dataType = getType(internalFormat);
+    GLenum dataType = getDataType(internalFormat);
     #ifdef MODERN_GL
         glTextureSubImage3D(handle, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
     #else
@@ -418,7 +429,7 @@ void Texture<target>::_load3D(GLint zindex, GLenum internalFormat, const std::fi
     GLsizei width, height, channelsInFile;
     GLenum baseFormat = getBaseFormat(internalFormat);
     GLsizei channels = getChannels(baseFormat);
-    GLenum dataType = getType(internalFormat);
+    GLenum dataType = getDataType(internalFormat);
     void* data;
 
     // Load image from file and read format
@@ -543,7 +554,7 @@ bool Texture<target>::writeToFile(const std::filesystem::path& filepath) {
 #endif
 
     GLenum baseFormat = getBaseFormat(internalFormat);
-    GLenum dataType = getType(internalFormat);
+    GLenum dataType = getDataType(internalFormat);
     int channels = 4; // glTexImage2D always returns 4 channels
 
     Context::setWorkingDirectory(); // Ensure the working directory is set correctly
@@ -559,7 +570,7 @@ bool Texture<target>::writeToFile(const std::filesystem::path& filepath) {
     #endif
 
         return stbi_write_hdr(filepath.string().c_str(), width, height, channels, floatData.get());
-    } else if (dataType == GL_UNSIGNED_BYTE) {
+    } else if (dataType == GL_UNSIGNED_BYTE || dataType == GL_BYTE) {
         auto byteData = std::make_unique<unsigned char[]>(width * height * channels);
 
     #ifdef MODERN_GL
@@ -567,14 +578,24 @@ bool Texture<target>::writeToFile(const std::filesystem::path& filepath) {
     #else
         glGetTexImage(target, 0, baseFormat, dataType, byteData.get());
     #endif
+
+        // Convert from signed to unsigned bytes
+        if (dataType == GL_BYTE)
+            for (int i = 0; i < width * height * channels; i++)
+                byteData[i] += 128;
         
         auto ext = filepath.extension();
-        if (ext == ".bmp") return stbi_write_bmp(filepath.string().c_str(), width, height, channels, byteData.get());
-        else if (ext == ".tga") return stbi_write_tga(filepath.string().c_str(), width, height, channels, byteData.get());
-        else if (ext == ".jpg" || ext == ".jpeg") return stbi_write_jpg(filepath.string().c_str(), width, height, channels, byteData.get(), 95);
-        else if (ext == ".png") return stbi_write_png(filepath.string().c_str(), width, height, channels, byteData.get(), width * channels);
-        return false;
-    } else return false;
+        if (ext == ".bmp")
+            return stbi_write_bmp(filepath.string().c_str(), width, height, channels, byteData.get());
+        else if (ext == ".tga")
+            return stbi_write_tga(filepath.string().c_str(), width, height, channels, byteData.get());
+        else if (ext == ".jpg" || ext == ".jpeg")
+            return stbi_write_jpg(filepath.string().c_str(), width, height, channels, byteData.get(), 95);
+        else if (ext == ".png")
+            return stbi_write_png(filepath.string().c_str(), width, height, channels, byteData.get(), width * channels);
+        else
+            throw std::runtime_error("Unsupported image format");
+    } else throw std::runtime_error("Unsupported texture format");
 }
 
 template<GLenum target>

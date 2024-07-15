@@ -87,3 +87,81 @@ void Framebuffer::checkStatus(GLenum target) {
             throw std::runtime_error("Unknown framebuffer status");
     }
 }
+
+bool Framebuffer::writeToFile(const std::filesystem::path &path, GLenum attachment) {
+    GLsizei width, height;
+    GLenum type, internalFormat;
+    GLint texture;
+#ifdef MODERN_GL
+    glNamedFramebufferReadBuffer(handle, attachment);
+    glGetNamedFramebufferAttachmentParameteriv(handle, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type);
+    glGetNamedFramebufferAttachmentParameteriv(handle, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &handle);
+    switch (type) {
+        case GL_TEXTURE:
+            glGetTextureLevelParameteriv(texture, 0, GL_TEXTURE_WIDTH, &width);
+            glGetTextureLevelParameteriv(texture, 0, GL_TEXTURE_HEIGHT, &height);
+            glGetTextureLevelParameteriv(texture, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat);
+            break;
+        case GL_RENDERBUFFER:
+            glGetNamedRenderbufferParameteriv(texture, GL_RENDERBUFFER_WIDTH, &width);
+            glGetNamedRenderbufferParameteriv(texture, GL_RENDERBUFFER_HEIGHT, &height);
+            glGetNamedRenderbufferParameteriv(texture, GL_RENDERBUFFER_INTERNAL_FORMAT, &internalFormat);
+            break;
+        default:
+            throw std::runtime_error("Unknown framebuffer attachment type");
+    }
+#else
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, handle);
+    glReadBuffer(attachment);
+    glGetFramebufferAttachmentParameteriv(GL_READ_FRAMEBUFFER, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type);
+    glGetFramebufferAttachmentParameteriv(GL_READ_FRAMEBUFFER, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &texture);
+    switch (type) {
+        case GL_TEXTURE:
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+            glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+            glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat);
+            break;
+        case GL_RENDERBUFFER:
+            glBindRenderbuffer(GL_RENDERBUFFER, texture);
+            glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width);
+            glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height);
+            glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_INTERNAL_FORMAT, &internalFormat);
+            break;
+        default:
+            throw std::runtime_error("Unknown framebuffer attachment type");
+    }
+#endif
+    GLenum dataType = getDataType(internalFormat);
+    GLenum baseFormat = getBaseFormat(internalFormat);
+    int channels = getChannels(baseFormat);
+
+    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
+    stbi_flip_vertically_on_write(true);
+
+    if (dataType == GL_UNSIGNED_BYTE || dataType == GL_BYTE) {
+        auto ubyteData = std::make_unique<unsigned char[]>(width * height * channels);
+        glReadPixels(0, 0, width, height, baseFormat, dataType, ubyteData.get());
+
+        // Convert from signed to unsigned byte
+        if (dataType == GL_BYTE)
+            for (int i = 0; i < width * height * channels; i++)
+                ubyteData[i] += 128;
+
+        auto ext = path.extension();
+        if (ext == ".png")
+            return stbi_write_png(path.string().c_str(), width, height, channels, ubyteData.get(), width * channels);
+        else if (ext == ".bmp")
+            return stbi_write_bmp(path.string().c_str(), width, height, channels, ubyteData.get());
+        else if (ext == ".tga")
+            return stbi_write_tga(path.string().c_str(), width, height, channels, ubyteData.get());
+        else if (ext == ".jpg" || ext == ".jpeg")
+            return stbi_write_jpg(path.string().c_str(), width, height, channels, ubyteData.get(), 95);
+        else
+            throw std::runtime_error("Unsupported image format");
+    } else if (dataType == GL_FLOAT) {
+        auto floatData = std::make_unique<float[]>(width * height * channels);
+        glReadPixels(0, 0, width, height, baseFormat, dataType, floatData.get());
+        return stbi_write_hdr(path.string().c_str(), width, height, channels, floatData.get());
+    } else throw std::runtime_error("Unsupported data type");
+}

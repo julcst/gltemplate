@@ -17,6 +17,7 @@ using namespace gl46core;
 #include "framework/uniformbuffer.hpp"
 #include "framework/gl/program.hpp"
 #include "framework/gl/texture.hpp"
+#include "framework/gl/framebuffer.hpp"
 
 using namespace glm;
 
@@ -91,11 +92,13 @@ void MainApp::render() {
 
 /* Catch window events by overriding the callback functions */
 
-void MainApp::keyCallback(Key key, Action action) {
+void MainApp::keyCallback(Key key, Action action, Modifier modifier) {
     // Close the application when pressing ESC
     if (key == Key::ESC && action == Action::PRESS) close();
     // Toggle GUI with COMMA
     if (key == Key::COMMA && action == Action::PRESS) imguiEnabled = !imguiEnabled;
+    // Take a screenshot with Shift + S
+    if (key == Key::S && modifier >= Modifier::SHIFT && action == Action::PRESS) takeScreenshot("screenshot.bmp");
 }
 
 void MainApp::scrollCallback(float amount) {

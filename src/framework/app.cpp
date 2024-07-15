@@ -1,11 +1,13 @@
 #include "app.hpp"
 
-
 #include <iostream>
 #include <string>
+#include <stdexcept>
+#include <filesystem>
 
-#include <glbinding/gl46core/gl.h>
 #include <glbinding/glbinding.h>
+#include <glbinding/gl46core/gl.h>
+using namespace gl46core;
 
 #include <glbinding-aux/ContextInfo.h>
 #include <glbinding-aux/types_to_string.h>
@@ -18,10 +20,9 @@
 #include <backends/imgui_impl_opengl3.h>
 
 #include <glm/glm.hpp>
-
-using namespace gl46core;
 using namespace glm;
 
+#include "framework/gl/texture.hpp"
 
 App::App(unsigned int width, unsigned int height) : resolution(width, height), traceOpenGLCalls(false), imguiEnabled(true) {
     initGLFW();
@@ -72,10 +73,10 @@ void App::initGLFW() {
         app->resolution.y = height;
         app->resizeCallback(app->resolution);
     });
-    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int, int action, int) {
+    glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int, int action, int modifier) {
         if (ImGui::GetIO().WantCaptureKeyboard) return;
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
-        app->keyCallback(static_cast<Key>(key), static_cast<Action>(action));
+        app->keyCallback(static_cast<Key>(key), static_cast<Action>(action), static_cast<Modifier>(modifier));
     });
     glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int modifier) {
         if (ImGui::GetIO().WantCaptureMouse) return;
@@ -217,7 +218,7 @@ App::~App() {
 // To be overriden
 void App::init() {}
 void App::render() {}
-void App::keyCallback(Key key, Action action) {}
+void App::keyCallback(Key key, Action action, Modifier modifier) {}
 void App::clickCallback(Button button, Action action, Modifier modifier) {}
 void App::scrollCallback(float amount) {}
 void App::moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) {}
@@ -267,4 +268,36 @@ vec2 App::convertCursorToClipSpace() {
     vec2 cursor = mouse / vec2(windowSize) * 2.0f - 1.0f;
     cursor.y = -cursor.y;
     return cursor;
+}
+
+bool App::takeScreenshot(const std::filesystem::path &path, GLenum baseFormat, GLenum attachment) {
+#ifdef MODERN_GL
+    glNamedFramebufferReadBuffer(0, attachment);
+#else
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glReadBuffer(attachment);
+#endif
+
+    GLint width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    GLenum dataType = GL_UNSIGNED_BYTE;
+    GLint channels = getChannels(baseFormat);
+
+    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
+    stbi_flip_vertically_on_write(true);
+
+    auto ubyteData = std::make_unique<unsigned char[]>(width * height * channels);
+    glReadPixels(0, 0, width, height, baseFormat, dataType, ubyteData.get());
+
+    auto ext = path.extension();
+    if (ext == ".png")
+        return stbi_write_png(path.string().c_str(), width, height, channels, ubyteData.get(), width * channels);
+    else if (ext == ".bmp")
+        return stbi_write_bmp(path.string().c_str(), width, height, channels, ubyteData.get());
+    else if (ext == ".tga")
+        return stbi_write_tga(path.string().c_str(), width, height, channels, ubyteData.get());
+    else if (ext == ".jpg" || ext == ".jpeg")
+        return stbi_write_jpg(path.string().c_str(), width, height, channels, ubyteData.get(), 95);
+    else
+        throw std::runtime_error("Unsupported image format");
 }

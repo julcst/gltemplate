@@ -2,6 +2,8 @@
 
 #include <glbinding/gl46core/gl.h>
 
+#include <filesystem>
+
 #include "framework/gl/texture.hpp"
 
 using namespace gl46core;
@@ -67,6 +69,13 @@ class Framebuffer {
      * @param target What to bind the framebuffer for, one of `GL_FRAMEBUFFER`, `GL_READ_FRAMEBUFFER`, or `GL_DRAW_FRAMEBUFFER`.
      */
     static void bindDefault(GLenum target = GL_FRAMEBUFFER);
+
+    /**
+     * @brief Writes a color attachment of the framebuffer to a file.
+     * @param path The path to write the image to.
+     * @param attachment The attachment point, e.g. `GL_COLOR_ATTACHMENT0`, `GL_DEPTH_ATTACHMENT`, ...
+     */
+    bool writeToFile(const std::filesystem::path& path, GLenum attachment = GL_COLOR_ATTACHMENT0);
 
     /**
      * @brief Attaches a texture to the framebuffer.
