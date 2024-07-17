@@ -61,6 +61,14 @@ void MainApp::render() {
     world.uTimeDelta = delta;
 
     // Update camera
+    const float camDelta = 5.0f * delta;
+    if (isKeyDown(Key::W)) cam.moveInEyeSpace(vec3(0.0f, 0.0f, -camDelta));
+    if (isKeyDown(Key::S)) cam.moveInEyeSpace(vec3(0.0f, 0.0f, camDelta));
+    if (isKeyDown(Key::A)) cam.moveInEyeSpace(vec3(-camDelta, 0.0f, 0.0f));
+    if (isKeyDown(Key::D)) cam.moveInEyeSpace(vec3(camDelta, 0.0f, 0.0f));
+    if (isKeyDown(Key::Q)) cam.moveInEyeSpace(vec3(0.0f, camDelta, 0.0f));
+    if (isKeyDown(Key::E)) cam.moveInEyeSpace(vec3(0.0f, -camDelta, 0.0f));
+
     if (cam.updateIfChanged()) {
         world.uAspectRatio = cam.aspectRatio;
         world.uCameraMatrix = cam.cameraMatrix;
@@ -97,6 +105,11 @@ void MainApp::keyCallback(Key key, Action action, Modifier modifier) {
     if (key == Key::ESC && action == Action::PRESS) close();
     // Toggle GUI with COMMA
     if (key == Key::COMMA && action == Action::PRESS) imguiEnabled = !imguiEnabled;
+    // Retarget the origin with R
+    if (key == Key::R && action == Action::PRESS) {
+        cam.target = vec3(0.0f);
+        cam.invalidate();
+    }
     // Take a screenshot with Shift + S
     if (key == Key::S && modifier >= Modifier::SHIFT && action == Action::PRESS) takeScreenshot("screenshot.bmp");
 }
@@ -108,7 +121,7 @@ void MainApp::scrollCallback(float amount) {
 
 void MainApp::moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) {
     // Rotate camera with right mouse button
-    if (rightButton) cam.rotate(movement * 0.01f);
+    if (leftButton | rightButton | middleButton) cam.orbit(movement * 0.01f);
 }
 
 void MainApp::resizeCallback(const vec2& resolution) {

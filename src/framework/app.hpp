@@ -167,7 +167,7 @@ class App {
     /**
      * @brief Converts the cursor position to clip space.
      */
-    vec2 convertCursorToClipSpace();
+    vec2 convertCursorToClipSpace() const;
 
     /**
      * @brief Writes the color attachment of the default framebuffer to a file.
@@ -177,6 +177,11 @@ class App {
      * By default `GL_BACK` as in double-buffered configurations reading from the front buffer is not advisable.
      */
     bool takeScreenshot(const std::filesystem::path& path, GLenum baseFormat = GL_RGB, GLenum attachment = GL_BACK);
+
+    /**
+     * @brief Checks if a key is currently pressed.
+     */
+    bool isKeyDown(Key key) const;
 
    protected:
     // To be overriden

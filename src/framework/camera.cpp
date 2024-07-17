@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 using namespace glm;
 
@@ -11,28 +12,14 @@ Camera::Camera() = default;
 Camera::Camera(const vec3& worldPosition, const vec3& target, const vec3& up, float near, float far, float fov)
     : worldPosition(worldPosition), target(target), up(up), minDist(near), maxDist(far), fov(fov), near(near), far(far) {}
 
-
-vec3 calcCartesianPosition(const vec3& sphericalPosition, const vec3& target) {
-    const float azimuth = sphericalPosition.y;
-    const float altitude = sphericalPosition.z;
-    const float radius = sphericalPosition.x;
-    return vec3(cos(altitude) * sin(azimuth), sin(altitude), cos(altitude) * cos(azimuth)) * radius + target;
-}
-
-vec3 calcSphericalPosition(const vec3& cartesianPosition, const vec3& target) {
-    vec3 direction = cartesianPosition - target;
-    const float radius = length(direction);
-    direction /= radius;
-    const float azimuth = atan(direction.x, direction.z);
-    const float altitude = asin(direction.y);
-    return vec3(radius, azimuth, altitude);
-}
-
-void Camera::rotate(const vec2& delta) {
-    vec3 sphericalPosition = calcSphericalPosition(worldPosition, target);
-    sphericalPosition.y -= delta.x;
-    sphericalPosition.z = clamp(sphericalPosition.z + delta.y, -half_pi<float>() + ALTITUDE_DELTA, half_pi<float>() - ALTITUDE_DELTA);
-    worldPosition = calcCartesianPosition(sphericalPosition, target);
+void Camera::orbit(const vec2& delta) {
+    const vec3 relativePos = worldPosition - target;
+    const vec3 direction = normalize(relativePos);
+    const vec3 right = cross(direction, up); // Create a right vector orthogonal to camera direction and up
+    const float maxUpDelta = acos(dot(direction, up)); // Maximum positive angle between camera direction and up
+    const float maxDownDelta = -(pi<float>() - maxUpDelta); // Maximum negative angle between camera direction and down
+    const quat rotation = rotate(angleAxis(-delta.x, up), clamp(delta.y, maxDownDelta + ALTITUDE_DELTA, maxUpDelta - ALTITUDE_DELTA), right);
+    worldPosition = target + rotation * relativePos;
     invalidate();
 }
 
@@ -42,6 +29,13 @@ void Camera::zoom(float delta) {
     direction /= distance;
     distance = clamp(distance - delta, minDist, maxDist);
     worldPosition = target + direction * distance;
+    invalidate();
+}
+
+void Camera::moveInEyeSpace(const vec3& delta) {
+    const vec3 camDelta = mat3(cameraMatrix) * delta; // Transform the delta to world space
+    worldPosition += camDelta;
+    target += camDelta;
     invalidate();
 }
 

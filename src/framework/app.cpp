@@ -131,8 +131,7 @@ void App::registerGLLoggingCallback() {
         stream << call.function->name() << "(";
         for (unsigned i = 0; i < call.parameters.size(); ++i) {
             stream << call.parameters[i].get();
-            if (i < call.parameters.size() - 1)
-            stream << ", ";
+            if (i < call.parameters.size() - 1) stream << ", ";
         }
         stream << ")";
 
@@ -262,7 +261,7 @@ void App::setVSync(bool vsync) {
     glfwSwapInterval(vsync ? 1 : 0);
 }
 
-vec2 App::convertCursorToClipSpace() {
+vec2 App::convertCursorToClipSpace() const {
     ivec2 windowSize;
     glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
     vec2 cursor = mouse / vec2(windowSize) * 2.0f - 1.0f;
@@ -300,4 +299,8 @@ bool App::takeScreenshot(const std::filesystem::path &path, GLenum baseFormat, G
         return stbi_write_jpg(path.string().c_str(), width, height, channels, ubyteData.get(), 95);
     else
         throw std::runtime_error("Unsupported image format");
+}
+
+bool App::isKeyDown(Key key) const {
+    return glfwGetKey(window, static_cast<int>(key)) == GLFW_PRESS;
 }

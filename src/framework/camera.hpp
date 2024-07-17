@@ -19,13 +19,19 @@ struct Camera {
      * @brief Rotate the camera around the target.
      * @param delta The angles to rotate the camera in radians in the format (azimuth, altitude).
      */
-    void rotate(const vec2& delta);
+    void orbit(const vec2& delta);
 
     /**
      * @brief Moves the camera in the direction of the target.
      * @param delta The distance to move the camera. Negative values move the camera away from the target.
      */
     void zoom(float delta);
+
+    /**
+     * @brief Moves the camera in eye space.
+     * @param delta The camera movement in eye space.
+     */
+    void moveInEyeSpace(const vec3& delta);
 
     /**
      * @brief Resizes the camera with a new aspect ratio.
