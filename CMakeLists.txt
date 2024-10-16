@@ -11,8 +11,8 @@ add_subdirectory(src/framework)
 # Only build examples and zip sources if this is the top level project
 if(PROJECT_IS_TOP_LEVEL)
     # Build examples
-    #include(DeploymentTool)
+    include(DeploymentTool)
     add_subdirectory(src/minimalexample)
     add_subdirectory(src/demo)
-    #setup_cpack()
+    setup_cpack()
 endif()
