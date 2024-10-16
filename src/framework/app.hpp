@@ -11,6 +11,7 @@ using namespace gl46core;
 
 #include <string>
 #include <filesystem>
+#include <set>
 
 enum class Key {
     UNKNOWN = GLFW_KEY_UNKNOWN,
@@ -98,6 +99,11 @@ class App {
      * @brief Enable or disable logging of all OpenGL calls.
      */
     bool traceOpenGLCalls = false;
+
+    /**
+     * @brief Set of OpenGL message IDs that have already been seen.
+     */
+    std::set<GLuint> seenMessageIDs;
 
     /**
      * @brief The position of the mouse cursor in screen coordinates.
