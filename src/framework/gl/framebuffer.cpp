@@ -95,7 +95,7 @@ bool Framebuffer::writeToFile(const std::filesystem::path &path, GLenum attachme
 #ifdef MODERN_GL
     glNamedFramebufferReadBuffer(handle, attachment);
     glGetNamedFramebufferAttachmentParameteriv(handle, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type);
-    glGetNamedFramebufferAttachmentParameteriv(handle, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &handle);
+    glGetNamedFramebufferAttachmentParameteriv(handle, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &texture);
     switch (type) {
         case GL_TEXTURE:
             glGetTextureLevelParameteriv(texture, 0, GL_TEXTURE_WIDTH, &width);
