@@ -8,8 +8,7 @@
 #include <stb_image.h>
 #include <stb_image_write.h>
 
-#include <glbinding/gl46core/gl.h>
-using namespace gl46core;
+#include <glad/glad.h>
 
 #include "framework/common.hpp"
 #include "framework/context.hpp"
@@ -540,7 +539,7 @@ void Texture<target>::loadCubemap(GLenum internalFormat, const std::filesystem::
 template<GLenum target>
 bool Texture<target>::writeToFile(const std::filesystem::path& filepath) {
     GLint width, height;
-    GLenum internalFormat;
+    GLint internalFormat;
 
 #ifdef MODERN_GL
     glGetTextureLevelParameteriv(handle, 0, GL_TEXTURE_WIDTH, &width);

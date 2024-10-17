@@ -1,17 +1,15 @@
 #include "program.hpp"
 
-#include <glbinding/gl46core/gl.h>
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+using namespace glm;
 
 #include <stdexcept>
 #include <string>
 #include <array>
 
 #include "shader.hpp"
-
-using namespace gl46core;
-using namespace glm;
 
 /////////////////////// RAII behavior ///////////////////////
 Program::Program() : handle(glCreateProgram()) {}

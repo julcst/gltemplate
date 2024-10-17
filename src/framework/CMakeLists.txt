@@ -46,8 +46,7 @@ endif()
 include(FetchDependencies)
 target_link_libraries(framework
     PUBLIC
-        glbinding::glbinding
-        glbinding::glbinding-aux
+        glad
         glm::glm
         glfw
         imgui_glfw

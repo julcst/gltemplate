@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glbinding/gl46core/gl.h>
-using namespace gl46core;
+#include <glad/glad.h>
 
 #include <vector>
 

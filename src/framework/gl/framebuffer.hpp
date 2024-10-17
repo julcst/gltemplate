@@ -1,12 +1,10 @@
 #pragma once
 
-#include <glbinding/gl46core/gl.h>
+#include <glad/glad.h>
 
 #include <filesystem>
 
 #include "framework/gl/texture.hpp"
-
-using namespace gl46core;
 
 /**
  * @file framebuffer.hpp

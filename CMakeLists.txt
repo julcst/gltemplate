@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.22)
 
+if(POLICY CMP0135)
+    cmake_policy(SET CMP0135 NEW)
+endif()
+
 project(GLTemplate VERSION 1.0 LANGUAGES C CXX)
 
 # Load custom modules from the cmake directory

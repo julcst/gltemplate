@@ -21,18 +21,25 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
-# Known issues: Generates warning with CMake >= 3.20, see policy CMP0120
-# glbinding
+# # GLAD2
+# FetchContent_Declare(
+#     glad2
+#     #GIT_REPOSITORY https://github.com/Dav1dde/glad.git
+#     GIT_TAG v2.0.8
+#     URL https://github.com/Dav1dde/glad/archive/v2.0.8.tar.gz
+#     EXCLUDE_FROM_ALL
+# )
+
+# GLAD
 FetchContent_Declare(
-    glbinding
-    #GIT_REPOSITORY https://github.com/cginternals/glbinding.git
-    GIT_TAG v3.3.0
-    URL https://github.com/cginternals/glbinding/archive/v3.3.0.tar.gz
+    glad
+    #GIT_REPOSITORY https://github.com/Dav1dde/glad.git
+    GIT_TAG v0.1.36
+    URL https://github.com/Dav1dde/glad/archive/v0.1.36.tar.gz
     EXCLUDE_FROM_ALL
-    FIND_PACKAGE_ARGS # First try to find the package in the system, if not found download it locally. For example use `brew install glbinding` on macOS
 )
-set(OPTION_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
-set(OPTION_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLAD_PROFILE "core" CACHE STRING "" FORCE)
+set(GLAD_GENERATOR "c-debug" CACHE STRING "" FORCE)
 
 # GLM
 FetchContent_Declare(
@@ -63,7 +70,10 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
 )
 
-FetchContent_MakeAvailable(glbinding glfw3 glm imgui tinyobjloader)
+FetchContent_MakeAvailable(glad glfw3 glm imgui tinyobjloader)
+
+# add_subdirectory(${glad_SOURCE_DIR}/cmake ${glad_BINARY_DIR})
+# glad_add_library(glad_gl_core_33 REPRODUCIBLE API gl:core=3.3)
 
 # ImGui is not build by CMake, so we need to add it manually
 add_library(imgui_glfw STATIC

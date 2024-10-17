@@ -1,9 +1,8 @@
 #include "mainapp.hpp"
 
-#include <glbinding/gl46core/gl.h>
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 using namespace glm;
-using namespace gl46core;
 
 #include <framework/context.hpp>
 

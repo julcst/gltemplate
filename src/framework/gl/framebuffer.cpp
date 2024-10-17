@@ -2,11 +2,9 @@
 
 #include <unordered_map>
 
-#include <glbinding/gl46core/gl.h>
+#include <glad/glad.h>
 
 #include "framework/gl/texture.hpp"
-
-using namespace gl46core;
 
 /////////////////////// RAII behavior ///////////////////////
 Framebuffer::Framebuffer() {
@@ -90,7 +88,7 @@ void Framebuffer::checkStatus(GLenum target) {
 
 bool Framebuffer::writeToFile(const std::filesystem::path &path, GLenum attachment) {
     GLsizei width, height;
-    GLenum type, internalFormat;
+    GLint type, internalFormat;
     GLint texture;
 #ifdef MODERN_GL
     glNamedFramebufferReadBuffer(handle, attachment);
