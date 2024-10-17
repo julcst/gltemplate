@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include "framework/gl/texture.hpp"
 

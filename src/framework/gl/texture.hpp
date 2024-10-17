@@ -8,7 +8,7 @@
 #include <stb_image.h>
 #include <stb_image_write.h>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include "framework/common.hpp"
 #include "framework/context.hpp"
