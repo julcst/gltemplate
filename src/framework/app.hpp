@@ -190,7 +190,6 @@ class App {
 
    protected:
     // To be overriden
-    virtual void init();
     virtual void buildImGui();
     virtual void render();
     virtual void keyCallback(Key key, Action action, Modifier modifier);

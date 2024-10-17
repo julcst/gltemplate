@@ -10,7 +10,6 @@ class MainApp : public App {
     MainApp();
 
    protected:
-    // void init() override;
     // void render() override;
     // void buildImGui() override;
     void keyCallback(Key key, Action action, Modifier modifier) override;

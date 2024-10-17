@@ -219,7 +219,6 @@ App::~App() {
 }
 
 // To be overriden
-void App::init() {}
 void App::render() {}
 void App::keyCallback(Key key, Action action, Modifier modifier) {}
 void App::clickCallback(Button button, Action action, Modifier modifier) {}
@@ -229,7 +228,6 @@ void App::resizeCallback(const vec2& resolution) {}
 void App::buildImGui() {}
 
 void App::run() {
-    init();
     resizeCallback(resolution);
     frames = 0;
     while (!glfwWindowShouldClose(window)) {
