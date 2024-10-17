@@ -43,8 +43,8 @@ void Program::load(const std::filesystem::path& vs, const std::filesystem::path&
 }
 
 void Program::loadSource(const std::string& vs, const std::string& fs) {
-    attach<GL_VERTEX_SHADER>(vs);
-    attach<GL_FRAGMENT_SHADER>(fs);
+    attachSource<GL_VERTEX_SHADER>(vs);
+    attachSource<GL_FRAGMENT_SHADER>(fs);
     link();
 }
 

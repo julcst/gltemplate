@@ -218,7 +218,7 @@ void Program::attach(const std::filesystem::path& filepath) {
 template <GLenum type>
 void Program::attachSource(const std::string& source) {
     Shader<type> shader;
-    shader.load(source);
+    shader.loadSource(source);
     attach(shader);
 }
 
