@@ -43,9 +43,7 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
 
     cubemap.loadCubemap(GL_RGB16F, "textures/studio");
     cubemap.bindTextureUnit(0);
-}
 
-void MainApp::init() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
