@@ -73,12 +73,23 @@ bool ImGui::Combo(const char* label, size_t* curr, const std::vector<std::string
     return ImGui::Combo(label, reinterpret_cast<int*>(curr), items);
 }
 
-bool ImGui::FlagCheckbox(const char* label, unsigned int* flags, unsigned int flagBitIndex) {
-    bool flag = (*flags & (1 << flagBitIndex)) != 0;
-    bool changed = ImGui::Checkbox(label, &flag);
+bool ImGui::FlagCheckbox(const char* label, unsigned int* flags, unsigned int flag) {
+    bool v = *flags & flag;
+    bool changed = ImGui::Checkbox(label, &v);
     if (changed) {
-        if (flag) *flags |= (1 << flagBitIndex);
-        else *flags &= ~(1 << flagBitIndex);
+        if (v) *flags |= flag;
+        else *flags &= ~flag;
     }
     return changed;
+}
+
+bool ImGui::FileCombo(const char* label, int* curr, const std::vector<std::filesystem::path>& items) {
+    return ImGui::Combo(
+        label, curr,
+        [](void* data, int idx, const char** out_text) {
+            auto items = reinterpret_cast<const std::vector<std::filesystem::path>*>(data);
+            *out_text = items->at(idx).c_str();
+            return true;
+        },
+        const_cast<void*>(reinterpret_cast<const void*>(&items)), items.size());
 }

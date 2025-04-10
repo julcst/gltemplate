@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 
 /**
  * @file imguiutil.hpp
@@ -43,11 +44,33 @@ namespace ImGui {
     /**
      * @brief Combo box for selecting an item from a vector of strings.
      */
-    bool Combo(const char* label, size_t* curr, const std::vector<std::string>& item);
+    bool Combo(const char* label, size_t* curr, const std::vector<std::string>& items);
 
     /**
      * @brief Checkbox for a single bit in a bitfield.
      */
-    bool FlagCheckbox(const char* label, unsigned int* flags, unsigned int flagBitIndex);
+    bool FlagCheckbox(const char* label, unsigned int* flags, unsigned int flag);
+
+    /**
+     * @brief File combo box for selecting a file from a vector of paths.
+     */
+    bool FileCombo(const char* label, int* curr, const std::vector<std::filesystem::path>& items);
+
+    /**
+     * @brief Combo box for selecting an item from an enum type.
+     */
+    template <typename T, size_t N>
+    inline bool EnumCombo(const char* label, T* curr, const std::array<std::string_view, N>& labels) {
+        return ImGui::Combo(
+            label, reinterpret_cast<int*>(curr),
+            [](void* data, int idx, const char** out_text) {
+                auto labels = reinterpret_cast<const std::array<std::string_view, N>*>(data);
+                *out_text = labels->at(idx).data();
+                return true;
+            },
+            const_cast<void*>(reinterpret_cast<const void*>(&labels)),
+            N
+        );
+    }
 
 }
