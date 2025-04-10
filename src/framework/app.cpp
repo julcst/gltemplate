@@ -101,10 +101,10 @@ void App::initGLFW() {
         bool middleButton = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS;
         app->moveCallback(movement, leftButton, rightButton, middleButton);
     });
-    glfwSetScrollCallback(window, [](GLFWwindow* window, double, double yoffset) {
+    glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
         if (ImGui::GetIO().WantCaptureMouse) return;
         App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
-        app->scrollCallback(static_cast<float>(yoffset));
+        app->scrollCallback(static_cast<float>(xoffset), static_cast<float>(yoffset));
     });
     glfwMakeContextCurrent(window);
 }
@@ -221,7 +221,7 @@ App::~App() {
 void App::render() {}
 void App::keyCallback(Key key, Action action, Modifier modifier) {}
 void App::clickCallback(Button button, Action action, Modifier modifier) {}
-void App::scrollCallback(float amount) {}
+void App::scrollCallback(float xamount, float yamount) {}
 void App::moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) {}
 void App::resizeCallback(const vec2& resolution) {}
 void App::buildImGui() {}
@@ -282,8 +282,7 @@ bool App::takeScreenshot(const std::filesystem::path &path, GLenum baseFormat, G
     glfwGetFramebufferSize(window, &width, &height);
     GLenum dataType = GL_UNSIGNED_BYTE;
     GLint channels = getChannels(baseFormat);
-
-    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
+    
     stbi_flip_vertically_on_write(true);
 
     auto ubyteData = std::make_unique<unsigned char[]>(width * height * channels);

@@ -112,9 +112,10 @@ void MainApp::keyCallback(Key key, Action action, Modifier modifier) {
     if (key == Key::S && modifier >= Modifier::SHIFT && action == Action::PRESS) takeScreenshot("screenshot.bmp");
 }
 
-void MainApp::scrollCallback(float amount) {
+void MainApp::scrollCallback(float xamount, float yamount) {
     // Zoom camera with scroll wheel
-    cam.zoom(amount);
+    if (abs(yamount) > abs(xamount)) cam.zoom(yamount);
+    else cam.orbit(vec2(xamount * 0.1f, 0.0f));
 }
 
 void MainApp::moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) {
