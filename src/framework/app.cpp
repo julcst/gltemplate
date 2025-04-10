@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <set>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -168,7 +168,7 @@ std::string glErrorToString(GLenum error) {
 }
 
 // Print function if error occurs
-void gladPostCallback(const char* name, void* funcptr, int len_args, ...) {
+void gladPostCallback(void* ret, const char* name, GLADapiproc funcptr, int len_args, ...) {
     GLenum error = glad_glGetError();
     if (error != GL_NO_ERROR) {
         std::cerr << "OpenGL Error: " << glErrorToString(error) << " in " << name << "(";
@@ -185,7 +185,7 @@ void gladPostCallback(const char* name, void* funcptr, int len_args, ...) {
 }
 
 void App::initGL() {
-    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) throw std::runtime_error("Failed to initialize GLAD");
+    if (!gladLoadGL(glfwGetProcAddress)) throw std::runtime_error("Failed to initialize GLAD");
 
     std::cout << std::endl
         << "OpenGL Vendor:   " << glGetString(GL_VENDOR) << std::endl
@@ -196,7 +196,7 @@ void App::initGL() {
 
     glEnable(GL_FRAMEBUFFER_SRGB); // Enables SRGB rendering
 
-    glad_set_post_callback(gladPostCallback);
+    gladSetGLPostCallback(gladPostCallback);
     
     // Enables better debug output, only supported for OpenGL 4.3+
 #ifdef MODERN_GL

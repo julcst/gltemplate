@@ -21,28 +21,6 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
-# # GLAD2
-# FetchContent_Declare(
-#     glad2
-#     #GIT_REPOSITORY https://github.com/Dav1dde/glad.git
-#     GIT_TAG v2.0.8
-#     URL https://github.com/Dav1dde/glad/archive/v2.0.8.tar.gz
-#     EXCLUDE_FROM_ALL
-# )
-
-# GLAD
-FetchContent_Declare(
-    glad
-    #GIT_REPOSITORY https://github.com/Dav1dde/glad.git
-    GIT_TAG v0.1.36
-    GIT_SHALLOW TRUE
-    GIT_PROGRESS TRUE
-    URL https://github.com/Dav1dde/glad/archive/v0.1.36.tar.gz
-    EXCLUDE_FROM_ALL
-)
-set(GLAD_PROFILE "core" CACHE STRING "" FORCE)
-set(GLAD_GENERATOR "c-debug" CACHE STRING "" FORCE)
-
 # GLM
 FetchContent_Declare(
     glm
@@ -78,10 +56,7 @@ FetchContent_Declare(
     EXCLUDE_FROM_ALL
 )
 
-FetchContent_MakeAvailable(glad glfw3 glm imgui tinyobjloader)
-
-# add_subdirectory(${glad_SOURCE_DIR}/cmake ${glad_BINARY_DIR})
-# glad_add_library(glad_gl_core_33 REPRODUCIBLE API gl:core=3.3)
+FetchContent_MakeAvailable(glfw3 glm imgui tinyobjloader)
 
 # ImGui is not build by CMake, so we need to add it manually
 add_library(imgui_glfw STATIC
@@ -117,3 +92,7 @@ file(GENERATE
 )
 add_library(stb STATIC ${stb_SOURCE_DIR}/stb.cpp)
 target_include_directories(stb PUBLIC ${stb_SOURCE_DIR})
+
+# GLAD
+add_library(glad STATIC ${CMAKE_CURRENT_SOURCE_DIR}/../../external/glad/src/gl.c)
+target_include_directories(glad PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../external/glad/include)

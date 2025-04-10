@@ -1,6 +1,6 @@
 #include "query.hpp"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 /////////////////////// RAII behavior ///////////////////////
 Query::Query() {

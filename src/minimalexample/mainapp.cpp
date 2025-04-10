@@ -1,6 +1,6 @@
 #include "mainapp.hpp"
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <glm/glm.hpp>
 using namespace glm;
 
