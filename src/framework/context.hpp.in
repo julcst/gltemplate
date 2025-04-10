@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <sstream>
 #include <string>
 
 // Enable DEBUG switches in DEBUG mode
@@ -30,7 +31,6 @@ namespace Context {
     const std::filesystem::path APP_DIR = ""; // On other platforms just write into the application directory
 #endif
 const std::string PROJECT_NAME = "${CMAKE_PROJECT_NAME}";
-const std::filesystem::path SHADER_DIR = "shaders/";
 
 
 #ifndef NDEBUG
@@ -46,6 +46,16 @@ inline void setWorkingDirectory() {
     #ifdef MAKE_PATHS_RELATIVE_TO_SOURCE_DIR
         std::filesystem::current_path(SOURCE_DIR);
     #endif
+}
+
+inline std::string getCWDWarning() {
+    std::stringstream stream;
+    const auto cwd = std::filesystem::current_path();
+    if (std::filesystem::current_path() != SOURCE_DIR) {
+        stream << "Warning: The current working directory " << cwd << " is not the source directory " << SOURCE_DIR
+               << ". This can lead to relative paths not being resolved as expected, you can fix this by setting the working directory with `cd` before running your program." << std::endl;
+    }
+    return stream.str();
 }
 
 }
