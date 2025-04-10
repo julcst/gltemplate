@@ -39,7 +39,7 @@ class MainApp : public App {
     void buildImGui() override;
     void render() override;
     void keyCallback(Key key, Action action, Modifier modifier) override;
-    void scrollCallback(float amount) override;
+    void scrollCallback(float xamount, float yamount) override;
     void moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton) override;
     void resizeCallback(const vec2& resolution) override;
 

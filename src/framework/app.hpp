@@ -190,7 +190,7 @@ class App {
     virtual void render();
     virtual void keyCallback(Key key, Action action, Modifier modifier);
     virtual void clickCallback(Button button, Action action, Modifier modifier);
-    virtual void scrollCallback(float amount);
+    virtual void scrollCallback(float xamount, float yamount);
     virtual void moveCallback(const vec2& movement, bool leftButton, bool rightButton, bool middleButton);
     virtual void resizeCallback(const vec2& resolution);
 
