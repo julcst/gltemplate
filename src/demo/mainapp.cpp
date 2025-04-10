@@ -1,7 +1,6 @@
 #include "mainapp.hpp"
 
-#include <glbinding/gl46core/gl.h>
-using namespace gl46core;
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -43,9 +42,7 @@ MainApp::MainApp() : App(800, 600), worldUBO(0, world), objectUBO(1, object) {
 
     cubemap.loadCubemap(GL_RGB16F, "textures/studio");
     cubemap.bindTextureUnit(0);
-}
 
-void MainApp::init() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);

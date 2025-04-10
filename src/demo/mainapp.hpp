@@ -35,7 +35,6 @@ class MainApp : public App {
     MainApp();
 
    protected:
-    void init() override;
     void buildImGui() override;
     void render() override;
     void keyCallback(Key key, Action action, Modifier modifier) override;

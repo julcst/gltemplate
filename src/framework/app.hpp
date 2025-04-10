@@ -1,16 +1,16 @@
 #pragma once
 
+#include <glad/glad.h>
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
 using namespace glm;
 
-#include <glbinding/gl46core/gl.h>
-using namespace gl46core;
-
 #include <string>
 #include <filesystem>
+#include <set>
 
 enum class Key {
     UNKNOWN = GLFW_KEY_UNKNOWN,
@@ -100,6 +100,11 @@ class App {
     bool traceOpenGLCalls = false;
 
     /**
+     * @brief Set of OpenGL message IDs that have already been seen.
+     */
+    std::set<GLuint> seenMessageIDs;
+
+    /**
      * @brief The position of the mouse cursor in screen coordinates.
      * Can be converted to clip space with `convertCursorToClipSpace()`.
      */
@@ -185,7 +190,6 @@ class App {
 
    protected:
     // To be overriden
-    virtual void init();
     virtual void buildImGui();
     virtual void render();
     virtual void keyCallback(Key key, Action action, Modifier modifier);

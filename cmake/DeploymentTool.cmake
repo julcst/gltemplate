@@ -6,16 +6,23 @@
 #   RES_FILES: The list of resource files to bundle (absolute or relative to CMAKE_SOURCE_DIR)
 function(bundle_resources TARGET)
     set(RES_FILES ${ARGN})
-
     set(MACOSX_ICON_FILE ${CMAKE_SOURCE_DIR}/icons/AppIcon.icns)
     cmake_path(GET MACOSX_ICON_FILE FILENAME MACOSX_ICON_FILE_NAME)
 
     # Add resource files to the target so they are included in the build
-    target_sources(${TARGET}
-        PUBLIC
-            FILE_SET resources TYPE HEADERS BASE_DIRS ${CMAKE_SOURCE_DIR} FILES ${RES_FILES}
-            FILE_SET icon TYPE HEADERS BASE_DIRS ${CMAKE_SOURCE_DIR} FILES ${MACOSX_ICON_FILE}
-    )
+    if(CMAKE_VERSION LESS 3.23)
+        # Mark all resources as headers so cmake does not try to compile them
+        foreach(RES_FILE IN LISTS RES_FILES)
+            set_source_files_properties(${RES_FILE} PROPERTIES HEADER_FILE_ONLY TRUE)
+        endforeach()
+        target_sources(${TARGET} PRIVATE ${RES_FILES} ${MACOSX_ICON_FILE})
+    else()
+        target_sources(${TARGET}
+            PUBLIC
+                FILE_SET resources TYPE HEADERS BASE_DIRS ${CMAKE_SOURCE_DIR} FILES ${RES_FILES}
+                FILE_SET icon TYPE HEADERS BASE_DIRS ${CMAKE_SOURCE_DIR} FILES ${MACOSX_ICON_FILE}
+        )
+    endif()
 
     if(APPLE)
         # Bundling macOS application

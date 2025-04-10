@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glbinding/gl46core/gl.h>
-using namespace gl46core;
+#include <glad/glad.h>
 
 #include <regex>
 #include <unordered_set>
@@ -74,6 +73,13 @@ class Shader {
      * @param filepath The path to the file containing the shader source code.
      */
     void load(const std::filesystem::path& filepath);
+
+    /**
+     * @brief Loads and compiles shader source code.
+     * @throw `std::runtime_error` when the shader could not be compiled.
+     * @param source The shader source code.
+     */
+    void loadSource(const std::string& source);
 
     /**
      * @brief Compiles the shader.
@@ -152,6 +158,11 @@ void Shader<type>::load(const std::filesystem::path& filepath) {
 #ifdef COMPOSE_SHADERS
     Common::writeToFile(source, Context::COMPOSED_SHADER_DIR / filepath.filepath);
 #endif
+    loadSource(source);
+}
+
+template <GLenum type>
+void Shader<type>::loadSource(const std::string& source) {
     const char* sourcePtr = source.c_str();
     glShaderSource(handle, 1, &sourcePtr, nullptr);
     compile();

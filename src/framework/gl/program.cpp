@@ -1,17 +1,15 @@
 #include "program.hpp"
 
-#include <glbinding/gl46core/gl.h>
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+using namespace glm;
 
 #include <stdexcept>
 #include <string>
 #include <array>
 
 #include "shader.hpp"
-
-using namespace gl46core;
-using namespace glm;
 
 /////////////////////// RAII behavior ///////////////////////
 Program::Program() : handle(glCreateProgram()) {}
@@ -41,6 +39,12 @@ void Program::release() {
 void Program::load(const std::filesystem::path& vs, const std::filesystem::path& fs) {
     attach<GL_VERTEX_SHADER>(vs);
     attach<GL_FRAGMENT_SHADER>(fs);
+    link();
+}
+
+void Program::loadSource(const std::string& vs, const std::string& fs) {
+    attachSource<GL_VERTEX_SHADER>(vs);
+    attachSource<GL_FRAGMENT_SHADER>(fs);
     link();
 }
 

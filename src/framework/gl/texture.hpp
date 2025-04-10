@@ -8,8 +8,7 @@
 #include <stb_image.h>
 #include <stb_image_write.h>
 
-#include <glbinding/gl46core/gl.h>
-using namespace gl46core;
+#include <glad/glad.h>
 
 #include "framework/common.hpp"
 #include "framework/context.hpp"
@@ -389,7 +388,7 @@ void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, const std
     void* data;
 
     // Load image from file and read format
-    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
+    Context::setWorkingDirectory(); // Ensure that the working directory is set correctly
     switch (dataType) {
         case GL_UNSIGNED_BYTE:
             data = stbi_load(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
@@ -433,7 +432,7 @@ void Texture<target>::_load3D(GLint zindex, GLenum internalFormat, const std::fi
     void* data;
 
     // Load image from file and read format
-    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
+    Context::setWorkingDirectory(); // Ensure that the working directory is set correctly
     switch (dataType) {
         case GL_UNSIGNED_BYTE:
             data = stbi_load(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
@@ -463,6 +462,7 @@ void Texture<target>::load(GLenum internalFormat, const std::filesystem::path& f
 
 #ifdef MODERN_GL
     GLsizei width, height, channels;
+    Context::setWorkingDirectory(); // Ensure that the working directory is set correctly
     if (!stbi_info(filepath.string().c_str(), &width, &height, &channels))
         throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
     glTextureStorage2D(handle, mipmaps + 1, internalFormat, width, height);
@@ -494,6 +494,7 @@ void Texture<target>::loadCubemap(GLenum internalFormat, const std::array<std::f
     glTextureParameteri(handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTextureParameteri(handle, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     GLsizei width, height, channels;
+    Context::setWorkingDirectory(); // Ensure that the working directory is set correctly
     if (!stbi_info(filepaths[0].string().c_str(), &width, &height, &channels))
         throw std::runtime_error("Failed to parse image " + filepaths[0].string() + ": " + stbi_failure_reason());
     glTextureStorage2D(handle, mipmaps + 1, internalFormat, width, height);
@@ -540,7 +541,7 @@ void Texture<target>::loadCubemap(GLenum internalFormat, const std::filesystem::
 template<GLenum target>
 bool Texture<target>::writeToFile(const std::filesystem::path& filepath) {
     GLint width, height;
-    GLenum internalFormat;
+    GLint internalFormat;
 
 #ifdef MODERN_GL
     glGetTextureLevelParameteriv(handle, 0, GL_TEXTURE_WIDTH, &width);

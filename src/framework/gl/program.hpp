@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glbinding/gl46core/gl.h>
-using namespace gl46core;
+#include <glad/glad.h>
 
 #include <glm/glm.hpp>
 
@@ -67,11 +66,23 @@ class Program {
      * @param vs The file path to the vertex shader source code.
      * @param fs The file path to the fragment shader source code.
      * @note Equivalent to calling
-     * `attach(vs, GL_VERTEX_SHADER);`
-     * `attach(fs, GL_FRAGMENT_SHADER);`
+     * `attach<GL_VERTEX_SHADER>(vs);`
+     * `attach<GL_FRAGMENT_SHADER>(fs);`
      * `link();`
      */
     void load(const std::filesystem::path& vs, const std::filesystem::path& fs);
+
+    /**
+     * @brief Loads and links the vertex and fragment shaders from the specified source code.
+     * @throw `std::runtime_error` when the shaders could not be loaded or linked. 
+     * @param vs The vertex shader source code.
+     * @param fs The fragment shader source code.
+     * @note Equivalent to calling
+     * `attach<GL_VERTEX_SHADER>(vs);`
+     * `attach<GL_FRAGMENT_SHADER>(fs);`
+     * `link();`
+     */
+    void loadSource(const std::string& vs, const std::string& fs);
 
     /**
      * @brief Attaches a shader to the program.
@@ -82,6 +93,16 @@ class Program {
      */
     template <GLenum type>
     void attach(const std::filesystem::path& filepath);
+
+    /**
+     * @brief Attaches a shader to the program.
+     * Internally, this function creates a Shader object, calls Shader::load, attaches it to the program, and deletes the Shader object as it is no longer needed.
+     * @throw `std::runtime_error` when the shader could not be loaded.
+     * @param source The shader source code.
+     * @tparam type The type of shader, e.g. `GL_VERTEX_SHADER`, `GL_FRAGMENT_SHADER`, `GL_COMPUTE_SHADER`.
+     */
+    template <GLenum type>
+    void attachSource(const std::string& source);
 
     /**
      * @brief Attaches a shader to the program.
@@ -191,6 +212,13 @@ template <GLenum type>
 void Program::attach(const std::filesystem::path& filepath) {
     Shader<type> shader;
     shader.load(filepath);
+    attach(shader);
+}
+
+template <GLenum type>
+void Program::attachSource(const std::string& source) {
+    Shader<type> shader;
+    shader.loadSource(source);
     attach(shader);
 }
 

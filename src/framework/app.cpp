@@ -4,13 +4,9 @@
 #include <string>
 #include <stdexcept>
 #include <filesystem>
+#include <set>
 
-#include <glbinding/glbinding.h>
-#include <glbinding/gl46core/gl.h>
-using namespace gl46core;
-
-#include <glbinding-aux/ContextInfo.h>
-#include <glbinding-aux/types_to_string.h>
+#include <glad/glad.h>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -24,7 +20,7 @@ using namespace glm;
 
 #include "framework/gl/texture.hpp"
 
-App::App(unsigned int width, unsigned int height) : resolution(width, height), traceOpenGLCalls(false), imguiEnabled(true) {
+App::App(unsigned int width, unsigned int height) : resolution(width, height) {
     initGLFW();
     initImGui();
     initGL();
@@ -119,32 +115,6 @@ void App::initImGui() {
     ImGui_ImplOpenGL3_Init();
 }
 
-void App::registerGLLoggingCallback() {
-    glbinding::setCallbackMaskExcept(glbinding::CallbackMask::After | glbinding::CallbackMask::ParametersAndReturnValue, { "glGetError" });
-    
-    glbinding::setAfterCallback([&](const glbinding::FunctionCall & call) {
-        const auto error = glGetError();
-        if (error == GL_NO_ERROR && !traceOpenGLCalls) return;
-        std::ostream &stream = error == GL_NO_ERROR ? std::cout : std::cerr;
-        if (error != GL_NO_ERROR) stream << "[Error] ";
-
-        stream << call.function->name() << "(";
-        for (unsigned i = 0; i < call.parameters.size(); ++i) {
-            stream << call.parameters[i].get();
-            if (i < call.parameters.size() - 1) stream << ", ";
-        }
-        stream << ")";
-
-        if (call.returnValue)
-            stream << " -> " << call.returnValue.get();
-        
-        if (error != GL_NO_ERROR)
-            stream << " generated " << error;
-
-        stream << std::endl;
-    });
-}
-
 std::string glSourceToString(GLenum source) {
     switch (source) {
         case GL_DEBUG_SOURCE_API: return "API";
@@ -182,27 +152,61 @@ std::string glSeverityToString(GLenum severity) {
     }
 }
 
-void App::initGL() {
-    glbinding::initialize(glfwGetProcAddress, false); // only resolve functions that are actually used (lazy)
+std::string glErrorToString(GLenum error) {
+    switch (error) {
+        case GL_NO_ERROR: return "GL_NO_ERROR";
+        case GL_INVALID_ENUM: return "GL_INVALID_ENUM";
+        case GL_INVALID_VALUE: return "GL_INVALID_VALUE";
+        case GL_INVALID_OPERATION: return "GL_INVALID_OPERATION";
+        case GL_INVALID_FRAMEBUFFER_OPERATION: return "GL_INVALID_FRAMEBUFFER_OPERATION";
+        case GL_CONTEXT_LOST: return "GL_CONTEXT_LOST";
+        case GL_OUT_OF_MEMORY: return "GL_OUT_OF_MEMORY";
+        case GL_STACK_OVERFLOW: return "GL_STACK_OVERFLOW";
+        case GL_STACK_UNDERFLOW: return "GL_STACK_UNDERFLOW";
+        default: return "Unknown";
+    }
+}
 
-#ifndef NDEBUG
+// Print function if error occurs
+void gladPostCallback(const char* name, void* funcptr, int len_args, ...) {
+    GLenum error = glad_glGetError();
+    if (error != GL_NO_ERROR) {
+        std::cerr << "OpenGL Error: " << glErrorToString(error) << " in " << name << "(";
+        va_list args;
+        va_start(args, len_args);
+        for (int i = 0; i < len_args; i++) {
+            GLenum arg = va_arg(args, GLenum);
+            std::cerr << arg;
+            if (i < len_args - 1) std::cerr << ", ";
+        }
+        va_end(args);
+        std::cerr << ")" << std::endl;
+    }
+}
+
+void App::initGL() {
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) throw std::runtime_error("Failed to initialize GLAD");
+
     std::cout << std::endl
-        << "OpenGL Version:  " << glbinding::aux::ContextInfo::version() << std::endl
-        << "OpenGL Vendor:   " << glbinding::aux::ContextInfo::vendor() << std::endl
-        << "OpenGL Renderer: " << glbinding::aux::ContextInfo::renderer() << std::endl << std::endl;
-    
-    registerGLLoggingCallback();
-#endif
+        << "OpenGL Vendor:   " << glGetString(GL_VENDOR) << std::endl
+        << "OpenGL Renderer: " << glGetString(GL_RENDERER) << std::endl
+        << "OpenGL Version:  " << glGetString(GL_VERSION) << std::endl
+        << "GLSL Version:    " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl
+        << std::endl;
 
     glEnable(GL_FRAMEBUFFER_SRGB); // Enables SRGB rendering
 
+    glad_set_post_callback(gladPostCallback);
+    
     // Enables better debug output, only supported for OpenGL 4.3+
 #ifdef MODERN_GL
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void*) {
-        std::cerr << "[" << glSourceToString(source) << "] " << glTypeToString(type) << ": " << message << " (" << glSeverityToString(severity) << ")" << std::endl;
-    }, 0);
+    glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+        auto app = static_cast<App*>(const_cast<void*>(userParam));
+        if (app->seenMessageIDs.insert(id).second)
+            std::cerr << "[" << glSourceToString(source) << "] " << glTypeToString(type) << ": " << message << " (" << glSeverityToString(severity) << ")" << std::endl;
+    }, this);
 #endif
 }
 
@@ -215,7 +219,6 @@ App::~App() {
 }
 
 // To be overriden
-void App::init() {}
 void App::render() {}
 void App::keyCallback(Key key, Action action, Modifier modifier) {}
 void App::clickCallback(Button button, Action action, Modifier modifier) {}
@@ -225,7 +228,6 @@ void App::resizeCallback(const vec2& resolution) {}
 void App::buildImGui() {}
 
 void App::run() {
-    init();
     resizeCallback(resolution);
     frames = 0;
     while (!glfwWindowShouldClose(window)) {
