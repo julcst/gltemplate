@@ -197,8 +197,6 @@ void App::initGL() {
     glEnable(GL_FRAMEBUFFER_SRGB); // Enables SRGB rendering
 
     gladSetGLPostCallback(gladPostCallback);
-
-    glEnable(15);
     
     // Enables better debug output, only supported for OpenGL 4.3+
 #ifdef MODERN_GL
