@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.29...4.0)
 
 project(GLTemplate VERSION 1.0 LANGUAGES C CXX)
 

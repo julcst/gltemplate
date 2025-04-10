@@ -26,8 +26,12 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
     glbinding
     #GIT_REPOSITORY https://github.com/cginternals/glbinding.git
-    GIT_TAG v3.3.0
-    URL https://github.com/cginternals/glbinding/archive/v3.3.0.tar.gz
+    #GIT_TAG v3.4.0
+    GIT_REPOSITORY https://github.com/chenrui333/glbinding.git
+    GIT_TAG support-cmake-4.0
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
+    #URL https://github.com/cginternals/glbinding/archive/v3.4.0.tar.gz
     EXCLUDE_FROM_ALL
     FIND_PACKAGE_ARGS # First try to find the package in the system, if not found download it locally. For example use `brew install glbinding` on macOS
 )
@@ -39,6 +43,8 @@ FetchContent_Declare(
     glm
     #GIT_REPOSITORY https://github.com/g-truc/glm.git
     GIT_TAG 1.0.1
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
     URL https://github.com/g-truc/glm/archive/1.0.1.tar.gz
     EXCLUDE_FROM_ALL
     FIND_PACKAGE_ARGS # First try to find the package in the system, if not found download it locally. For example use `brew install glm` on macOS
@@ -49,8 +55,10 @@ add_compile_definitions(GLM_FORCE_RADIANS)
 FetchContent_Declare(
     imgui
     #GIT_REPOSITORY https://github.com/ocornut/imgui.git
-    GIT_TAG v1.90.8
-    URL https://github.com/ocornut/imgui/archive/v1.90.8.tar.gz
+    GIT_TAG v1.91.9b
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
+    URL https://github.com/ocornut/imgui/archive/v1.91.9b.tar.gz
     EXCLUDE_FROM_ALL
 )
 
@@ -59,6 +67,8 @@ FetchContent_Declare(
     tinyobjloader
     #GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git
     GIT_TAG v2.0.0rc13
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
     URL https://github.com/tinyobjloader/tinyobjloader/archive/v2.0.0rc13.tar.gz
     EXCLUDE_FROM_ALL
 )
