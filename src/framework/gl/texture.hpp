@@ -556,8 +556,7 @@ bool Texture<target>::writeToFile(const std::filesystem::path& filepath) {
     GLenum baseFormat = getBaseFormat(internalFormat);
     GLenum dataType = getDataType(internalFormat);
     int channels = 4; // glTexImage2D always returns 4 channels
-
-    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
+    
     stbi_flip_vertically_on_write(true);
 
     if (dataType == GL_FLOAT) {

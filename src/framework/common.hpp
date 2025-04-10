@@ -18,6 +18,13 @@ namespace Common {
     std::string readFile(const std::filesystem::path& filepath);
 
     /**
+     * @brief Reads the content of a binary file.
+     * @param filepath The path to the file.
+     * @return The content of the file as a vector of characters.
+     */
+    std::vector<char> readBinaryFile(const std::filesystem::path& filepath);
+
+    /**
      * @brief Writes content to a file.
      * @param content The content to write.
      * @param filepath The path to the file.

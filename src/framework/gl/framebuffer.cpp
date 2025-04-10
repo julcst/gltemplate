@@ -135,8 +135,7 @@ bool Framebuffer::writeToFile(const std::filesystem::path &path, GLenum attachme
     GLenum dataType = getDataType(internalFormat);
     GLenum baseFormat = getBaseFormat(internalFormat);
     int channels = getChannels(baseFormat);
-
-    Context::setWorkingDirectory(); // Ensure the working directory is set correctly
+    
     stbi_flip_vertically_on_write(true);
 
     if (dataType == GL_UNSIGNED_BYTE || dataType == GL_BYTE) {

@@ -13,7 +13,6 @@ using namespace gl46core;
 
 using namespace glm;
 
-
 ////////////////////////// Manual mesh loading //////////////////////////
 
 void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) {
