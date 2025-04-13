@@ -12,6 +12,8 @@ FetchContent_Declare(
     glfw3
     #GIT_REPOSITORY https://github.com/glfw/glfw.git
     GIT_TAG 3.4
+    GIT_SHALLOW TRUE
+    GIT_PROGRESS TRUE
     URL https://github.com/glfw/glfw/archive/refs/tags/3.4.tar.gz
     EXCLUDE_FROM_ALL
     FIND_PACKAGE_ARGS # First try to find the package in the system, if not found download it locally. For example use `brew install glfw` on macOS
