@@ -38,21 +38,90 @@ void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned i
 #endif
 }
 
-void Mesh::load(const std::vector<VertexPCN>& vertices, const std::vector<unsigned int>& indices) {
+void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned int>& attributeSizes, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numIndices = indices.size();
     vbo.load(vertices, GL_STATIC_DRAW);
     ebo.load(indices, GL_STATIC_DRAW);
 
     // Bind buffers to VAO
-    GLsizei stride = sizeof(VertexPCN);
+    GLsizei stride = 0;
+    for (const auto attributeSize : attributeSizes) {
+        stride += attributeSize * sizeof(float);
+    }
+
+#ifdef MODERN_GL
+    GLuint offset = 0;
+    for (unsigned int attributeIdx = 0; attributeIdx < attributeSizes.size(); attributeIdx++) {
+        const auto attributeSize = attributeSizes[attributeIdx];
+        glEnableVertexArrayAttrib(vao.handle, attributeIdx);
+        glVertexArrayAttribBinding(vao.handle, attributeIdx, 0);
+        glVertexArrayAttribFormat(vao.handle, attributeIdx, attributeSize, GL_FLOAT, GL_FALSE, offset);
+        offset += attributeSize * sizeof(float);
+    }
+    glVertexArrayVertexBuffer(vao.handle, 0, vbo.handle, 0, stride);
+    glVertexArrayElementBuffer(vao.handle, ebo.handle);
+#else
+    vao.bind();
+    vbo.bind();
+    ebo.bind();
+    GLuint offset = 0;
+    for (unsigned int attributeIdx = 0; attributeIdx < attributeSizes.size(); attributeIdx++) {
+        const auto attributeSize = attributeSizes[attributeIdx];
+        glEnableVertexAttribArray(attributeIdx);
+        glVertexAttribPointer(attributeIdx, attributeSize, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offset));
+        offset += attributeSize * sizeof(float);
+    }
+#endif
+}
+
+void Mesh::load(const std::vector<VertexPC>& vertices, const std::vector<unsigned int>& indices) {
+    // Load data into buffers
+    numIndices = indices.size();
+    vbo.load(vertices, GL_STATIC_DRAW);
+    ebo.load(indices, GL_STATIC_DRAW);
+
+    // Bind buffers to VAO
+    GLsizei stride = sizeof(VertexPC);
 
 #ifdef MODERN_GL
     glVertexArrayVertexBuffer(vao.handle, 0, vbo.handle, 0, stride);
     glVertexArrayElementBuffer(vao.handle, ebo.handle);
-    glVertexArrayAttribFormat(vao.handle, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPCN, position));
-    glVertexArrayAttribFormat(vao.handle, 1, 2, GL_FLOAT, GL_FALSE, offsetof(VertexPCN, texCoord));
-    glVertexArrayAttribFormat(vao.handle, 2, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPCN, normal));
+    glVertexArrayAttribFormat(vao.handle, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPC, position));
+    glVertexArrayAttribFormat(vao.handle, 1, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPC, color));
+    glEnableVertexArrayAttrib(vao.handle, 0);
+    glEnableVertexArrayAttrib(vao.handle, 1);
+    glVertexArrayAttribBinding(vao.handle, 0, 0);
+    glVertexArrayAttribBinding(vao.handle, 1, 0);
+#else
+    vao.bind();
+    vbo.bind();
+    ebo.bind();
+    // Vertex attributes
+    // (location = 0) position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPC, position)));
+    // (location = 1) color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPC, color)));
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+#endif
+}
+
+void Mesh::load(const std::vector<VertexPTN>& vertices, const std::vector<unsigned int>& indices) {
+    // Load data into buffers
+    numIndices = indices.size();
+    vbo.load(vertices, GL_STATIC_DRAW);
+    ebo.load(indices, GL_STATIC_DRAW);
+
+    // Bind buffers to VAO
+    GLsizei stride = sizeof(VertexPTN);
+
+#ifdef MODERN_GL
+    glVertexArrayVertexBuffer(vao.handle, 0, vbo.handle, 0, stride);
+    glVertexArrayElementBuffer(vao.handle, ebo.handle);
+    glVertexArrayAttribFormat(vao.handle, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPTN, position));
+    glVertexArrayAttribFormat(vao.handle, 1, 2, GL_FLOAT, GL_FALSE, offsetof(VertexPTN, texCoord));
+    glVertexArrayAttribFormat(vao.handle, 2, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPTN, normal));
     glEnableVertexArrayAttrib(vao.handle, 0);
     glEnableVertexArrayAttrib(vao.handle, 1);
     glEnableVertexArrayAttrib(vao.handle, 2);
@@ -65,34 +134,33 @@ void Mesh::load(const std::vector<VertexPCN>& vertices, const std::vector<unsign
     ebo.bind();
     // Vertex attributes
     // (location = 0) position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPCN, position)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPTN, position)));
     // (location = 1) uv
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPCN, texCoord)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPTN, texCoord)));
     // (location = 2) normal
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPCN, normal)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPTN, normal)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 #endif
 }
 
-void Mesh::load(const std::vector<VertexPCNT>& vertices, const std::vector<unsigned int>& indices) {
+void Mesh::load(const std::vector<VertexPTNT>& vertices, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numIndices = indices.size();
     vbo.load(vertices, GL_STATIC_DRAW);
     ebo.load(indices, GL_STATIC_DRAW);
 
     // Bind buffers to VAO
-    // TODO: Use DSA instead (but only OpenGL 4.5+, so not on macOS)
-    GLsizei stride = sizeof(VertexPCNT);
+    GLsizei stride = sizeof(VertexPTNT);
 
 #ifdef MODERN_GL
     glVertexArrayVertexBuffer(vao.handle, 0, vbo.handle, 0, stride);
     glVertexArrayElementBuffer(vao.handle, ebo.handle);
-    glVertexArrayAttribFormat(vao.handle, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPCNT, position));
-    glVertexArrayAttribFormat(vao.handle, 1, 2, GL_FLOAT, GL_FALSE, offsetof(VertexPCNT, texCoord));
-    glVertexArrayAttribFormat(vao.handle, 2, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPCNT, normal));
-    glVertexArrayAttribFormat(vao.handle, 3, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPCNT, tangent));
+    glVertexArrayAttribFormat(vao.handle, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPTNT, position));
+    glVertexArrayAttribFormat(vao.handle, 1, 2, GL_FLOAT, GL_FALSE, offsetof(VertexPTNT, texCoord));
+    glVertexArrayAttribFormat(vao.handle, 2, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPTNT, normal));
+    glVertexArrayAttribFormat(vao.handle, 3, 3, GL_FLOAT, GL_FALSE, offsetof(VertexPTNT, tangent));
     glEnableVertexArrayAttrib(vao.handle, 0);
     glEnableVertexArrayAttrib(vao.handle, 1);
     glEnableVertexArrayAttrib(vao.handle, 2);
@@ -107,13 +175,13 @@ void Mesh::load(const std::vector<VertexPCNT>& vertices, const std::vector<unsig
     ebo.bind();
     // Vertex attributes
     // (location = 0) position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPCNT, position)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPTNT, position)));
     // (location = 1) uv
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPCNT, texCoord)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPTNT, texCoord)));
     // (location = 2) normal
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPCNT, normal)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPTNT, normal)));
     // (location = 3) tangent
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPCNT, tangent)));
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offsetof(VertexPTNT, tangent)));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
@@ -122,14 +190,14 @@ void Mesh::load(const std::vector<VertexPCNT>& vertices, const std::vector<unsig
 }
 
 void Mesh::load(const std::filesystem::path& filepath) {
-    std::vector<VertexPCN> vertices;
+    std::vector<VertexPTN> vertices;
     std::vector<unsigned int> indices;
     ObjParser::parse(filepath, vertices, indices);
     load(vertices, indices);
 }
 
 void Mesh::loadWithTangents(const std::filesystem::path& filepath) {
-    std::vector<VertexPCNT> vertices;
+    std::vector<VertexPTNT> vertices;
     std::vector<unsigned int> indices;
     ObjParser::parse(filepath, vertices, indices);
     load(vertices, indices);

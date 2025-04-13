@@ -20,15 +20,15 @@ using namespace glm;
 ////////////////////// Obj loading without tangents //////////////////////
 
 /* Define comparison operator for use with std::unordered_map */
-bool operator==(const Mesh::VertexPCN& v1, const Mesh::VertexPCN& v2) {
+bool operator==(const Mesh::VertexPTN& v1, const Mesh::VertexPTN& v2) {
     return v1.position == v2.position && v1.texCoord == v2.texCoord && v1.normal == v2.normal;
 }
 
 /* Define hash function for use with std::unordered_map */
 template<>
-struct std::hash<Mesh::VertexPCN>
+struct std::hash<Mesh::VertexPTN>
 {
-    std::size_t operator()(const Mesh::VertexPCN& vertex) const noexcept
+    std::size_t operator()(const Mesh::VertexPTN& vertex) const noexcept
     {
         size_t seed = 0;
         Common::hash_combine(seed, vertex.position, vertex.texCoord, vertex.normal);
@@ -36,7 +36,7 @@ struct std::hash<Mesh::VertexPCN>
     }
 };
 
-void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::VertexPCN>& vertices, std::vector<unsigned int>& indices) {
+void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::VertexPTN>& vertices, std::vector<unsigned int>& indices) {
     // Parse OBJ file
     std::string rawobj = Common::readFile(filepath);
     tinyobj::ObjReader reader;
@@ -54,14 +54,14 @@ void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::V
     size_t predictedNumVertices = attrib.vertices.size() / 3;
     size_t predictedNumIndices = predictedNumVertices * 2 * 3; // Euler's polyhedron theorem
 
-    std::unordered_map<Mesh::VertexPCN, uint32_t> uniqueVertices;
+    std::unordered_map<Mesh::VertexPTN, uint32_t> uniqueVertices;
     uniqueVertices.reserve(predictedNumVertices);
     vertices.reserve(predictedNumVertices);
     indices.reserve(predictedNumIndices);
 
     for (const auto& shape : shapes) {
         for (const auto& index : shape.mesh.indices) {
-            Mesh::VertexPCN vertex;
+            Mesh::VertexPTN vertex;
             
             vertex.position = {
                 attrib.vertices[3 * index.vertex_index + 0],
@@ -97,15 +97,15 @@ void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::V
 /////////////////////// Obj loading with tangents ///////////////////////
 
 /* Define comparison operator for use with std::unordered_map */
-bool operator==(const Mesh::VertexPCNT& v1, const Mesh::VertexPCNT& v2) {
+bool operator==(const Mesh::VertexPTNT& v1, const Mesh::VertexPTNT& v2) {
     return v1.position == v2.position && v1.texCoord == v2.texCoord && v1.normal == v2.normal;
 }
 
 /* Define hash function for use with std::unordered_map */
 template<>
-struct std::hash<Mesh::VertexPCNT>
+struct std::hash<Mesh::VertexPTNT>
 {
-    std::size_t operator()(const Mesh::VertexPCNT& vertex) const noexcept
+    std::size_t operator()(const Mesh::VertexPTNT& vertex) const noexcept
     {
         size_t seed = 0;
         Common::hash_combine(seed, vertex.position, vertex.texCoord, vertex.normal);
@@ -113,7 +113,7 @@ struct std::hash<Mesh::VertexPCNT>
     }
 };
 
-void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::VertexPCNT>& vertices, std::vector<unsigned int>& indices) {
+void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::VertexPTNT>& vertices, std::vector<unsigned int>& indices) {
     // Parse OBJ file
     std::string rawobj = Common::readFile(filepath);
     tinyobj::ObjReader reader;
@@ -131,14 +131,14 @@ void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::V
     size_t predictedNumVertices = attrib.vertices.size() / 3;
     size_t predictedNumIndices = predictedNumVertices * 2 * 3; // Euler's polyhedron theorem
 
-    std::unordered_map<Mesh::VertexPCNT, uint32_t> uniqueVertices;
+    std::unordered_map<Mesh::VertexPTNT, uint32_t> uniqueVertices;
     uniqueVertices.reserve(predictedNumVertices);
     vertices.reserve(predictedNumVertices);
     indices.reserve(predictedNumIndices);
 
     for (const auto& shape : shapes) {
         for (const auto& index : shape.mesh.indices) {
-            Mesh::VertexPCNT vertex{};
+            Mesh::VertexPTNT vertex{};
             
             vertex.position = {
                 attrib.vertices[3 * index.vertex_index + 0],
@@ -180,9 +180,9 @@ void ObjParser::parse(const std::filesystem::path& filepath, std::vector<Mesh::V
         uint index0 = indices[i + 0u];
         uint index1 = indices[i + 1u];
         uint index2 = indices[i + 2u];
-        Mesh::VertexPCNT& v0 = vertices[index0];
-        Mesh::VertexPCNT& v1 = vertices[index1];
-        Mesh::VertexPCNT& v2 = vertices[index2];
+        Mesh::VertexPTNT& v0 = vertices[index0];
+        Mesh::VertexPTNT& v1 = vertices[index1];
+        Mesh::VertexPTNT& v2 = vertices[index2];
 
         vec3 delta_pos1 = v1.position - v0.position;
         vec3 delta_pos2 = v2.position - v0.position;
