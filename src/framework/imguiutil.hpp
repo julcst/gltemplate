@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <imgui.h>
 
 /**
  * @file imguiutil.hpp
