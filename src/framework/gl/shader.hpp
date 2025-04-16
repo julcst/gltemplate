@@ -130,9 +130,16 @@ void Shader<type>::release() {
 }
 /////////////////////////////////////////////////////////////
 
+struct PathHash {
+  auto operator()(const std::filesystem::path &p) const -> size_t {
+    return std::hash<std::string>{}(p);
+  }
+};
+
+
 const std::regex includeRegex("(?:^|\n)#include \"([^\"]+)\"");
 
-inline std::string readShader(const std::filesystem::path& filepath, std::unordered_set<std::filesystem::path>& included) {
+inline std::string readShader(const std::filesystem::path& filepath, std::unordered_set<std::filesystem::path, PathHash>& included) {
     std::string source = Common::readFile(filepath);
     std::smatch match;
     while (std::regex_search(source, match, includeRegex)) {
@@ -153,7 +160,7 @@ inline std::string readShader(const std::filesystem::path& filepath, std::unorde
 
 template <GLenum type>
 void Shader<type>::load(const std::filesystem::path& filepath) {
-    std::unordered_set<std::filesystem::path> included;
+    std::unordered_set<std::filesystem::path, PathHash> included;
     std::string source = readShader(filepath, included);
 #ifdef COMPOSE_SHADERS
     Common::writeToFile(source, Context::COMPOSED_SHADER_DIR / filepath.filepath);
