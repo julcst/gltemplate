@@ -84,13 +84,10 @@ bool ImGui::FlagCheckbox(const char* label, unsigned int* flags, unsigned int fl
 }
 
 bool ImGui::FileCombo(const char* label, int* curr, const std::vector<std::filesystem::path>& items) {
-    return ImGui::Combo(
-        label, curr,
-        [](void* data, int idx, const char** out_text) {
-            auto items = reinterpret_cast<const std::vector<std::filesystem::path>*>(data);
-            std::string temp_string = items->at(idx).u8string();
-            *out_text = temp_string.c_str();
-            return true;
-        },
-        const_cast<void*>(reinterpret_cast<const void*>(&items)), items.size());
+    std::vector<std::string> itemStrings;
+    itemStrings.reserve(items.size());
+    for (const auto& item : items) {
+        itemStrings.push_back(item.string());
+    }
+    return ImGui::Combo(label, curr, itemStrings);
 }
