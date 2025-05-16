@@ -18,6 +18,197 @@
  * @brief Defines a Texture class wrapper around the OpenGL texture object.
  */
 
+ /**
+ * @brief Gets the number of channels from a base format, e.g. `GL_RED` returns 1, `GL_RGB` returns 3, etc.
+ * @note See: https://gist.github.com/Kos/4739337
+ */
+constexpr GLsizei getChannels(GLenum baseFormat) {
+    switch(baseFormat) {
+        case GL_RED: return 1;
+        case GL_RG: return 2;
+        case GL_RGB: return 3;
+        case GL_RGBA: return 4;
+        default: throw std::runtime_error("Unsupported base format");
+    }
+}
+
+ /**
+ * @brief Gets the base format from an internal format, e.g. `GL_R8` returns `GL_RED`, `GL_RGB8` returns `GL_RGB`, etc.
+ * @note See: https://gist.github.com/Kos/4739337
+ */
+constexpr GLenum getBaseFormat(GLenum internalFormat) {
+    switch (internalFormat) {
+        case GL_R8:
+        case GL_R8_SNORM:
+        case GL_R16:
+        case GL_R16_SNORM:
+        case GL_R16F:
+        case GL_R32F:
+        case GL_R8I:
+        case GL_R8UI:
+        case GL_R16I:
+        case GL_R16UI:
+        case GL_R32I:
+        case GL_R32UI:
+            return GL_RED;
+        case GL_RG8:
+        case GL_RG8_SNORM:
+        case GL_RG16:
+        case GL_RG16_SNORM:
+        case GL_RG16F:
+        case GL_RG32F:
+        case GL_RG8I:
+        case GL_RG8UI:
+        case GL_RG16I:
+        case GL_RG16UI:
+        case GL_RG32I:
+        case GL_RG32UI:
+            return GL_RG;
+        case GL_R3_G3_B2:
+        case GL_RGB4:
+        case GL_RGB5:
+        case GL_RGB8:
+        case GL_RGB8_SNORM:
+        case GL_RGB10:
+        case GL_RGB12:
+        case GL_RGB16:
+        case GL_RGB16_SNORM:
+        case GL_RGB16F:
+        case GL_RGB32F:
+        case GL_SRGB8:
+            return GL_RGB;
+        case GL_RGBA2:
+        case GL_RGBA4:
+        case GL_RGB5_A1:
+        case GL_RGBA8:
+        case GL_RGBA8_SNORM:
+        case GL_RGB10_A2:
+        case GL_RGB10_A2UI:
+        case GL_RGBA12:
+        case GL_RGBA16:
+        case GL_RGBA16_SNORM:
+        case GL_RGBA16F:
+        case GL_RGBA32F:
+        case GL_SRGB8_ALPHA8:
+            return GL_RGBA;
+        case GL_DEPTH_COMPONENT16:
+        case GL_DEPTH_COMPONENT24:
+        case GL_DEPTH_COMPONENT32:
+        case GL_DEPTH_COMPONENT32F:
+            return GL_DEPTH_COMPONENT;
+        case GL_DEPTH24_STENCIL8:
+        case GL_DEPTH32F_STENCIL8:
+            return GL_DEPTH_STENCIL;
+        default: throw std::runtime_error("getBaseFormat got unsupported internal format");
+    }
+    return GL_NONE;
+}
+
+/**
+ * @brief Gets the preferred data type from an internal format, e.g. `GL_R8` returns `GL_UNSIGNED_BYTE`, `GL_RGB32F` returns `GL_FLOAT`, etc.
+ * @note See: https://gist.github.com/Kos/4739337
+ */
+constexpr GLenum getDataType(GLenum internalFormat) {
+    switch (internalFormat) {
+        case GL_R8:
+        case GL_RG8:
+        case GL_RGB4:
+        case GL_RGB5:
+        case GL_RGB8:
+        case GL_RGBA8:
+        case GL_SRGB8:
+        case GL_SRGB8_ALPHA8:
+            return GL_UNSIGNED_BYTE;
+        case GL_R3_G3_B2:
+            return GL_UNSIGNED_BYTE_3_3_2;
+        case GL_R8_SNORM:
+        case GL_RG8_SNORM:
+        case GL_RGB8_SNORM:
+        case GL_RGBA8_SNORM:
+            return GL_BYTE;
+        case GL_R16:
+        case GL_RG16:
+        case GL_RGB10:
+        case GL_RGB12:
+        case GL_RGB16:
+        case GL_RGBA12:
+        case GL_RGBA16:
+        case GL_DEPTH_COMPONENT16:
+            return GL_UNSIGNED_SHORT;
+        case GL_RGBA2:
+        case GL_RGBA4:
+            return GL_UNSIGNED_SHORT_4_4_4_4;
+        case GL_RGB5_A1:
+            return GL_UNSIGNED_SHORT_5_5_5_1;
+        case GL_R16_SNORM:
+        case GL_RG16_SNORM:
+        case GL_RGB16_SNORM:
+        case GL_RGBA16_SNORM:
+            return GL_SHORT;
+        case GL_R16I:
+        case GL_RG16I:
+        case GL_RGB16I:
+        case GL_RGBA16I:
+            return GL_INT;
+        case GL_R16UI:
+        case GL_RG16UI:
+        case GL_RGB16UI:
+        case GL_RGBA16UI:
+            return GL_UNSIGNED_INT;
+        case GL_R16F:
+        case GL_RG16F:
+        case GL_RGB16F:
+        case GL_RGBA16F:
+            return GL_HALF_FLOAT;
+        case GL_R32F:
+        case GL_RG32F:
+        case GL_RGB32F:
+        case GL_RGBA32F:
+        case GL_DEPTH_COMPONENT32F:
+            return GL_FLOAT;
+        case GL_DEPTH24_STENCIL8:
+            return GL_UNSIGNED_INT_24_8;
+        case GL_DEPTH32F_STENCIL8:
+            return GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
+        default: throw std::runtime_error("getDataType got unsupported internal format");
+    }
+    return GL_NONE;
+}
+
+/**
+ * @brief Gets the STB preferred data type from an internal format, e.g. `GL_R8` returns `GL_UNSIGNED_BYTE`, `GL_RGB32F` returns `GL_FLOAT`, etc.
+ */
+constexpr GLenum getSTBPreferredDataType(GLenum internalFormat) {
+    switch (internalFormat) {
+        case GL_R8:
+        case GL_RG8:
+        case GL_RGB4:
+        case GL_RGB5:
+        case GL_RGB8:
+        case GL_RGBA8:
+        case GL_SRGB8:
+        case GL_SRGB8_ALPHA8:
+            return GL_UNSIGNED_BYTE;
+        case GL_R8_SNORM:
+        case GL_RG8_SNORM:
+        case GL_RGB8_SNORM:
+        case GL_RGBA8_SNORM:
+            return GL_BYTE;
+        case GL_R16F:
+        case GL_RG16F:
+        case GL_RGB16F:
+        case GL_RGBA16F:
+        case GL_R32F:
+        case GL_RG32F:
+        case GL_RGB32F:
+        case GL_RGBA32F:
+        case GL_DEPTH_COMPONENT32F:
+            return GL_FLOAT;
+        default: throw std::runtime_error("getSTBPreferredDataType got unsupported internal format");
+    }
+    return GL_NONE;
+}
+
 /**
  * @class Texture
  * @brief RAII wrapper for OpenGL texture with helper functions for loading 2D textures and cubemaps.
@@ -101,8 +292,23 @@ class Texture {
      * @param width The width of the texture.
      * @param height The height of the texture.
      * @param data The image data.
+     * @param baseFormat The base format of the image data.
+     * @param dataType The data type of the image data.
      */
-    void _load2D(GLenum texTarget, GLenum format, GLint width, GLint height, void* data);
+    void _load2D(GLenum texTarget, GLenum format, GLint width, GLint height, void* data, GLenum baseFormat, GLenum dataType);
+
+    /**
+     * @brief Loads a 2D texture from memory.
+     * @note Prefer `Texture::load`, as this function is incomplete and requires the texture first to be bound.
+     * @param texTarget The target texture type to load the texture into, cubemaps require special targets per face.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F` and for normal maps `GL_RGB8_SNORM`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param width The width of the texture.
+     * @param height The height of the texture.
+     * @param data The image data.
+     */
+    void _load2D(GLenum texTarget, GLenum format, GLint width, GLint height, void* data) {
+        _load2D(texTarget, format, width, height, data, getBaseFormat(format), getDataType(format));
+    }
 
     /**
      * @brief Loads a 2D texture from a file.
@@ -122,8 +328,23 @@ class Texture {
      * @param width The width of the texture.
      * @param height The height of the texture.
      * @param data The image data.
+     * @param baseFormat The base format of the image data.
+     * @param dataType The data type of the image data.
      */
-    void _load3D(GLint zindex, GLenum format, GLint width, GLint height, void* data);
+    void _load3D(GLint zindex, GLenum format, GLint width, GLint height, void* data, GLenum baseFormat, GLenum dataType);
+
+    /**
+     * @brief Loads a 3D texture slice from memory.
+     * @note Prefer `Texture::load`, as this function is incomplete and requires the texture first to be bound.
+     * @param zindex The z-index of the texture slice.
+     * @param format The format of the texture. E.g. for standard color use `GL_SRGB8_ALPHA8`, for HDR use `GL_RGBA32F` or `GL_RGBA16F` and for normal maps `GL_RGB8_SNORM`. See https://www.khronos.org/opengl/wiki/Image_Format for more information.
+     * @param width The width of the texture.
+     * @param height The height of the texture.
+     * @param data The image data.
+     */
+    void _load3D(GLint zindex, GLenum format, GLint width, GLint height, void* data) {
+        _load3D(zindex, format, width, height, data, getBaseFormat(format), getDataType(format));
+    }
 
     /**
      * @brief Loads a 3D texture slice from a file.
@@ -263,93 +484,6 @@ void Texture<target>::bindTextureUnit(GLuint index) {
 #endif
 }
 
-/**
- * @brief Gets the number of channels from a base format, e.g. `GL_RED` returns 1, `GL_RGB` returns 3, etc.
- * @note See: https://gist.github.com/Kos/4739337
- */
-inline GLsizei getChannels(GLenum baseFormat) {
-    switch(baseFormat) {
-        case GL_RED: return 1;
-        case GL_RG: return 2;
-        case GL_RGB: return 3;
-        case GL_RGBA: return 4;
-        default: throw std::runtime_error("Unsupported base format");
-    }
-}
-
-/**
- * @brief Gets the base format from an internal format, e.g. `GL_R8` returns `GL_RED`, `GL_RGB8` returns `GL_RGB`, etc.
- * @note See: https://gist.github.com/Kos/4739337
- */
-inline GLenum getBaseFormat(GLenum internalFormat) {
-    switch (internalFormat) {
-        case GL_R8:
-        case GL_R16F:
-        case GL_R32F:
-        case GL_R8_SNORM:
-            return GL_RED;
-        case GL_RG8:
-        case GL_RG16F:
-        case GL_RG32F:
-        case GL_RG8_SNORM:
-            return GL_RG;
-        case GL_RGB8:
-        case GL_RGB16F:
-        case GL_RGB32F:
-        case GL_RGB8_SNORM:
-        case GL_SRGB8:
-            return GL_RGB;
-        case GL_RGBA8:
-        case GL_RGBA16F:
-        case GL_RGBA32F:
-        case GL_RGBA8_SNORM:
-        case GL_SRGB8_ALPHA8:
-            return GL_RGBA;
-        case GL_DEPTH_COMPONENT32F:
-            return GL_DEPTH_COMPONENT;
-        case GL_DEPTH32F_STENCIL8:
-            return GL_DEPTH_STENCIL;
-        default: throw std::runtime_error("Unsupported internal format");
-    }
-    return GL_NONE;
-}
-
-/**
- * @brief Gets the preferred data type from an internal format, e.g. `GL_R8` returns `GL_UNSIGNED_BYTE`, `GL_RGB32F` returns `GL_FLOAT`, etc.
- * @note See: https://gist.github.com/Kos/4739337
- */
-inline GLenum getDataType(GLenum internalFormat) {
-    switch (internalFormat) {
-        case GL_R8:
-        case GL_RG8:
-        case GL_RGB8:
-        case GL_RGBA8:
-        case GL_SRGB8:
-        case GL_SRGB8_ALPHA8:
-            return GL_UNSIGNED_BYTE;
-        case GL_R8_SNORM:
-        case GL_RG8_SNORM:
-        case GL_RGB8_SNORM:
-        case GL_RGBA8_SNORM:
-            return GL_BYTE;
-        case GL_R16F:
-        case GL_RG16F:
-        case GL_RGB16F:
-        case GL_RGBA16F:
-        case GL_R32F:
-        case GL_RG32F:
-        case GL_RGB32F:
-        case GL_RGBA32F:
-        case GL_DEPTH_COMPONENT32F:
-            return GL_FLOAT;
-        case GL_DEPTH32F_STENCIL8:
-            return GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
-        default: throw std::runtime_error("Unsupported internal format");
-    }
-    return GL_NONE;
-
-}
-
 template<GLenum target>
 void Texture<target>::allocate2D(GLenum internalFormat, GLint width, GLint height, GLint mipmaps) {
     #ifdef MODERN_GL
@@ -365,9 +499,7 @@ void Texture<target>::allocate2D(GLenum internalFormat, GLint width, GLint heigh
 }
 
 template<GLenum target>
-void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, GLint width, GLint height, void* data) {
-    GLenum baseFormat = getBaseFormat(internalFormat);
-    GLenum dataType = getDataType(internalFormat);
+void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, GLint width, GLint height, void* data, GLenum baseFormat, GLenum dataType) {
     #ifdef MODERN_GL
         // This would be the immutable version:
         // glTexStorage2D(GL_TEXTURE_2D, levels, internalFormat, width, height);
@@ -384,7 +516,7 @@ void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, const std
     GLsizei width, height, channelsInFile;
     GLenum baseFormat = getBaseFormat(internalFormat);
     GLsizei channels = getChannels(baseFormat);
-    GLenum dataType = getDataType(internalFormat);
+    GLenum dataType = getSTBPreferredDataType(internalFormat);
     void* data;
 
     // Load image from file and read format
@@ -400,22 +532,21 @@ void Texture<target>::_load2D(GLenum texTarget, GLenum internalFormat, const std
             break;
         case GL_FLOAT:
             data = stbi_loadf(filepath.string().c_str(), &width, &height, &channelsInFile, channels);
+            dataType = GL_FLOAT; // stbi_loadf returns float, but OpenGL expects half float
             break;
         default: throw std::runtime_error("Unsupported texture format");
     }
 
     if (!data) throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
 
-    _load2D(texTarget, internalFormat, width, height, data);
+    _load2D(texTarget, internalFormat, width, height, data, baseFormat, dataType);
 
     // Free image data
     stbi_image_free(data);
 }
 
 template<GLenum target>
-void Texture<target>::_load3D(GLint zindex, GLenum internalFormat, GLint width, GLint height, void* data) {
-    GLenum baseFormat = getBaseFormat(internalFormat);
-    GLenum dataType = getDataType(internalFormat);
+void Texture<target>::_load3D(GLint zindex, GLenum internalFormat, GLint width, GLint height, void* data, GLenum baseFormat, GLenum dataType) {
     #ifdef MODERN_GL
         glTextureSubImage3D(handle, 0, 0, 0, zindex, width, height, 1, baseFormat, dataType, data);
     #else
@@ -428,7 +559,7 @@ void Texture<target>::_load3D(GLint zindex, GLenum internalFormat, const std::fi
     GLsizei width, height, channelsInFile;
     GLenum baseFormat = getBaseFormat(internalFormat);
     GLsizei channels = getChannels(baseFormat);
-    GLenum dataType = getDataType(internalFormat);
+    GLenum dataType = getSTBPreferredDataType(internalFormat);
     void* data;
 
     // Load image from file and read format
@@ -450,7 +581,7 @@ void Texture<target>::_load3D(GLint zindex, GLenum internalFormat, const std::fi
 
     if (!data) throw std::runtime_error("Failed to parse image " + filepath.string() + ": " + stbi_failure_reason());
 
-    _load3D(zindex, internalFormat, width, height, data);
+    _load3D(zindex, internalFormat, width, height, data, baseFormat, dataType);
 
     // Free image data
     stbi_image_free(data);
@@ -555,7 +686,7 @@ bool Texture<target>::writeToFile(const std::filesystem::path& filepath) {
 #endif
 
     GLenum baseFormat = getBaseFormat(internalFormat);
-    GLenum dataType = getDataType(internalFormat);
+    GLenum dataType = getSTBPreferredDataType(internalFormat);
     int channels = 4; // glTexImage2D always returns 4 channels
     
     stbi_flip_vertically_on_write(true);

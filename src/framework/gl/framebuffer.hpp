@@ -19,6 +19,13 @@
 class Framebuffer {
    public:
     /**
+     * @brief The default framebuffer object (0) used for rendering to the window.
+     */
+    static Framebuffer getDefault() {
+        return Framebuffer(0);
+    }
+
+    /**
      * @brief Constructs a Framebuffer object.
      * The identifier of the OpenGL object is stored in `Framebuffer::handle`.
      */
@@ -108,6 +115,8 @@ class Framebuffer {
      * @brief  This function is called by the destructor and move assignment operator to release the resources associated with the Framebuffer object.
      */
     void release();
+
+    Framebuffer(GLuint handle) : handle(handle) {} // Private constructor for DEFAULT framebuffer
 };
 
 template <GLenum target>
