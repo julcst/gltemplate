@@ -132,7 +132,17 @@ void Shader<type>::release() {
 
 const std::regex includeRegex("(?:^|\n)#include \"([^\"]+)\"");
 
-inline std::string readShader(const std::filesystem::path& filepath, std::unordered_set<std::filesystem::path>& included) {
+/**
+ * Workaround to support hashing of `std::filesystem::path` in unordered containers in Clang < 17, GCC < 11.4, MSVC < 19.32
+ * See: https://en.cppreference.com/w/cpp/compiler_support/17
+ */
+struct PathHash {
+    auto operator()(const std::filesystem::path& p) const noexcept {
+        return std::filesystem::hash_value(p);
+    }
+};
+
+inline std::string readShader(const std::filesystem::path& filepath, std::unordered_set<std::filesystem::path, PathHash>& included) {
     std::string source = Common::readFile(filepath);
     std::smatch match;
     while (std::regex_search(source, match, includeRegex)) {
