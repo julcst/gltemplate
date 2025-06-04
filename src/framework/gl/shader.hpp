@@ -142,7 +142,9 @@ struct PathHash {
     }
 };
 
-inline std::string readShader(const std::filesystem::path& filepath, std::unordered_set<std::filesystem::path, PathHash>& included) {
+using PathSet = std::unordered_set<std::filesystem::path, PathHash>;
+
+inline std::string readShader(const std::filesystem::path& filepath, PathSet& included) {
     std::string source = Common::readFile(filepath);
     std::smatch match;
     while (std::regex_search(source, match, includeRegex)) {
@@ -163,7 +165,7 @@ inline std::string readShader(const std::filesystem::path& filepath, std::unorde
 
 template <GLenum type>
 void Shader<type>::load(const std::filesystem::path& filepath) {
-    std::unordered_set<std::filesystem::path> included;
+    PathSet included;
     std::string source = readShader(filepath, included);
 #ifdef COMPOSE_SHADERS
     Common::writeToFile(source, Context::COMPOSED_SHADER_DIR / filepath.filepath);
