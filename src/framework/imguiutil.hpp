@@ -6,6 +6,9 @@
 #include <vector>
 #include <filesystem>
 #include <imgui.h>
+#include <string_view>
+#include <unordered_map>
+#include <algorithm>
 
 /**
  * @file imguiutil.hpp
@@ -72,6 +75,58 @@ namespace ImGui {
             const_cast<void*>(reinterpret_cast<const void*>(&labels)),
             N
         );
+    }
+
+    /**
+     * @brief Combo box for selecting an value from a map
+     */
+    template <typename T, size_t N>
+    inline bool Combo(const char* label, T* curr, const std::unordered_map<T, std::string_view>& items) {
+        const auto search = items.find(*curr);
+        const auto currentLabel = search != items.end() ? search->second : "Unknown";
+        bool changed = false;
+        if (ImGui::BeginCombo(label, currentLabel.data())) {
+            for (const auto& [value, label] : items) {
+                const bool isSelected = (value == *curr);
+                if (ImGui::Selectable(label.data(), isSelected)) {
+                    *curr = value;
+                    changed = true;
+                }
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+        return changed;
+    }
+
+    /**
+     * @brief Combo box for selecting a value from an initializer list
+     */
+    template <typename T>
+    inline bool Combo(const char* label, T* curr, std::initializer_list<std::pair<T, std::string_view>> items) {
+        // Convert to vector instead of unordered_map to avoid hash requirement
+        std::vector<std::pair<T, std::string_view>> itemsVec(items);
+        
+        // Find current item
+        auto search = std::find_if(itemsVec.begin(), itemsVec.end(), 
+            [curr](const auto& item) { return item.first == *curr; });
+        const auto currentLabel = search != itemsVec.end() ? search->second : "Unknown";
+        
+        bool changed = false;
+        if (ImGui::BeginCombo(label, currentLabel.data())) {
+            for (const auto& [value, label] : itemsVec) {
+                const bool isSelected = (value == *curr);
+                if (ImGui::Selectable(label.data(), isSelected)) {
+                    *curr = value;
+                    changed = true;
+                }
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+        return changed;
     }
 
 }
