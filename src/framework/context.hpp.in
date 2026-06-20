@@ -37,6 +37,9 @@ const std::string PROJECT_NAME = "${CMAKE_PROJECT_NAME}";
     /* Source directory, only available in DEBUG mode */
     const std::filesystem::path SOURCE_DIR = "${CMAKE_SOURCE_DIR}";
     const std::filesystem::path COMPOSED_SHADER_DIR = "${CMAKE_SOURCE_DIR}/composed/";
+#else
+    const std::filesystem::path SOURCE_DIR = ""; // Not available in RELEASE mode
+    const std::filesystem::path COMPOSED_SHADER_DIR = ""; // Not available in RELEASE mode
 #endif
 
 /**
@@ -51,10 +54,12 @@ inline void setWorkingDirectory() {
 inline std::string getCWDWarning() {
     std::stringstream stream;
     const auto cwd = std::filesystem::current_path();
+#ifndef NDEBUG
     if (std::filesystem::current_path() != SOURCE_DIR) {
         stream << "Warning: The current working directory " << cwd << " is not the source directory " << SOURCE_DIR
                << ". This can lead to relative paths not being resolved as expected, you can fix this by setting the working directory with `cd` before running your program." << std::endl;
     }
+#endif
     return stream.str();
 }
 
