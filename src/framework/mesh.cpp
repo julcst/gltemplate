@@ -17,6 +17,9 @@ using namespace glm;
 void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numIndices = indices.size();
+#ifndef MODERN_GL
+    vao.bind();
+#endif
     vbo.load(vertices, GL_STATIC_DRAW);
     ebo.load(indices, GL_STATIC_DRAW);
 
@@ -30,7 +33,6 @@ void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned i
     glEnableVertexArrayAttrib(vao.handle, 0);
     glVertexArrayAttribBinding(vao.handle, 0, 0);
 #else
-    vao.bind();
     vbo.bind();
     ebo.bind();
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, 0);
@@ -41,6 +43,9 @@ void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned i
 void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned int>& attributeSizes, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numIndices = indices.size();
+#ifndef MODERN_GL
+    vao.bind(); // NOTE: Bind VAO first as Core Profile requires a VAO to be bound when loading buffers
+#endif
     vbo.load(vertices, GL_STATIC_DRAW);
     ebo.load(indices, GL_STATIC_DRAW);
 
@@ -62,7 +67,6 @@ void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned i
     glVertexArrayVertexBuffer(vao.handle, 0, vbo.handle, 0, stride);
     glVertexArrayElementBuffer(vao.handle, ebo.handle);
 #else
-    vao.bind();
     vbo.bind();
     ebo.bind();
     GLuint offset = 0;
@@ -78,6 +82,9 @@ void Mesh::load(const std::vector<float>& vertices, const std::vector<unsigned i
 void Mesh::load(const std::vector<VertexPC>& vertices, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numIndices = indices.size();
+#ifndef MODERN_GL
+    vao.bind(); // NOTE: Bind VAO first as Core Profile requires a VAO to be bound when loading buffers
+#endif
     vbo.load(vertices, GL_STATIC_DRAW);
     ebo.load(indices, GL_STATIC_DRAW);
 
@@ -94,7 +101,6 @@ void Mesh::load(const std::vector<VertexPC>& vertices, const std::vector<unsigne
     glVertexArrayAttribBinding(vao.handle, 0, 0);
     glVertexArrayAttribBinding(vao.handle, 1, 0);
 #else
-    vao.bind();
     vbo.bind();
     ebo.bind();
     // Vertex attributes
@@ -110,6 +116,9 @@ void Mesh::load(const std::vector<VertexPC>& vertices, const std::vector<unsigne
 void Mesh::load(const std::vector<VertexPTN>& vertices, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numIndices = indices.size();
+#ifndef MODERN_GL
+    vao.bind(); // NOTE: Bind VAO first as Core Profile requires a VAO to be bound when loading buffers
+#endif
     vbo.load(vertices, GL_STATIC_DRAW);
     ebo.load(indices, GL_STATIC_DRAW);
 
@@ -129,7 +138,6 @@ void Mesh::load(const std::vector<VertexPTN>& vertices, const std::vector<unsign
     glVertexArrayAttribBinding(vao.handle, 1, 0);
     glVertexArrayAttribBinding(vao.handle, 2, 0);
 #else
-    vao.bind();
     vbo.bind();
     ebo.bind();
     // Vertex attributes
@@ -148,6 +156,9 @@ void Mesh::load(const std::vector<VertexPTN>& vertices, const std::vector<unsign
 void Mesh::load(const std::vector<VertexPTNT>& vertices, const std::vector<unsigned int>& indices) {
     // Load data into buffers
     numIndices = indices.size();
+#ifndef MODERN_GL
+    vao.bind(); // NOTE: Bind VAO first as Core Profile requires a VAO to be bound when loading buffers
+#endif
     vbo.load(vertices, GL_STATIC_DRAW);
     ebo.load(indices, GL_STATIC_DRAW);
 
@@ -170,7 +181,6 @@ void Mesh::load(const std::vector<VertexPTNT>& vertices, const std::vector<unsig
     glVertexArrayAttribBinding(vao.handle, 2, 0);
     glVertexArrayAttribBinding(vao.handle, 3, 0);
 #else
-    vao.bind();
     vbo.bind();
     ebo.bind();
     // Vertex attributes
