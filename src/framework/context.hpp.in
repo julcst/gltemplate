@@ -26,7 +26,7 @@ namespace Context {
 // Fetch the directory for document files
 #ifdef __APPLE__
     const std::filesystem::path HOME = getpwuid(getuid())->pw_dir; // Get home directory on Unix/Linux/MacOS
-    const std::filesystem::path APP_DIR = HOME / "/Library/Application Support/${CMAKE_PROJECT_NAME}/"; // Writing into the .app bundle is not allowed as it is signed
+    const std::filesystem::path APP_DIR = HOME / "Library" / "Application Support" / "${CMAKE_PROJECT_NAME}"; // Writing into the .app bundle is not allowed as it is signed
 #else
     const std::filesystem::path APP_DIR = ""; // On other platforms just write into the application directory
 #endif
@@ -55,7 +55,7 @@ inline std::string getCWDWarning() {
     std::stringstream stream;
     const auto cwd = std::filesystem::current_path();
 #ifndef NDEBUG
-    if (std::filesystem::current_path() != SOURCE_DIR) {
+    if (cwd != SOURCE_DIR) {
         stream << "Warning: The current working directory " << cwd << " is not the source directory " << SOURCE_DIR
                << ". This can lead to relative paths not being resolved as expected, you can fix this by setting the working directory with `cd` before running your program." << std::endl;
     }
